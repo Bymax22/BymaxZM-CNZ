@@ -142,9 +142,9 @@ export function Navigation() {
         animate={{ y: 0 }}
         className="bg-gradient-to-r from-[#029346] to-[#0C4726] text-white py-2 px-4 text-sm border-b border-white/10"
       >
-        <div className="max-w-7xl mx-auto flex flex-col xs:flex-row justify-between items-center gap-2">
-          {/* Contact Info - Stack on mobile */}
-          <div className="flex flex-col xs:flex-row items-center gap-2 xs:gap-4 w-full xs:w-auto justify-center xs:justify-start">
+        <div className="max-w-7xl mx-auto flex flex-row flex-wrap justify-between items-center gap-2">
+          {/* Contact Info - inline on mobile */}
+          <div className="flex flex-row items-center gap-2 xs:gap-4 w-auto justify-center xs:justify-start">
             <motion.a 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -167,7 +167,7 @@ export function Navigation() {
           </div>
           
           {/* Clubs & Portal - Always visible on mobile */}
-          <div className="flex items-center gap-3 w-full xs:w-auto justify-center xs:justify-end">
+          <div className="flex items-center gap-3 w-auto justify-center xs:justify-end">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
