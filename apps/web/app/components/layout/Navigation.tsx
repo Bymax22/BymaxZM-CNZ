@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaBars, 
@@ -13,8 +13,10 @@ import {
   FaUsers,
   FaDonate,
   FaHandHoldingHeart,
-  FaSeedling
+  FaSeedling,
+  FaUserCircle
 } from 'react-icons/fa';
+import Image from 'next/image';
 
 const navigation = [
   { 
@@ -72,6 +74,8 @@ export function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,43 +86,77 @@ export function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleSubmenuEnter = (itemName: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setActiveSubmenu(itemName);
+    setIsDropdownOpen(true);
+  };
+
+  const handleSubmenuLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      if (!dropdownRef.current?.matches(':hover')) {
+        setIsDropdownOpen(false);
+        setActiveSubmenu(null);
+      }
+    }, 150);
+  };
+
+  const handleDropdownEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleDropdownLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsDropdownOpen(false);
+      setActiveSubmenu(null);
+    }, 150);
+  };
+
   return (
     <>
       {/* Top Bar */}
       <motion.div 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="bg-gradient-to-r from-emerald-700 to-green-800 text-white py-3 px-4 text-sm border-b border-white/10"
+        className="bg-gradient-to-r from-[#029346] to-[#0C4726] text-white py-2 px-4 text-sm border-b border-white/10"
       >
-        <div className="container-custom flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <motion.div 
+        <div className="container-custom flex flex-col sm:flex-row justify-between items-center gap-2">
+          <div className="flex items-center gap-4 flex-wrap justify-center">
+            <motion.a 
               whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-2 hover:text-amber-300 transition-colors cursor-pointer"
+              href="tel:+260965638175"
+              className="flex items-center gap-2 hover:text-[#F79021] transition-colors cursor-pointer text-xs sm:text-sm"
             >
               <FaPhone className="w-3 h-3" />
               <span>+260 965 638 175</span>
-            </motion.div>
-            <motion.div 
+            </motion.a>
+            <motion.a 
               whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-2 hover:text-amber-300 transition-colors cursor-pointer"
+              href="mailto:info@carefornaturezambia.org"
+              className="flex items-center gap-2 hover:text-[#F79021] transition-colors cursor-pointer text-xs sm:text-sm"
             >
               <FaEnvelope className="w-3 h-3" />
               <span>info@carefornaturezambia.org</span>
-            </motion.div>
+            </motion.a>
           </div>
-          <div className="hidden md:flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <motion.button 
               whileHover={{ scale: 1.05 }}
-              className="hover:text-amber-300 transition-colors font-medium"
+              className="hover:text-[#F79021] transition-colors font-medium text-xs sm:text-sm flex items-center gap-1"
             >
-              Care for Nature Clubs
+              <FaUsers className="w-3 h-3" />
+              <span className="hidden sm:inline">Clubs</span>
             </motion.button>
             <motion.button 
               whileHover={{ scale: 1.05 }}
-              className="bg-amber-500 hover:bg-amber-600 px-4 py-1 rounded-full text-white font-medium transition-all duration-300"
+              className="bg-[#F79021] hover:bg-[#AA5D26] px-3 py-1 rounded-full text-white font-medium transition-all duration-300 text-xs sm:text-sm flex items-center gap-1"
             >
-              Portal Login
+              <FaUserCircle className="w-3 h-3" />
+              <span>Portal</span>
             </motion.button>
           </div>
         </div>
@@ -132,34 +170,34 @@ export function Navigation() {
         className={`sticky top-0 z-50 transition-all duration-500 ${
           scrolled 
             ? 'bg-white/95 backdrop-blur-xl shadow-2xl border-b border-gray-100' 
-            : 'bg-transparent'
+            : 'bg-white shadow-lg'
         }`}
       >
         <div className="container-custom">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <motion.div 
-              className="flex items-center gap-4"
+              className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <motion.div 
-                whileHover={{ rotate: 360 }}
-                transition={{ duration: 0.8 }}
-                className={`w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-lg ${
-                  scrolled ? 'shadow-emerald-200' : 'shadow-emerald-400'
-                }`}
-              >
-                <FaLeaf className="w-6 h-6 text-white" />
-              </motion.div>
+              <div className="relative w-10 h-10 lg:w-12 lg:h-12">
+                <Image
+                  src="/images/logo.png"
+                  alt="Care for Nature Zambia"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
               <div className="flex flex-col">
-                <span className={`font-bold text-xl leading-none ${
-                  scrolled ? 'text-gray-800' : 'text-white'
+                <span className={`font-bold text-lg lg:text-xl leading-none ${
+                  scrolled ? 'text-gray-800' : 'text-gray-800'
                 }`}>
                   Care for Nature
                 </span>
-                <span className={`text-sm font-medium ${
-                  scrolled ? 'text-emerald-600' : 'text-emerald-200'
+                <span className={`text-xs lg:text-sm font-medium ${
+                  scrolled ? 'text-[#029346]' : 'text-[#029346]'
                 }`}>
                   Zambia
                 </span>
@@ -167,30 +205,21 @@ export function Navigation() {
             </motion.div>
 
             {/* Desktop Navigation */}
-            <div className="hidden xl:flex items-center space-x-1">
+            <div className="hidden lg:flex items-center space-x-1">
               {navigation.map((item) => (
                 <div key={item.name} className="relative group">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
-                    className={`nav-link flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
+                    className={`nav-link flex items-center gap-2 px-3 py-2 lg:px-4 lg:py-2 rounded-xl font-medium transition-all duration-300 ${
                       scrolled 
-                        ? 'text-gray-700 hover:text-emerald-600 hover:bg-emerald-50' 
-                        : 'text-white hover:text-emerald-200 hover:bg-white/10'
+                        ? 'text-gray-700 hover:text-[#029346] hover:bg-[#029346]/10' 
+                        : 'text-gray-700 hover:text-[#029346] hover:bg-[#029346]/10'
                     }`}
-                    onMouseEnter={() => {
-                      setActiveSubmenu(item.name);
-                      setIsDropdownOpen(true);
-                    }}
-                    onMouseLeave={() => {
-                      setTimeout(() => {
-                        if (!document.querySelector('.submenu:hover')) {
-                          setIsDropdownOpen(false);
-                        }
-                      }, 100);
-                    }}
+                    onMouseEnter={() => handleSubmenuEnter(item.name)}
+                    onMouseLeave={handleSubmenuLeave}
                   >
                     {item.icon && <item.icon className="w-4 h-4" />}
-                    {item.name}
+                    <span className="text-sm lg:text-base">{item.name}</span>
                     {item.submenu && (
                       <motion.div
                         animate={{ rotate: activeSubmenu === item.name ? 180 : 0 }}
@@ -204,30 +233,29 @@ export function Navigation() {
                   {/* Enhanced Submenu */}
                   {item.submenu && (
                     <motion.div 
-                      className={`absolute top-full left-0 mt-2 w-80 rounded-2xl shadow-2xl border border-gray-100 submenu ${
-                        scrolled ? 'bg-white' : 'bg-white/95 backdrop-blur-xl'
-                      } ${
+                      ref={dropdownRef}
+                      className={`absolute top-full left-0 mt-1 w-64 rounded-2xl shadow-2xl border border-gray-100 submenu bg-white/95 backdrop-blur-xl ${
                         activeSubmenu === item.name && isDropdownOpen
-                          ? 'opacity-100 scale-100'
+                          ? 'opacity-100 scale-100 pointer-events-auto'
                           : 'opacity-0 scale-95 pointer-events-none'
                       } transition-all duration-300 origin-top`}
-                      onMouseEnter={() => setIsDropdownOpen(true)}
-                      onMouseLeave={() => setIsDropdownOpen(false)}
+                      onMouseEnter={handleDropdownEnter}
+                      onMouseLeave={handleDropdownLeave}
                     >
-                      <div className="p-4">
-                        <h3 className="font-bold text-gray-800 mb-3 text-lg">{item.name}</h3>
-                        <div className="space-y-2">
+                      <div className="p-3">
+                        <h3 className="font-bold text-gray-800 mb-2 text-sm">{item.name}</h3>
+                        <div className="space-y-1">
                           {item.submenu.map((subItem) => (
                             <motion.a
                               key={subItem.name}
                               href={subItem.href}
                               whileHover={{ x: 5 }}
-                              className="flex flex-col p-3 rounded-xl hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 group transition-all duration-300 border border-transparent hover:border-emerald-100"
+                              className="flex flex-col p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#029346]/5 hover:to-[#0C4726]/5 group transition-all duration-300 border border-transparent hover:border-[#029346]/20"
                             >
-                              <span className="font-semibold text-gray-800 group-hover:text-emerald-600">
+                              <span className="font-semibold text-gray-800 group-hover:text-[#029346] text-sm">
                                 {subItem.name}
                               </span>
-                              <span className="text-sm text-gray-500 group-hover:text-gray-600">
+                              <span className="text-xs text-gray-500 group-hover:text-gray-600">
                                 {subItem.description}
                               </span>
                             </motion.a>
@@ -240,30 +268,22 @@ export function Navigation() {
               ))}
               
               {/* CTA Buttons */}
-              <div className="flex items-center gap-3 ml-4">
+              <div className="flex items-center gap-2 ml-2">
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg ${
-                    scrolled 
-                      ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:shadow-emerald-200 hover:shadow-xl' 
-                      : 'bg-white text-emerald-600 hover:bg-gray-50 hover:shadow-white hover:shadow-xl'
-                  }`}
+                  className="bg-[#029346] hover:bg-[#0C4726] text-white font-semibold px-4 py-2 lg:px-6 lg:py-3 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2"
                 >
-                  <FaDonate className="inline w-4 h-4 mr-2" />
-                  Donate
+                  <FaDonate className="w-3 h-3 lg:w-4 lg:h-4" />
+                  <span className="hidden sm:inline">Donate</span>
                 </motion.button>
                 <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 border-2 ${
-                    scrolled 
-                      ? 'border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white' 
-                      : 'border-white text-white hover:bg-white hover:text-amber-500'
-                  }`}
+                  className="border-2 border-[#F79021] text-[#F79021] hover:bg-[#F79021] hover:text-white font-semibold px-4 py-2 lg:px-6 lg:py-3 rounded-xl text-sm transition-all duration-300 flex items-center gap-2"
                 >
-                  <FaUsers className="inline w-4 h-4 mr-2" />
-                  Join Us
+                  <FaUsers className="w-3 h-3 lg:w-4 lg:h-4" />
+                  <span className="hidden sm:inline">Join Us</span>
                 </motion.button>
               </div>
             </div>
@@ -273,13 +293,13 @@ export function Navigation() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsOpen(!isOpen)}
-              className={`xl:hidden p-3 rounded-xl transition-all duration-300 ${
+              className={`lg:hidden p-2 rounded-xl transition-all duration-300 ${
                 scrolled 
                   ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-white hover:bg-white/10'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
-              {isOpen ? <FaTimes className="w-6 h-6" /> : <FaBars className="w-6 h-6" />}
+              {isOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
             </motion.button>
           </div>
         </div>
@@ -292,23 +312,23 @@ export function Navigation() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="xl:hidden bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-2xl"
+              className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-2xl"
             >
-              <div className="container-custom py-6">
+              <div className="container-custom py-4">
                 {navigation.map((item) => (
                   <div key={item.name} className="border-b border-gray-100 last:border-b-0">
                     <motion.button
                       whileHover={{ x: 5 }}
-                      className="flex items-center justify-between w-full py-4 text-gray-700 font-semibold hover:text-emerald-600 transition-colors group"
+                      className="flex items-center justify-between w-full py-3 text-gray-700 font-semibold hover:text-[#029346] transition-colors group text-left"
                       onClick={() => item.submenu ? setActiveSubmenu(
                         activeSubmenu === item.name ? null : item.name
-                      ) : setIsOpen(false)}
+                      ) : (setIsOpen(false), window.location.href = item.href)}
                     >
                       <div className="flex items-center gap-3">
                         {item.icon && (
-                          <item.icon className="w-4 h-4 text-emerald-500 group-hover:text-emerald-600" />
+                          <item.icon className="w-4 h-4 text-[#029346] group-hover:text-[#029346]" />
                         )}
-                        {item.name}
+                        <span className="text-base">{item.name}</span>
                       </div>
                       {item.submenu && (
                         <motion.div
@@ -326,14 +346,14 @@ export function Navigation() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="pl-7 pb-3 space-y-2"
+                        className="pl-7 pb-2 space-y-1"
                       >
                         {item.submenu.map((subItem) => (
                           <motion.a
                             key={subItem.name}
                             href={subItem.href}
                             whileHover={{ x: 5 }}
-                            className="block py-2 text-gray-600 hover:text-emerald-600 transition-colors font-medium"
+                            className="block py-2 text-gray-600 hover:text-[#029346] transition-colors font-medium text-sm"
                             onClick={() => setIsOpen(false)}
                           >
                             {subItem.name}
@@ -349,22 +369,24 @@ export function Navigation() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex flex-col gap-3 mt-6 pt-6 border-t border-gray-200"
+                  className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-200"
                 >
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2"
+                    className="w-full bg-[#029346] text-white font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2"
+                    onClick={() => setIsOpen(false)}
                   >
-                    <FaDonate className="w-5 h-5" />
+                    <FaDonate className="w-4 h-4" />
                     Make a Donation
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full border-2 border-emerald-500 text-emerald-500 font-bold py-4 rounded-xl hover:bg-emerald-500 hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full border-2 border-[#F79021] text-[#F79021] font-semibold py-3 rounded-xl hover:bg-[#F79021] hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
+                    onClick={() => setIsOpen(false)}
                   >
-                    <FaUsers className="w-5 h-5" />
+                    <FaUsers className="w-4 h-4" />
                     Join as Volunteer
                   </motion.button>
                 </motion.div>

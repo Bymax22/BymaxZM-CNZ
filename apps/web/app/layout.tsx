@@ -1,4 +1,3 @@
-// app/layout.tsx
 export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
@@ -61,7 +60,7 @@ export const metadata: Metadata = {
     description: 'Join us in protecting Zambia\'s environment and empowering communities through sustainable development and conservation efforts.',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/images/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'Care for Nature Zambia',
@@ -72,7 +71,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Care for Nature Zambia',
     description: 'Protecting Environment, Empowering Communities',
-    images: ['/og-image.jpg'],
+    images: ['/images/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -84,10 +83,6 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-  verification: {
-    // Add Google Search Console verification here
-    // google: 'verification_token',
   },
   viewport: {
     width: 'device-width',
@@ -112,10 +107,21 @@ export default function RootLayout({ children }: RootLayoutProps) {
         {/* Preload critical resources */}
         <link
           rel="preload"
-          href="/hero-bg.jpg"
+          href="/images/hero-bg-1.jpg"
           as="image"
           type="image/jpeg"
-          media="(min-width: 768px)"
+        />
+        <link
+          rel="preload"
+          href="/images/hero-bg-2.jpg"
+          as="image"
+          type="image/jpeg"
+        />
+        <link
+          rel="preload"
+          href="/images/hero-bg-3.jpg"
+          as="image"
+          type="image/jpeg"
         />
         
         {/* Preconnect to important origins */}
@@ -132,7 +138,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               name: 'Care for Nature Zambia',
               alternateName: 'CNZ',
               url: 'https://carefornaturezambia.org',
-              logo: 'https://carefornaturezambia.org/logo.png',
+              logo: 'https://carefornaturezambia.org/images/logo.png',
               description: 'Non-profit organization dedicated to environmental conservation and community development in Zambia.',
               address: {
                 '@type': 'PostalAddress',
@@ -140,7 +146,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               },
               contactPoint: {
                 '@type': 'ContactPoint',
-                telephone: '+260-XXX-XXXXXX',
+                telephone: '+260-965-638-175',
                 contactType: 'customer service',
               },
               sameAs: [
