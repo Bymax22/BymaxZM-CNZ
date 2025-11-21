@@ -1,102 +1,147 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+// app/page.tsx
+'use client';
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
+import { useState, useEffect } from 'react';
+import { HeroSection } from './components/sections/HeroSection';
+import { ImpactStats } from './components/sections/ImpactStats';
+import { FeaturedProjects } from './components/sections/FeaturedProjects';
+import { HowToHelp } from './components/sections/HowToHelp';
+import { LatestNews } from './components/sections/LatestNews';
+import { Testimonials } from './components/sections/Testimonials';
+import { Partners } from './components/sections/Partners';
+import { CTASection } from './components/sections/CTASection';
+import { LoadingScreen } from './components/ui/LoadingScreen';
 
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
+export default function HomePage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+  useEffect(() => {
+    setIsMounted(true);
+    
+    // Simulate loading time for animations and data fetching
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    return () => clearTimeout(timer);
+  }, []);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.com/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading Care for Nature Zambia...</p>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.com?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turborepo.com →
-        </a>
-      </footer>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section id="home">
+        <HeroSection />
+      </section>
+      
+      {/* Impact Statistics */}
+      <section id="impact">
+        <ImpactStats />
+      </section>
+      
+      {/* Featured Projects */}
+      <section id="projects">
+        <FeaturedProjects />
+      </section>
+      
+      {/* How to Help */}
+      <section id="get-involved">
+        <HowToHelp />
+      </section>
+      
+      {/* Latest News */}
+      <section id="news">
+        <LatestNews />
+      </section>
+      
+      {/* Testimonials */}
+      <section id="testimonials">
+        <Testimonials />
+      </section>
+      
+      {/* Partners */}
+      <section id="partners">
+        <Partners />
+      </section>
+      
+      {/* CTA Section */}
+      <section id="contact">
+        <CTASection />
+      </section>
+
+      {/* Smooth Scroll Script */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+              anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                  target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }
+              });
+            });
+
+            // Intersection Observer for animations
+            const observerOptions = {
+              threshold: 0.1,
+              rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('animate-fade-in');
+                }
+              });
+            }, observerOptions);
+
+            // Observe all sections for animation
+            document.querySelectorAll('section').forEach(section => {
+              observer.observe(section);
+            });
+
+            // Performance monitoring
+            window.addEventListener('load', () => {
+              const navigationTiming = performance.getEntriesByType('navigation')[0];
+              if (navigationTiming) {
+                const loadTime = navigationTiming.loadEventEnd - navigationTiming.navigationStart;
+                console.log('Page fully loaded in:', loadTime + 'ms');
+                
+                // Send to analytics
+                if (typeof gtag !== 'undefined') {
+                  gtag('event', 'timing_complete', {
+                    'name': 'page_load',
+                    'value': loadTime,
+                    'event_category': 'Load Performance'
+                  });
+                }
+              }
+            });
+          `,
+        }}
+      />
     </div>
   );
 }

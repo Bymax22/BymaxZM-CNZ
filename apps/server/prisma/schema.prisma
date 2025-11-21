@@ -1,0 +1,867 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  PROJECT_MANAGER
+  FINANCE_OFFICER
+  VOLUNTEER_COORDINATOR
+  FIELD_OFFICER
+  CLUB_LEADER
+  MEMBER
+  DONOR
+  PARTNER
+  YOUTH
+  GUEST
+}
+
+enum MembershipType {
+  ORDINARY
+  CORPORATE
+  HONORARY
+  STUDENT
+  LIFETIME
+}
+
+enum ProjectStatus {
+  DRAFT
+  PLANNING
+  ACTIVE
+  COMPLETED
+  SUSPENDED
+  CANCELLED
+}
+
+enum DonationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum ClubStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
+enum EventType {
+  VOLUNTEERING
+  TRAINING
+  MEETING
+  FUNDRAISER
+  AWARENESS
+  TREE_PLANTING
+  CLEANUP
+  WORKSHOP
+}
+
+enum ReportType {
+  FIELD
+  PROGRESS
+  FINANCIAL
+  INCIDENT
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum NotificationType {
+  SYSTEM
+  PROJECT_UPDATE
+  EVENT_REMINDER
+  DONATION_RECEIPT
+  MEMBERSHIP_UPDATE
+  CLUB_ANNOUNCEMENT
+  SECURITY_ALERT
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  phone       String?
+  avatar      String?
+  role        UserRole @default(GUEST)
+  isActive    Boolean  @default(true)
+  isVerified  Boolean  @default(false)
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  profile     Profile?
+  memberships Membership[]
+  donations   Donation[]
+  projects    Project[]
+  managedClubs Club[]   @relation("ClubLeader")
+  clubMemberships ClubMember[]
+  posts       Post[]
+  events      Event[]
+  messagesSent Message[] @relation("MessageSender")
+  messagesReceived Message[] @relation("MessageReceiver")
+  reportsAuthored Report[] @relation("UserReportsAuthored")
+  reportsApproved Report[] @relation("UserReportsApproved")
+  enrollments Enrollment[]
+  notifications Notification[]
+  auditLogs   AuditLog[]
+  sessions    Session[]
+  volunteerHours VolunteerHour[] @relation("VolunteerHoursUser")
+  verifiedVolunteerHours VolunteerHour[] @relation("VolunteerHoursVerifiedBy")
+  clubPoints  ClubPoints[]
+  meetingsCreated ClubMeeting[]
+  meetingAttendances MeetingAttendance[]
+  clubAnnouncements ClubAnnouncement[]
+  projectVolunteers ProjectVolunteer[]
+  projectTasks ProjectTask[]
+  comments    Comment[]
+  eventRegistrations EventRegistration[]
+  courses     Course[]
+  userAchievements UserAchievement[]
+  dashboardWidgets DashboardWidget[]
+  accounts    Account[]
+
+  @@map("users")
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  bio         String?
+  dateOfBirth DateTime?
+  address     String?
+  city        String?
+  province    String?
+  country     String   @default("Zambia")
+  occupation  String?
+  organization String?
+  interests   String[]
+  skills      String[]
+  emergencyContactName String?
+  emergencyContactPhone String?
+  userId      String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Membership {
+  id             String         @id @default(cuid())
+  type           MembershipType
+  membershipId   String         @unique
+  joinDate       DateTime       @default(now())
+  expiryDate     DateTime?
+  isActive       Boolean        @default(true)
+  membershipFee  Float          @default(0)
+  userId         String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  user           User           @relation(fields: [userId], references: [id])
+  payments       MembershipPayment[]
+
+  @@map("memberships")
+}
+
+model MembershipPayment {
+  id           String   @id @default(cuid())
+  amount       Float
+  paymentDate  DateTime @default(now())
+  paymentMethod String
+  transactionId String?
+  status       DonationStatus
+  membershipId String
+  createdAt    DateTime @default(now())
+
+  membership   Membership @relation(fields: [membershipId], references: [id])
+
+  @@map("membership_payments")
+}
+
+model Club {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  location    String
+  province    String
+  latitude    Float?
+  longitude   Float?
+  meetingSchedule String?
+  meetingDay  String? // e.g., "Monday", "Friday"
+  meetingTime String? // e.g., "14:00"
+  status      ClubStatus @default(PENDING)
+  isActive    Boolean  @default(true)
+  memberCount Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  leaderId    String
+  leader      User     @relation("ClubLeader", fields: [leaderId], references: [id])
+  members     ClubMember[]
+  projects    Project[]
+  meetings    ClubMeeting[]
+  reports     Report[]
+  announcements ClubAnnouncement[]
+  achievements Achievement[]
+  impactMetrics ImpactMetric[]
+  clubPointsRecords ClubPoints[]
+  events      Event[]
+
+  @@map("clubs")
+}
+
+model ClubMember {
+  id          String   @id @default(cuid())
+  userId      String
+  clubId      String
+  role        UserRole @default(MEMBER)
+  joinDate    DateTime @default(now())
+  isActive    Boolean  @default(true)
+  permissions String[] // Custom permissions for club management
+
+  user        User     @relation(fields: [userId], references: [id])
+  club        Club     @relation(fields: [clubId], references: [id])
+
+  @@unique([userId, clubId])
+  @@map("club_members")
+}
+
+model ClubMeeting {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  duration    Int? // in minutes
+  location    String
+  agenda      String?
+  minutes     String?
+  decisions   String?
+  actionItems String?
+  clubId      String
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  club        Club     @relation(fields: [clubId], references: [id])
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  attendees   MeetingAttendance[]
+
+  @@map("club_meetings")
+}
+
+model MeetingAttendance {
+  id        String   @id @default(cuid())
+  meetingId String
+  userId    String
+  attended  Boolean  @default(false)
+  checkInTime DateTime?
+  notes     String?
+
+  meeting   ClubMeeting @relation(fields: [meetingId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+
+  @@unique([meetingId, userId])
+  @@map("meeting_attendances")
+}
+
+model ClubAnnouncement {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  isImportant Boolean  @default(false)
+  isPublic    Boolean  @default(true)
+  clubId      String
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  club        Club     @relation(fields: [clubId], references: [id])
+  author      User     @relation(fields: [authorId], references: [id])
+
+  @@map("club_announcements")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  objectives  String[]
+  status      ProjectStatus @default(DRAFT)
+  startDate   DateTime?
+  endDate     DateTime?
+  budget      Float?
+  fundsRaised Float    @default(0)
+  location    String
+  province    String
+  latitude    Float?
+  longitude   Float?
+  tags        String[]
+  isPublic    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  managerId   String
+  manager     User     @relation(fields: [managerId], references: [id])
+  clubId      String?
+  club        Club?    @relation(fields: [clubId], references: [id])
+  donations   Donation[]
+  milestones  Milestone[]
+  reports     Report[]
+  media       Media[]
+  partners    ProjectPartner[]
+  volunteers  ProjectVolunteer[]
+  tasks       ProjectTask[]
+  volunteerHours VolunteerHour[]
+  impactMetrics ImpactMetric[]
+  events      Event[]
+
+  @@map("projects")
+}
+
+model ProjectVolunteer {
+  id          String   @id @default(cuid())
+  projectId   String
+  userId      String
+  role        String
+  hoursContributed Float @default(0)
+  joinedAt    DateTime @default(now())
+  isActive    Boolean  @default(true)
+
+  project     Project  @relation(fields: [projectId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_volunteers")
+}
+
+model ProjectTask {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  status      String   @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
+  assignedTo  String?
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id])
+  assignee    User?    @relation(fields: [assignedTo], references: [id])
+
+  @@map("project_tasks")
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  dueDate     DateTime
+  completedAt DateTime?
+  isCompleted Boolean  @default(false)
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  @@map("milestones")
+}
+
+model Donation {
+  id            String         @id @default(cuid())
+  amount        Float
+  currency      String         @default("ZMW")
+  donorName     String
+  donorEmail    String
+  donorPhone    String?
+  message       String?
+  paymentMethod String
+  transactionId String?
+  status        DonationStatus @default(PENDING)
+  isAnonymous   Boolean        @default(false)
+  isRecurring   Boolean        @default(false)
+  receiptSent   Boolean        @default(false)
+  projectId     String?
+  userId        String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  donor         User?          @relation(fields: [userId], references: [id])
+  project       Project?       @relation(fields: [projectId], references: [id])
+
+  @@map("donations")
+}
+
+model ProjectPartner {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  website     String?
+  contactEmail String?
+  logo        String?
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  @@map("project_partners")
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  slug        String   @unique
+  coverImage  String?
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  tags        String[]
+  authorId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User     @relation(fields: [authorId], references: [id])
+  categories  PostCategory[]
+  comments    Comment[]
+  media       Media[]
+
+  @@map("posts")
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  color       String?  // For UI display
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts       PostCategory[]
+
+  @@map("categories")
+}
+
+model PostCategory {
+  id          String   @id @default(cuid())
+  postId      String
+  categoryId  String
+
+  post        Post     @relation(fields: [postId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  @@unique([postId, categoryId])
+  @@map("post_categories")
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  content     String
+  authorId    String
+  postId      String
+  parentId    String?
+  isApproved  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User     @relation(fields: [authorId], references: [id])
+  post        Post     @relation(fields: [postId], references: [id])
+  parent      Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[] @relation("CommentReplies")
+
+  @@map("comments")
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  location    String
+  latitude    Float?
+  longitude   Float?
+  maxAttendees Int?
+  type        EventType
+  isPublic    Boolean  @default(true)
+  organizerId String
+  clubId      String?
+  projectId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organizer   User     @relation(fields: [organizerId], references: [id])
+  club        Club?    @relation(fields: [clubId], references: [id])
+  project     Project? @relation(fields: [projectId], references: [id])
+  registrations EventRegistration[]
+  volunteerHours VolunteerHour[]
+
+  @@map("events")
+}
+
+model EventRegistration {
+  id          String   @id @default(cuid())
+  eventId     String
+  userId      String
+  attended    Boolean  @default(false)
+  checkInTime DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  event       Event    @relation(fields: [eventId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+  @@map("event_registrations")
+}
+
+model Media {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  type        String // image, video, document
+  size        Int?
+  projectId   String?
+  reportId    String?
+  postId      String?
+  createdAt   DateTime @default(now())
+
+  project     Project? @relation(fields: [projectId], references: [id])
+  report      Report?  @relation(fields: [reportId], references: [id])
+  post        Post?    @relation(fields: [postId], references: [id])
+
+  @@map("media")
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        ReportType
+  latitude    Float?
+  longitude   Float?
+  location    String?
+  authorId    String
+  projectId   String?
+  clubId      String?
+  isApproved  Boolean  @default(false)
+  approvedById String?
+  approvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User     @relation("UserReportsAuthored", fields: [authorId], references: [id])
+  project     Project? @relation(fields: [projectId], references: [id])
+  club        Club?    @relation(fields: [clubId], references: [id])
+  approvedBy  User?    @relation("UserReportsApproved", fields: [approvedById], references: [id])
+  media       Media[]
+
+  @@map("reports")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  subject     String
+  content     String
+  isRead      Boolean  @default(false)
+  isImportant Boolean  @default(false)
+  senderId    String
+  receiverId  String
+  parentId    String?
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation("MessageSender", fields: [senderId], references: [id])
+  receiver    User     @relation("MessageReceiver", fields: [receiverId], references: [id])
+  parent      Message? @relation("MessageReplies", fields: [parentId], references: [id])
+  replies     Message[] @relation("MessageReplies")
+
+  @@map("messages")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String
+  duration    Int // in minutes
+  level       String // beginner, intermediate, advanced
+  isPublished Boolean  @default(false)
+  instructorId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  instructor  User       @relation(fields: [instructorId], references: [id])
+  enrollments Enrollment[]
+  modules     Module[]
+
+  @@map("courses")
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  content     String
+  order       Int
+  duration    Int // in minutes
+  courseId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course    @relation(fields: [courseId], references: [id])
+  resources   LearningResource[]
+
+  @@map("modules")
+}
+
+model LearningResource {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  type        String // video, document, link, quiz
+  moduleId    String
+  createdAt   DateTime @default(now())
+
+  module      Module   @relation(fields: [moduleId], references: [id])
+
+  @@map("learning_resources")
+}
+
+model Enrollment {
+  id          String   @id @default(cuid())
+  userId      String
+  courseId    String
+  progress    Float    @default(0)
+  completedAt DateTime?
+  certificateUrl String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  course      Course   @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model ImpactMetric {
+  id          String   @id @default(cuid())
+  name        String
+  value       Float
+  unit        String
+  date        DateTime
+  projectId   String?
+  clubId      String?
+  province    String?
+  createdAt   DateTime @default(now())
+
+  project     Project? @relation(fields: [projectId], references: [id])
+  club        Club?    @relation(fields: [clubId], references: [id])
+
+  @@map("impact_metrics")
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  type        NotificationType
+  isRead      Boolean  @default(false)
+  userId      String
+  relatedId   String?  // ID of related entity (project, event, etc.)
+  relatedType String?  // Type of related entity
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  resource    String
+  resourceId  String?
+  details     Json?
+  userId      String
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+// Portal Dashboard Models
+model DashboardWidget {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // chart, stats, list, progress
+  config      Json     // Widget configuration
+  position    Int      // Order in dashboard
+  userId      String?  // Null for system-wide widgets
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@map("dashboard_widgets")
+}
+
+model VolunteerHour {
+  id          String   @id @default(cuid())
+  userId      String
+  projectId   String?
+  eventId     String?
+  hours       Float
+  date        DateTime
+  description String
+  verifiedBy  String?
+  verifiedAt  DateTime?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation("VolunteerHoursUser", fields: [userId], references: [id])
+  project     Project? @relation(fields: [projectId], references: [id])
+  event       Event?   @relation(fields: [eventId], references: [id])
+  verifiedByUser User? @relation("VolunteerHoursVerifiedBy", fields: [verifiedBy], references: [id])
+
+  @@map("volunteer_hours")
+}
+
+// Club Achievement System
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  icon        String?
+  points      Int      @default(0)
+  criteria    Json     // Achievement criteria
+  clubId      String?
+  isGlobal    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  club        Club?    @relation(fields: [clubId], references: [id])
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id             String   @id @default(cuid())
+  userId         String
+  achievementId  String
+  earnedAt       DateTime @default(now())
+  pointsEarned   Int
+
+  user           User       @relation(fields: [userId], references: [id])
+  achievement    Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+// Club Points System
+model ClubPoints {
+  id          String   @id @default(cuid())
+  clubId      String
+  points      Int      @default(0)
+  reason      String
+  sourceType  String   // project, event, membership, etc.
+  sourceId    String?
+  awardedBy   String
+  createdAt   DateTime @default(now())
+
+  club        Club     @relation(fields: [clubId], references: [id])
+  awardedByUser User   @relation(fields: [awardedBy], references: [id])
+
+  @@map("club_points")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
