@@ -209,7 +209,7 @@ export function Navigation() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
-              <div className="relative w-8 h-8 lg:w-10 lg:h-10">
+              <div className="relative w-10 h-10 lg:w-12 lg:h-12">
                 <Image
                   src="/images/logo.png"
                   alt="Care for Nature Zambia"
@@ -373,7 +373,7 @@ export function Navigation() {
                 {/* Mobile Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white sticky top-0">
                   <div className="flex items-center gap-3">
-                    <div className="relative w-10 h-10">
+                    <div className="relative w-12 h-12">
                       <Image
                         src="/images/logo.png"
                         alt="Care for Nature Zambia"
