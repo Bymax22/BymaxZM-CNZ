@@ -115,6 +115,12 @@ export function HeroSection() {
     setIsVideoLoaded(true);
   };
 
+  const handleVideoError = (e: any) => {
+    // keep state consistent and surface a helpful log when video fails to load
+    console.warn('Hero video failed to load', e?.currentTarget?.currentSrc ?? e);
+    setIsVideoLoaded(false);
+  };
+
   return (
     <section className="relative h-screen overflow-hidden">
       {/* Background Slides with Enhanced Media */}
@@ -146,7 +152,7 @@ export function HeroSection() {
           {/* Image Fallback */}
           <motion.div
             className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
-              !currentSlideData.video || isVideoLoaded ? 'opacity-0' : 'opacity-100'
+              (!currentSlideData.video || !isVideoLoaded) ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
               backgroundImage: `url('${currentSlideData.image}')`,
@@ -222,6 +228,7 @@ export function HeroSection() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="max-w-6xl mx-auto"
             >
+
               {/* Animated Icon */}
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
@@ -242,7 +249,7 @@ export function HeroSection() {
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight"
               >
                 <span className="block">Care for Nature</span>
-                <motion.span 
+                <motion.span
                   initial={{ opacity: 0, x: -50 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.6 }}
