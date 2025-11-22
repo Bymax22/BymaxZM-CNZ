@@ -152,7 +152,7 @@ export function Navigation() {
               className="flex items-center gap-2 hover:text-[#F79021] transition-colors cursor-pointer text-xs"
             >
               <FaPhone className="w-3 h-3 flex-shrink-0" />
-              <span className="truncate">+260 965 638 175</span>
+              <span className="truncate">Call Us</span>
             </motion.a>
             <motion.a 
               whileHover={{ scale: 1.05 }}
