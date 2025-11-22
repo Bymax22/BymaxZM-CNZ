@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaBars, 
@@ -77,6 +78,7 @@ export function Navigation() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navRef = useRef<HTMLElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -172,6 +174,7 @@ export function Navigation() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="hover:text-[#F79021] transition-colors font-medium text-xs flex items-center gap-2"
+              onClick={() => router.push('/auth/login')}
             >
               <FaUsers className="w-3 h-3 flex-shrink-0" />
               <span className="whitespace-nowrap">Clubs</span>
@@ -180,6 +183,7 @@ export function Navigation() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-[#F79021] hover:bg-[#AA5D26] px-3 py-1 rounded-full text-white font-medium transition-all duration-300 text-xs flex items-center gap-2 whitespace-nowrap"
+              onClick={() => router.push('/auth/login')}
             >
               <FaUserCircle className="w-3 h-3 flex-shrink-0" />
               <span>Portal</span>
@@ -481,6 +485,7 @@ export function Navigation() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="text-xs text-gray-600 hover:text-[#029346] transition-colors flex items-center gap-1"
+                        onClick={() => { setIsOpen(false); router.push('/auth/login'); }}
                       >
                         <FaUsers className="w-3 h-3" />
                         Clubs
@@ -489,6 +494,7 @@ export function Navigation() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="text-xs text-gray-600 hover:text-[#029346] transition-colors flex items-center gap-1"
+                        onClick={() => { setIsOpen(false); router.push('/auth/login'); }}
                       >
                         <FaUserCircle className="w-3 h-3" />
                         Portal
