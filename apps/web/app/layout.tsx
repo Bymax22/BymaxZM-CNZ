@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import './globals.css';
 import { CNZProvider } from './contexts/CNZContext';
+import AuthProvider from './providers/AuthProvider';
 import { Navigation } from './components/layout/Navigation';
 import { Footer } from './components/layout/Footer';
 import { Toaster } from 'react-hot-toast';
@@ -160,7 +161,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
       </head>
       <body className={`${inter.className} antialiased bg-white min-h-screen flex flex-col`}>
         <CNZProvider>
-          <div className="flex-1 flex flex-col">
+          <AuthProvider>
+            <div className="flex-1 flex flex-col">
             {/* Skip to main content for accessibility */}
             <a
               href="#main-content"
@@ -183,7 +185,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
             {/* Footer */}
             <Footer />
-          </div>
+            </div>
+          </AuthProvider>
 
           {/* Toast notifications */}
           <Toaster
@@ -250,9 +253,36 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 console.error('Global error caught:', e.error);
               });
 
-              // Service Worker registration (if you add one later)
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(console.error);
+              // Service Worker registration: only attempt in production
+              // and after verifying the file exists to avoid 404s during dev.
+              if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+                (async () => {
+                  try {
+                    // Skip registration on local development hosts to avoid 404s
+                    // (this script runs in the browser so process is not available).
+                    try {
+                      const host = window.location.hostname;
+                      if (host === 'localhost' || host === '127.0.0.1') {
+                        return;
+                      }
+                    } catch (e) {
+                      // If window is not available for some reason, skip registration
+                      return;
+                    }
+
+                    // Check that the service worker script actually exists
+                    const res = await fetch('/sw.js', { method: 'HEAD' });
+                    if (!res.ok) {
+                      console.debug('No /sw.js found — skipping service worker registration.', res.status);
+                      return;
+                    }
+
+                    await navigator.serviceWorker.register('/sw.js');
+                    console.debug('Service worker registered: /sw.js');
+                  } catch (err) {
+                    console.error('Service worker registration skipped:', err);
+                  }
+                })();
               }
             `,
           }}

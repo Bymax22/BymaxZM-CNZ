@@ -70,10 +70,6 @@ export default function HomePage() {
         <LatestNews />
       </section>
       
-      {/* Testimonials */}
-      <section id="testimonials">
-        <Testimonials />
-      </section>
       
       {/* Partners */}
       <section id="partners">
