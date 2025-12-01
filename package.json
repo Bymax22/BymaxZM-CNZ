@@ -6,7 +6,6 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "postinstall": "cd apps/web && npx prisma generate --schema=../server/prisma/schema.prisma",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
