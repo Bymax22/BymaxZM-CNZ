@@ -1,7 +1,14 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": ["NODE_ENV", "NEXTAUTH_SECRET"],
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXTAUTH_SECRET",
+    "DATABASE_URL",
+    "NEXTAUTH_URL",
+    "NEXTAUTH_CALLBACK_URL",
+    "LOG_LEVEL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
