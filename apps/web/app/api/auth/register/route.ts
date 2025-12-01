@@ -1,12 +1,7 @@
 // app/api/auth/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-
-// Lazy load prisma to avoid build-time import errors
-async function getPrisma() {
-  const { prisma } = await import('../../../lib/prisma');
-  return prisma;
-}
+import { prisma } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +16,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const prisma = await getPrisma();
     const existingUser = await prisma.user.findUnique({
       where: { email }
     });
