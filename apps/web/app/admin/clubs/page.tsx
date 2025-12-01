@@ -1,3 +1,11 @@
+interface ClubForm {
+  id?: string;
+  name: string;
+  description: string;
+  location: string;
+  province: string;
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'INACTIVE';
+}
 // app/admin/clubs/page.tsx
 'use client';
 
@@ -41,6 +49,105 @@ export default function ClubsManagement() {
   const [filter, setFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [form, setForm] = useState<ClubForm>({ name: '', description: '', location: '', province: '', status: 'ACTIVE' });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  // Handlers for create/edit
+  const openCreateModal = () => {
+    setForm({ name: '', description: '', location: '', province: '', status: 'ACTIVE' });
+    setModalMode('create');
+    setEditingId(null);
+    setFormError(null);
+    setShowModal(true);
+  };
+  const openEditModal = (club: Club) => {
+    setForm({
+      id: club.id,
+      name: club.name,
+      description: club.description,
+      location: club.location,
+      province: club.province,
+      status: club.status
+    });
+    setModalMode('edit');
+    setEditingId(club.id);
+    setFormError(null);
+    setShowModal(true);
+  };
+  const closeModal = () => setShowModal(false);
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    try {
+      let res;
+      if (modalMode === 'create') {
+        res = await fetch('/api/admin/clubs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+      } else {
+        res = await fetch('/api/admin/clubs', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...form, id: editingId })
+        });
+      }
+      if (!res.ok) {
+        const data = await res.json();
+        setFormError(data.error || 'Failed to save club');
+        return;
+      }
+      closeModal();
+      // Refresh clubs
+      setIsLoading(true);
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('search', searchTerm);
+      if (filter) params.append('filter', filter);
+      params.append('limit', '50');
+      const clubsRes = await fetch(`/api/admin/clubs?${params.toString()}`);
+      const clubsData = await clubsRes.json();
+      setClubs(clubsData.clubs.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        location: c.location,
+        province: c.province,
+        leader: c.leader?.firstName ? `${c.leader.firstName} ${c.leader.lastName}` : '',
+        memberCount: c.members?.length || 0,
+        status: c.status,
+        createdDate: c.createdAt,
+        lastActivity: c.updatedAt,
+        projectsCount: c.projects?.length || 0
+      })));
+    } catch (err) {
+      setFormError('Failed to save club');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this club?')) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/clubs?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        alert('Failed to delete club');
+      } else {
+        setClubs(clubs => clubs.filter(c => c.id !== id));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -51,80 +158,40 @@ export default function ClubsManagement() {
   }, [status, session, router, userRole]);
 
   useEffect(() => {
-    // Mock data
-    const mockClubs: Club[] = [
-      {
-        id: '1',
-        name: 'Lusaka Green Warriors',
-        description: 'Urban conservation and tree planting initiatives',
-        location: 'Lusaka City',
-        province: 'Lusaka',
-        leader: 'Sarah Chibwe',
-        memberCount: 45,
-        status: 'ACTIVE',
-        createdDate: '2023-05-10',
-        lastActivity: '2024-03-15',
-        projectsCount: 8
-      },
-      {
-        id: '2',
-        name: 'Copperbelt Conservation Club',
-        description: 'Mining area rehabilitation and wildlife protection',
-        location: 'Kitwe',
-        province: 'Copperbelt',
-        leader: 'John Banda',
-        memberCount: 32,
-        status: 'ACTIVE',
-        createdDate: '2023-08-15',
-        lastActivity: '2024-03-14',
-        projectsCount: 6
-      },
-      {
-        id: '3',
-        name: 'Green Future Youth',
-        description: 'Youth-led environmental initiatives',
-        location: 'Ndola',
-        province: 'Copperbelt',
-        leader: 'David Mwale',
-        memberCount: 28,
-        status: 'PENDING',
-        createdDate: '2024-03-01',
-        lastActivity: '2024-03-10',
-        projectsCount: 2
-      },
-      {
-        id: '4',
-        name: 'Livingstone Nature Guardians',
-        description: 'Victoria Falls ecosystem protection',
-        location: 'Livingstone',
-        province: 'Southern',
-        leader: 'Grace Phiri',
-        memberCount: 38,
-        status: 'ACTIVE',
-        createdDate: '2023-11-20',
-        lastActivity: '2024-03-12',
-        projectsCount: 5
-      },
-      {
-        id: '5',
-        name: 'Eastern Green Initiative',
-        description: 'Rural community conservation projects',
-        location: 'Chipata',
-        province: 'Eastern',
-        leader: 'Michael Kabwe',
-        memberCount: 24,
-        status: 'INACTIVE',
-        createdDate: '2023-12-05',
-        lastActivity: '2024-02-15',
-        projectsCount: 3
+    const fetchClubs = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('search', searchTerm);
+        if (filter) params.append('filter', filter);
+        params.append('limit', '50');
+        const res = await fetch(`/api/admin/clubs?${params.toString()}`);
+        const data = await res.json();
+        if (res.ok) {
+          setClubs(data.clubs.map((c: any) => ({
+            id: c.id,
+            name: c.name,
+            description: c.description,
+            location: c.location,
+            province: c.province,
+            leader: c.leader?.firstName ? `${c.leader.firstName} ${c.leader.lastName}` : '',
+            memberCount: c.members?.length || 0,
+            status: c.status,
+            createdDate: c.createdAt,
+            lastActivity: c.updatedAt,
+            projectsCount: c.projects?.length || 0
+          })));
+        } else {
+          setClubs([]);
+        }
+      } catch (e) {
+        setClubs([]);
+      } finally {
+        setIsLoading(false);
       }
-    ];
-
-    setTimeout(() => {
-      setClubs(mockClubs);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    };
+    if (status === 'authenticated') fetchClubs();
+  }, [status, searchTerm, filter]);
 
   const filteredClubs = clubs.filter(club => {
     const matchesFilter = filter === 'ALL' || club.status === filter;
@@ -319,8 +386,11 @@ export default function ClubsManagement() {
                         <FaEye className="w-3 h-3" />
                         <span>View</span>
                       </button>
-                      <button className="p-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors">
+                      <button className="p-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors" onClick={() => openEditModal(club)}>
                         <FaEdit className="w-3 h-3" />
+                      </button>
+                      <button className="p-2 border border-gray-300 hover:bg-red-50 text-red-600 rounded-lg transition-colors" onClick={() => handleDelete(club.id)}>
+                        <FaTimesCircle className="w-3 h-3" />
                       </button>
                     </>
                   )}
@@ -344,9 +414,52 @@ export default function ClubsManagement() {
             <p className="text-gray-500 mb-6">
               {searchTerm ? 'No clubs match your search criteria.' : 'Get started by creating your first club.'}
             </p>
-            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors" onClick={openCreateModal}>
               Create New Club
             </button>
+                {/* Club Modal */}
+                {showModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+                    <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+                      <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-600" onClick={closeModal}>&times;</button>
+                      <h2 className="text-2xl font-bold mb-4">{modalMode === 'create' ? 'Add Club' : 'Edit Club'}</h2>
+                      {formError && <div className="mb-2 text-red-600 text-sm">{formError}</div>}
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Name</label>
+                          <input name="name" value={form.name} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Description</label>
+                          <textarea name="description" value={form.description} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Location</label>
+                          <input name="location" value={form.location} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Province</label>
+                          <input name="province" value={form.province} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Status</label>
+                          <select name="status" value={form.status} onChange={handleFormChange} className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2">
+                            <option value="ACTIVE">Active</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="SUSPENDED">Suspended</option>
+                            <option value="INACTIVE">Inactive</option>
+                          </select>
+                        </div>
+                        <div className="flex justify-end">
+                          <button type="button" className="mr-2 px-4 py-2 rounded-lg border border-gray-300" onClick={closeModal}>Cancel</button>
+                          <button type="submit" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold">
+                            {modalMode === 'create' ? 'Create' : 'Save'}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
           </motion.div>
         )}
       </div>

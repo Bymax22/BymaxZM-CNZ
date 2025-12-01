@@ -1,3 +1,11 @@
+interface UserForm {
+  id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  phone?: string;
+}
 // app/admin/users/page.tsx
 'use client';
 
@@ -27,7 +35,7 @@ interface User {
   status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
   lastLogin: string;
   joinDate: string;
-  club?: string;
+	club?: string;
 }
 
 export default function UsersManagement() {
@@ -38,6 +46,11 @@ export default function UsersManagement() {
   const [filter, setFilter] = useState('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [form, setForm] = useState<UserForm>({ firstName: '', lastName: '', email: '', role: 'CLUB_LEADER', phone: '' });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -48,68 +61,38 @@ export default function UsersManagement() {
   }, [status, session, router, userRole]);
 
   useEffect(() => {
-    // Mock data
-    const mockUsers: User[] = [
-      {
-        id: '1',
-        firstName: 'Sarah',
-        lastName: 'Chibwe',
-        email: 'sarah.chibwe@example.com',
-        role: 'CLUB_LEADER',
-        status: 'ACTIVE',
-        lastLogin: '2024-03-15T14:30:00',
-        joinDate: '2023-05-10',
-        club: 'Lusaka Green Warriors'
-      },
-      {
-        id: '2',
-        firstName: 'John',
-        lastName: 'Banda',
-        email: 'john.banda@example.com',
-        role: 'MEMBER',
-        status: 'ACTIVE',
-        lastLogin: '2024-03-14T09:15:00',
-        joinDate: '2024-01-15',
-        club: 'Copperbelt Conservation Club'
-      },
-      {
-        id: '3',
-        firstName: 'David',
-        lastName: 'Mwale',
-        email: 'david.mwale@example.com',
-        role: 'ADMIN',
-        status: 'ACTIVE',
-        lastLogin: '2024-03-15T16:45:00',
-        joinDate: '2022-11-20'
-      },
-      {
-        id: '4',
-        firstName: 'Grace',
-        lastName: 'Phiri',
-        email: 'grace.phiri@example.com',
-        role: 'PROJECT_MANAGER',
-        status: 'PENDING',
-        lastLogin: '2024-03-10T11:20:00',
-        joinDate: '2024-03-01'
-      },
-      {
-        id: '5',
-        firstName: 'Michael',
-        lastName: 'Kabwe',
-        email: 'michael.kabwe@example.com',
-        role: 'MEMBER',
-        status: 'INACTIVE',
-        lastLogin: '2024-02-28T13:10:00',
-        joinDate: '2023-12-05',
-        club: 'Livingstone Nature Guardians'
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('search', searchTerm);
+        if (filter) params.append('filter', filter);
+        params.append('limit', '50');
+        const res = await fetch(`/api/admin/users?${params.toString()}`);
+        const data = await res.json();
+        if (res.ok) {
+          setUsers(data.users.map((u: any) => ({
+            id: u.id,
+            firstName: u.firstName,
+            lastName: u.lastName,
+            email: u.email,
+            role: u.role,
+            status: u.isActive ? 'ACTIVE' : 'INACTIVE',
+            lastLogin: u.lastLogin,
+            joinDate: u.createdAt,
+            club: u.memberships?.[0]?.clubId || ''
+          })));
+        } else {
+          setUsers([]);
+        }
+      } catch (e) {
+        setUsers([]);
+      } finally {
+        setIsLoading(false);
       }
-    ];
-
-    setTimeout(() => {
-      setUsers(mockUsers);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    };
+    if (status === 'authenticated') fetchUsers();
+  }, [status, searchTerm, filter]);
 
   const filteredUsers = users.filter(user => {
     const matchesFilter = filter === 'ALL' || user.status === filter || user.role === filter;
@@ -168,6 +151,100 @@ export default function UsersManagement() {
     return null;
   }
 
+  // Handlers for create/edit
+  const openCreateModal = () => {
+    setForm({ firstName: '', lastName: '', email: '', role: 'CLUB_LEADER', phone: '' });
+    setModalMode('create');
+    setEditingId(null);
+    setFormError(null);
+    setShowModal(true);
+  };
+  const openEditModal = (user: User) => {
+    setForm({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      phone: ''
+    });
+    setModalMode('edit');
+    setEditingId(user.id);
+    setFormError(null);
+    setShowModal(true);
+  };
+  const closeModal = () => setShowModal(false);
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    try {
+      let res;
+      if (modalMode === 'create') {
+        res = await fetch('/api/admin/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form)
+        });
+      } else {
+        res = await fetch('/api/admin/users', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...form, id: editingId })
+        });
+      }
+      if (!res.ok) {
+        const data = await res.json();
+        setFormError(data.error || 'Failed to save user');
+        return;
+      }
+      closeModal();
+      // Refresh users
+      setIsLoading(true);
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('search', searchTerm);
+      if (filter) params.append('filter', filter);
+      params.append('limit', '50');
+      const usersRes = await fetch(`/api/admin/users?${params.toString()}`);
+      const usersData = await usersRes.json();
+      setUsers(usersData.users.map((u: any) => ({
+        id: u.id,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        email: u.email,
+        role: u.role,
+        status: u.isActive ? 'ACTIVE' : 'INACTIVE',
+        lastLogin: u.lastLogin,
+        joinDate: u.createdAt,
+        club: u.memberships?.[0]?.clubId || ''
+      })));
+    } catch (err) {
+      setFormError('Failed to save user');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/users?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        alert('Failed to delete user');
+      } else {
+        setUsers(users => users.filter(u => u.id !== id));
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ...existing code...
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -184,6 +261,7 @@ export default function UsersManagement() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
+              onClick={openCreateModal}
             >
               <FaPlus className="w-4 h-4" />
               <span>Add User</span>
@@ -299,18 +377,12 @@ export default function UsersManagement() {
                           <button className="text-blue-600 hover:text-blue-900 transition-colors">
                             <FaEye className="w-4 h-4" />
                           </button>
-                          <button className="text-emerald-600 hover:text-emerald-900 transition-colors">
+                          <button className="text-emerald-600 hover:text-emerald-900 transition-colors" onClick={() => openEditModal(user)}>
                             <FaEdit className="w-4 h-4" />
                           </button>
-                          {user.status === 'ACTIVE' ? (
-                            <button className="text-red-600 hover:text-red-900 transition-colors">
-                              <FaBan className="w-4 h-4" />
-                            </button>
-                          ) : (
-                            <button className="text-green-600 hover:text-green-900 transition-colors">
-                              <FaCheckCircle className="w-4 h-4" />
-                            </button>
-                          )}
+                          <button className="text-red-600 hover:text-red-900 transition-colors" onClick={() => handleDelete(user.id)}>
+                            <FaBan className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </motion.tr>
@@ -334,7 +406,7 @@ export default function UsersManagement() {
               <p className="text-gray-500 mb-6">
                 {searchTerm ? 'No users match your search criteria.' : 'Get started by adding your first user.'}
               </p>
-              <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+              <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors" onClick={openCreateModal}>
                 Add New User
               </button>
             </motion.div>
@@ -365,6 +437,49 @@ export default function UsersManagement() {
           </div>
         )}
       </div>
+      {/* User Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative">
+            <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-600" onClick={closeModal}>&times;</button>
+            <h2 className="text-2xl font-bold mb-4">{modalMode === 'create' ? 'Add User' : 'Edit User'}</h2>
+            {formError && <div className="mb-2 text-red-600 text-sm">{formError}</div>}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">First Name</label>
+                <input name="firstName" value={form.firstName} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                <input name="lastName" value={form.lastName} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input name="email" type="email" value={form.email} onChange={handleFormChange} required className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" disabled={modalMode === 'edit'} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Role</label>
+                <select name="role" value={form.role} onChange={handleFormChange} className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2">
+                  <option value="CLUB_LEADER">Club Leader</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="SUPER_ADMIN">Super Admin</option>
+                  <option value="PROJECT_MANAGER">Project Manager</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <input name="phone" value={form.phone} onChange={handleFormChange} className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2" />
+              </div>
+              <div className="flex justify-end">
+                <button type="button" className="mr-2 px-4 py-2 rounded-lg border border-gray-300" onClick={closeModal}>Cancel</button>
+                <button type="submit" className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2 rounded-lg font-semibold">
+                  {modalMode === 'create' ? 'Create' : 'Save'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
