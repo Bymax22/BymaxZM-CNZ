@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import path from 'path';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -9,6 +10,8 @@ declare global {
  * Singleton Prisma client for serverless environments (Vercel).
  * Reuses connections across invocations to avoid exhausting the connection pool.
  * In development, this is stored globally to prevent hot-reload recreations.
+ * 
+ * The schema is located at apps/server/prisma/schema.prisma (relative to project root).
  */
 export const prisma =
   global.__prisma__ ??
