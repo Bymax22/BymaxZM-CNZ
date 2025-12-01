@@ -13,36 +13,59 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
-          },
-          include: {
-            profile: true
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.warn('[next-auth] Missing credentials on authorize call');
+            return null;
           }
-        });
 
-        if (!user || !user.isActive) {
+          console.debug('[next-auth] Authorize attempt for:', credentials.email);
+
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            },
+            include: {
+              profile: true
+            }
+          });
+
+          if (!user) {
+            console.debug('[next-auth] No user found for', credentials.email);
+            return null;
+          }
+
+          if (!user.isActive) {
+            console.debug('[next-auth] User not active:', credentials.email);
+            return null;
+          }
+
+          if (!user.password) {
+            console.debug('[next-auth] User has no password set (possible SSO user):', credentials.email);
+            return null;
+          }
+
+          const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+
+          if (!passwordMatch) {
+            console.debug('[next-auth] Password mismatch for', credentials.email);
+            return null;
+          }
+
+          console.debug('[next-auth] Authorize successful for', credentials.email);
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: `${user.firstName} ${user.lastName}`,
+            role: user.role,
+            avatar: user.avatar
+          };
+        } catch (err) {
+          console.error('[next-auth] authorize error:', err);
+          // Returning null will cause NextAuth to return 401 — which is desired for auth failures.
           return null;
         }
-
-        const passwordMatch = await bcrypt.compare(credentials.password, user.password);
-
-        if (!passwordMatch) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: `${user.firstName} ${user.lastName}`,
-          role: user.role,
-          avatar: user.avatar
-        };
       }
     })
   ],
