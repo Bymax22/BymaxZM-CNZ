@@ -49,7 +49,6 @@
     "react-icons": "^5.5.0",
     "react-responsive-carousel": "^3.2.23",
     "stripe": "^14.0.0",
-    "@stripe/react-stripe-js": "^2.0.0",
     "tailwind-merge": "^3.2.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.175.0",
