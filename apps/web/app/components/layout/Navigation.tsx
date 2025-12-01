@@ -251,6 +251,7 @@ export function Navigation() {
                     } text-sm xl:text-base`}
                     onMouseEnter={() => handleSubmenuEnter(item.name)}
                     onMouseLeave={handleSubmenuLeave}
+                    onClick={() => { if (!item.submenu) router.push(item.href); }}
                   >
                     {item.icon && <item.icon className="w-3 h-3 xl:w-4 xl:h-4 flex-shrink-0" />}
                     <span>{item.name}</span>
@@ -307,6 +308,7 @@ export function Navigation() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="bg-[#029346] hover:bg-[#0C4726] text-white font-semibold px-3 xl:px-4 py-2 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 whitespace-nowrap"
+                  onClick={() => router.push('/get-involved/donate')}
                 >
                   <FaDonate className="w-3 h-3 flex-shrink-0" />
                   <span>Donate</span>
@@ -315,6 +317,7 @@ export function Navigation() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="border-2 border-[#F79021] text-[#F79021] hover:bg-[#F79021] hover:text-white font-semibold px-3 xl:px-4 py-2 rounded-xl text-sm transition-all duration-300 flex items-center gap-2 whitespace-nowrap"
+                  onClick={() => router.push('/get-involved/volunteer')}
                 >
                   <FaUsers className="w-3 h-3 flex-shrink-0" />
                   <span>Join Us</span>
@@ -329,6 +332,7 @@ export function Navigation() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-[#029346] text-white font-semibold px-3 py-2 rounded-lg text-xs transition-all duration-300 shadow-lg flex items-center gap-1 whitespace-nowrap"
+                onClick={() => router.push('/get-involved/donate')}
               >
                 <FaDonate className="w-3 h-3" />
                 <span className="hidden xs:inline">Donate</span>
@@ -464,7 +468,7 @@ export function Navigation() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full bg-[#029346] text-white font-semibold py-3 rounded-xl shadow-lg flex items-center justify-center gap-2"
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => { setIsOpen(false); router.push('/get-involved/donate'); }}
                     >
                       <FaDonate className="w-4 h-4" />
                       Make a Donation
@@ -473,7 +477,7 @@ export function Navigation() {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full border-2 border-[#F79021] text-[#F79021] font-semibold py-3 rounded-xl hover:bg-[#F79021] hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => { setIsOpen(false); router.push('/get-involved/volunteer'); }}
                     >
                       <FaUsers className="w-4 h-4" />
                       Join as Volunteer
