@@ -62,6 +62,8 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    console.debug('Registration successful for user id:', user.id, 'email:', user.email);
+
     // TODO: Send verification email
     // await sendVerificationEmail(user.email, verificationToken);
 
@@ -78,9 +80,12 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Registration error:', error);
+    // Log stack for debugging in Vercel logs
+    console.error('Registration error:', error?.stack ?? error);
+    // Return a minimal error message to client. For debugging you can temporarily
+    // include error.message, but avoid exposing sensitive details in production.
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', message: String(error?.message ?? '') },
       { status: 500 }
     );
   }

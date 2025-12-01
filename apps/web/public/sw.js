@@ -45,7 +45,18 @@ self.addEventListener('fetch', (event) => {
           // Optionally cache successful responses for offline
           if (response && response.status === 200) {
             const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+            try {
+              // Only cache same-origin http(s) requests to avoid errors from
+              // browser extension schemes (e.g. chrome-extension://...)
+              const reqUrl = new URL(event.request.url);
+              const isHttp = reqUrl.protocol === 'http:' || reqUrl.protocol === 'https:';
+              const isSameOrigin = reqUrl.origin === self.location.origin;
+              if (isHttp && isSameOrigin) {
+                caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+              }
+            } catch (err) {
+              // Swallow caching errors — caching failures should not break navigation.
+            }
           }
           return response;
         })
