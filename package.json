@@ -11,9 +11,9 @@
   },
   "devDependencies": {
     "prettier": "^3.6.2",
+    "prisma": "^6.6.0",
     "turbo": "^2.5.8",
     "typescript": "5.9.2"
-  ,"prisma": "^6.6.0"
   },
   "engines": {
     "node": ">=18"
@@ -22,5 +22,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@stripe/react-stripe-js": "^5.4.1",
+    "stripe": "^20.0.0"
+  }
 }
