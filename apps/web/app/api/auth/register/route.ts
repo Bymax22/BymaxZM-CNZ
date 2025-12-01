@@ -79,13 +79,12 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
-    // Log stack for debugging in Vercel logs
-    console.error('Registration error:', error?.stack ?? error);
-    // Return a minimal error message to client. For debugging you can temporarily
-    // include error.message, but avoid exposing sensitive details in production.
+  } catch (error: unknown) {
+    // Narrow the unknown error safely for logging
+    const err = error as { message?: string; stack?: string } | undefined;
+    console.error('Registration error:', err?.stack ?? err ?? String(error));
     return NextResponse.json(
-      { error: 'Internal server error', message: String(error?.message ?? '') },
+      { error: 'Internal server error', message: String(err?.message ?? error) },
       { status: 500 }
     );
   }
