@@ -160,7 +160,7 @@ export default function AdminSidebar() {
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
+    await signOut({ callbackUrl: '/' });
   };
 
   const isActive = (href: string) => {

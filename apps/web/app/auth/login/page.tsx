@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -30,6 +30,18 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError('Invalid email or password');
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch updated session to get the role
+      const res = await fetch('/api/auth/session');
+      const session = await res.json();
+
+      // Redirect based on role
+      const userRole = session?.user?.role;
+      if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
+        router.push('/admin/dashboard');
       } else {
         router.push('/portal/dashboard');
       }

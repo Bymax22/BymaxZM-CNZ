@@ -51,16 +51,31 @@ export default function DashboardPage() {
   }, [status, router]);
 
   useEffect(() => {
-    // Mock data - replace with actual API calls
-    const mockStats: DashboardStats = {
-      totalMembers: 1247,
-      activeProjects: 18,
-      totalDonations: 45670,
-      volunteerHours: 2345,
-      treesPlanted: 48732,
-      upcomingEvents: 7
+    // Fetch real data from API
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/portal/stats');
+        const data = await response.json();
+
+        if (response.ok) {
+          setStats(data);
+        } else {
+          console.error('Failed to fetch stats:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
+    if (status === 'authenticated') {
+      fetchStats();
+    }
+  }, [status]);
+
+  useEffect(() => {
+    // Mock data - replace with actual API calls
     const mockActivity: RecentActivity[] = [
       {
         id: '1',
@@ -97,7 +112,6 @@ export default function DashboardPage() {
     ];
 
     setTimeout(() => {
-      setStats(mockStats);
       setRecentActivity(mockActivity);
       setIsLoading(false);
     }, 1000);

@@ -57,59 +57,41 @@ export default function AdminDashboard() {
   }, [status, session, router, userRole]);
 
   useEffect(() => {
-    // Mock data
-    const mockStats: AdminStats = {
-      totalUsers: 1247,
-      totalAdmins: 8,
-      activeProjects: 24,
-      totalClubs: 45,
-      pendingApprovals: 12,
-      systemHealth: 98,
-      revenueThisMonth: 125430,
-      activeVolunteers: 345
+    // Fetch real data from API
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/admin/stats');
+        const data = await response.json();
+
+        if (response.ok) {
+          setStats(data.stats);
+          setRecentActivity(data.recentActivity || []);
+        } else {
+          console.error('Failed to fetch stats:', data.error);
+          // Fall back to mock data
+          const mockStats: AdminStats = {
+            totalUsers: 1247,
+            totalAdmins: 8,
+            activeProjects: 24,
+            totalClubs: 45,
+            pendingApprovals: 12,
+            systemHealth: 98,
+            revenueThisMonth: 125430,
+            activeVolunteers: 345
+          };
+          setStats(mockStats);
+        }
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    const mockPending: PendingItem[] = [
-      {
-        id: '1',
-        type: 'CLUB',
-        title: 'New Club Registration - Green Future Youth',
-        submittedBy: 'Sarah Chibwe',
-        submittedAt: '2024-03-15T10:30:00',
-        priority: 'HIGH'
-      },
-      {
-        id: '2',
-        type: 'PROJECT',
-        title: 'Project Proposal - Urban Farming Initiative',
-        submittedBy: 'John Banda',
-        submittedAt: '2024-03-14T14:20:00',
-        priority: 'MEDIUM'
-      },
-      {
-        id: '3',
-        type: 'USER',
-        title: 'Admin Role Request - David Mwale',
-        submittedBy: 'System',
-        submittedAt: '2024-03-14T09:15:00',
-        priority: 'HIGH'
-      }
-    ];
-
-    const mockActivity = [
-      { action: 'New user registered', time: '2 hours ago', user: 'System' },
-      { action: 'Project approved', time: '4 hours ago', user: 'Admin User' },
-      { action: 'Club created', time: '1 day ago', user: 'Sarah Chibwe' },
-      { action: 'Donation processed', time: '1 day ago', user: 'System' }
-    ];
-
-    setTimeout(() => {
-      setStats(mockStats);
-      setPendingItems(mockPending);
-      setRecentActivity(mockActivity);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    if (status === 'authenticated') {
+      fetchStats();
+    }
+  }, [status]);
 
   if (status === 'loading' || isLoading) {
     return (

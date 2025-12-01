@@ -161,7 +161,7 @@ export default function PortalSidebar() {
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/auth/login' });
+    await signOut({ callbackUrl: '/' });
   };
 
   const isActive = (href: string) => {
