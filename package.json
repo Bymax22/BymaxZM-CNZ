@@ -25,5 +25,9 @@
   ],
   "dependencies": {
     "stripe": "^20.0.0"
+  },
+  "overrides": {
+    "glob": "^10.3.10",
+    "inflight": "^1.0.6"
   }
 }
