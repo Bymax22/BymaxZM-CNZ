@@ -79,6 +79,59 @@ export function HowToHelp() {
           </p>
         </motion.div>
 
+        {/* IMAGE BANNERS */}
+        <div className="-mx-6 px-6 mb-14">
+          <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory">
+            <article className="min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+              <img
+                src="/images/community.jpg"
+                alt="Community conservation project"
+                className="h-48 w-full object-cover"
+              />
+              <div className="p-5">
+                <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
+                  Community
+                </p>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Strong local partnerships
+                </h3>
+              </div>
+            </article>
+
+            <article className="min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+              <img
+                src="/images/deforestation.jpg"
+                alt="Tree planting and reforestation work"
+                className="h-48 w-full object-cover"
+              />
+              <div className="p-5">
+                <p className="text-sm uppercase tracking-[0.3em] text-[#F79021] font-semibold mb-2">
+                  Reforestation
+                </p>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Restoring Zambia’s forests
+                </h3>
+              </div>
+            </article>
+
+            <article className="min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+              <img
+                src="/images/partnership.jpg"
+                alt="Partnerships for sustainable change"
+                className="h-48 w-full object-cover"
+              />
+              <div className="p-5">
+                <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
+                  Partnership
+                </p>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Meaningful collaboration
+                </h3>
+              </div>
+            </article>
+          </div>
+        </div>
+
         {/* STEPS */}
         <div className="grid md:grid-cols-2 gap-10">
           {steps.map((step, index) => (
