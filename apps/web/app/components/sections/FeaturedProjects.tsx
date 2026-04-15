@@ -20,7 +20,7 @@ const projects: Project[] = [
     title: 'Green Schools Initiative',
     description: 'Empowering young environmental champions through school-based conservation clubs and eco-education programs.',
     icon: FaGraduationCap,
-    image: '/images/green-schools.jpg',
+    image: '/green-schools.jpg',
     accent: 'green',
   },
   {
@@ -28,7 +28,7 @@ const projects: Project[] = [
     title: 'Community Reforestation',
     description: 'Planting indigenous trees and promoting sustainable forest management practices that restore ecosystems.',
     icon: FaTree,
-    image: '/images/reforestation.jpg',
+    image: '/tree-planting.jpg',
     accent: 'orange',
   },
   {
@@ -36,7 +36,7 @@ const projects: Project[] = [
     title: "Children's Rights & Education",
     description: 'Creating safe spaces for children to learn about their rights while engaging in environmental conservation.',
     icon: FaHandsHelping,
-    image: '/images/children.jpg',
+    image: '/children.jpg',
     accent: 'green',
   },
   {
@@ -44,7 +44,7 @@ const projects: Project[] = [
     title: 'Women in Conservation',
     description: 'Empowering women through conservation enterprise training and sustainable income sources.',
     icon: FaUsers,
-    image: '/images/women-conservation.jpg',
+    image: '/women-conservation.jpg',
     accent: 'orange',
   },
 ];
