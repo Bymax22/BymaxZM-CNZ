@@ -102,23 +102,6 @@ export const HeroSection = () => {
         </div>
       </div>
 
-      {/* SCROLL INDICATOR */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
-        <motion.div
-          className="w-[2px] h-12 bg-white/40 rounded-full overflow-hidden"
-        >
-          <motion.div
-            className="w-full h-1/2 bg-white"
-            animate={{ y: ['0%', '100%'] }}
-            transition={{
-              duration: 1.2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-        </motion.div>
-      </div>
-
     </section>
   );
 };
