@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FaBullseye, FaEye, FaCircle } from 'react-icons/fa';
+import { FaBullseye, FaEye } from 'react-icons/fa';
 
 export function MissionVision() {
   return (
@@ -22,7 +22,7 @@ export function MissionVision() {
             
             <h3 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h3>
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              To protect and restore Zambia's natural environment through community-led conservation 
+              To protect and restore Zambia&apos;s natural environment through community-led conservation 
               initiatives, sustainable development practices, and environmental education that 
               empowers present and future generations.
             </p>

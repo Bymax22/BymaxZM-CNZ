@@ -49,7 +49,7 @@ export function AboutHero() {
           </h1>
           
           <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            Since 2008, we've been at the forefront of environmental conservation and community 
+            Since 2008, we&apos;ve been at the forefront of environmental conservation and community 
             empowerment in Zambia, creating sustainable impact through innovative solutions and 
             collaborative partnerships.
           </p>

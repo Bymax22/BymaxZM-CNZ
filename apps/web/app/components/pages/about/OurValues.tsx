@@ -106,7 +106,7 @@ export function OurValues() {
               Ready to Make a <span className="text-[#F79021]">Difference</span>?
             </h3>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join us in our mission to protect Zambia's environment and empower communities for a sustainable future.
+              Join us in our mission to protect Zambia&apos;s environment and empower communities for a sustainable future.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="bg-white text-[#029346] px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300">

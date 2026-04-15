@@ -83,7 +83,7 @@ export function AdvisoryBoard() {
               Join Our <span className="text-[#029346]">Mission</span>
             </h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              We're always looking for passionate individuals to join our team and help drive 
+              We&apos;re always looking for passionate individuals to join our team and help drive 
               environmental conservation in Zambia.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

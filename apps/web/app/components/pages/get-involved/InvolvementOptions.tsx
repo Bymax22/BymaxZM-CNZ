@@ -83,7 +83,7 @@ export function InvolvementOptions() {
             Ways to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Get Involved</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choose how you want to make a difference. Every action counts in our mission to protect Zambia's environment.
+            Choose how you want to make a difference. Every action counts in our mission to protect Zambia&apos;s environment.
           </p>
         </motion.div>
 

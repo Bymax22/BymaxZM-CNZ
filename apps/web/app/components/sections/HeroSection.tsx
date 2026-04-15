@@ -19,7 +19,7 @@ const slides = [
       'Empowering communities to safeguard forests, land and water',
   },
   {
-    video: '/videos/11781635-uhd_3840_2160_60fps.mp4',
+    video: '/videos/11781635-Uhd 3840 2160 60Fps-1.m4v',
     title: 'CREATING SUSTAINABLE FUTURES',
     subtitle:
       'Driving climate action, human rights and environmental justice',

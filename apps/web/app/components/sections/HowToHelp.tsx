@@ -1,6 +1,8 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
+import { IconType } from 'react-icons/lib';
 import {
   FaHeart,
   FaUsers,
@@ -10,7 +12,7 @@ import {
 } from 'react-icons/fa';
 
 type Step = {
-  icon: any;
+  icon: IconType;
   title: string;
   description: string;
   step: number;

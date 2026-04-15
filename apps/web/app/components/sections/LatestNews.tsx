@@ -243,7 +243,7 @@ export function LatestNews() {
                   Stay <span className="text-[#F79021]">Informed</span>
                 </h3>
                 <p className="text-white/80 text-sm sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto leading-relaxed">
-                  Get monthly updates and opportunities to protect Zambia's natural heritage.
+                  Get monthly updates and opportunities to protect Zambia&apos;s natural heritage.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">

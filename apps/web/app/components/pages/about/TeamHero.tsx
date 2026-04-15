@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FaUsers, FaHandsHelping, FaLightbulb } from 'react-icons/fa';
+import { FaUsers } from 'react-icons/fa';
 
 export function TeamHero() {
   return (

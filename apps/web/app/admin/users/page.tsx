@@ -6,7 +6,6 @@ interface UserForm {
   role: string;
   phone?: string;
 }
-// app/admin/users/page.tsx
 'use client';
 
 import { useSession } from 'next-auth/react';
@@ -22,8 +21,7 @@ import {
   FaUserShield,
   FaUser,
   FaClock,
-  FaBan,
-  FaCheckCircle
+  FaBan
 } from 'react-icons/fa';
 
 interface User {
@@ -36,6 +34,19 @@ interface User {
   lastLogin: string;
   joinDate: string;
 	club?: string;
+}
+
+interface ApiUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  isActive: boolean;
+  lastLogin: string;
+  createdAt: string;
+  club?: { name: string };
+  memberships?: { clubId: string }[];
 }
 
 export default function UsersManagement() {
@@ -71,7 +82,7 @@ export default function UsersManagement() {
         const res = await fetch(`/api/admin/users?${params.toString()}`);
         const data = await res.json();
         if (res.ok) {
-          setUsers(data.users.map((u: any) => ({
+          setUsers(data.users.map((u: ApiUser) => ({
             id: u.id,
             firstName: u.firstName,
             lastName: u.lastName,
@@ -85,7 +96,7 @@ export default function UsersManagement() {
         } else {
           setUsers([]);
         }
-      } catch (e) {
+      } catch {
         setUsers([]);
       } finally {
         setIsLoading(false);
@@ -211,7 +222,7 @@ export default function UsersManagement() {
       params.append('limit', '50');
       const usersRes = await fetch(`/api/admin/users?${params.toString()}`);
       const usersData = await usersRes.json();
-      setUsers(usersData.users.map((u: any) => ({
+      setUsers(usersData.users.map((u: ApiUser) => ({
         id: u.id,
         firstName: u.firstName,
         lastName: u.lastName,
@@ -222,7 +233,7 @@ export default function UsersManagement() {
         joinDate: u.createdAt,
         club: u.memberships?.[0]?.clubId || ''
       })));
-    } catch (err) {
+    } catch {
       setFormError('Failed to save user');
     } finally {
       setIsLoading(false);

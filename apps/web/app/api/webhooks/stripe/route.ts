@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       case 'charge.refunded': {
         const charge = event.data.object as Stripe.Charge;
         if (charge.payment_intent) {
-          const donation = await prisma.donation.updateMany({
+          await prisma.donation.updateMany({
             where: { transactionId: charge.id },
             data: { status: 'REFUNDED' },
           });

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 interface Project {
   title: string;
@@ -27,7 +28,7 @@ export function ProjectGallery({ project }: { project: Project }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {images.map((src, i) => (
             <div key={i} className="overflow-hidden rounded-2xl bg-white shadow-sm">
-              <img src={src} alt={`${project.title} ${i + 1}`} className="w-full h-48 object-cover" />
+              <Image src={src} alt={`${project.title} ${i + 1}`} width={400} height={192} className="w-full h-48 object-cover" />
             </div>
           ))}
         </div>

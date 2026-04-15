@@ -11,7 +11,6 @@ import {
   FaEnvelope,
   FaPhone,
   FaMapMarkerAlt,
-  FaHeart,
 } from 'react-icons/fa';
 import { MdOutlineWaves } from 'react-icons/md';
 

@@ -4,19 +4,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FaTree,
-  FaHandsHelping,
-  FaWater,
   FaIndustry,
-  FaChild,
-  FaBalanceScale,
-  FaSeedling,
   FaHeart,
   FaUsers,
   FaLeaf,
 } from 'react-icons/fa';
-import { GiAfrica, GiPlantRoots, GiFruitTree } from 'react-icons/gi';
-import { MdOutlineForest, MdOutlinePeople, MdOutlineWaves } from 'react-icons/md';
+import { GiAfrica } from 'react-icons/gi';
+import { MdOutlinePeople } from 'react-icons/md';
 
 const sections = [
   {
@@ -241,14 +235,6 @@ const SimpleCommunity = () => {
 
 export const StorySection = () => {
   const [active, setActive] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const getAnimationComponent = (index: number) => {
     switch (index) {

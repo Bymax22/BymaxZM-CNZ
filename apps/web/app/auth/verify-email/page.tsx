@@ -70,7 +70,7 @@ export default function VerifyEmailPage() {
 
         {/* Help Text */}
         <p className="text-center text-sm text-gray-500 mt-6">
-          Didn't receive the email? Check your spam folder or{' '}
+          Didn&apos;t receive the email? Check your spam folder or{' '}
           <Link href="/auth/register" className="text-green-600 hover:text-green-700 font-medium">
             try again
           </Link>

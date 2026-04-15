@@ -6,11 +6,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
 });
 
-async function getPrisma() {
-  const { prisma } = await import('../../../../lib/prisma');
-  return prisma;
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -39,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create or retrieve customer
-    let customer = await stripe.customers.list({
+    const customer = await stripe.customers.list({
       email: donorEmail,
       limit: 1,
     });

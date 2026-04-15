@@ -20,7 +20,7 @@ interface Project {
   stats: ProjectStats;
 }
 
-export function ProjectDetails({ project }: { project: Project }) {
+export function ProjectDetails({ project: _project }: { project: Project }) {
   const features = [
     {
       icon: FaTree,
@@ -122,7 +122,7 @@ export function ProjectDetails({ project }: { project: Project }) {
             >
               <h3 className="text-xl font-bold mb-3">Get Involved</h3>
               <p className="text-white/90 mb-4">
-                Support our forest conservation efforts and help protect Zambia's natural heritage.
+                Support our forest conservation efforts and help protect Zambia&apos;s natural heritage.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
                 <button className="bg-white text-[#029346] px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">

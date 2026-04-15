@@ -32,7 +32,7 @@ export function ProjectsHero() {
           
           <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
             Discover our comprehensive portfolio of environmental conservation and community 
-            development initiatives making a tangible difference across Zambia's diverse landscapes.
+            development initiatives making a tangible difference across Zambia&apos;s diverse landscapes.
           </p>
         </motion.div>
 

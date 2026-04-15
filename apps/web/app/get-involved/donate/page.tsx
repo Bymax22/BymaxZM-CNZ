@@ -27,7 +27,7 @@ export default function DonatePage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -293,7 +293,7 @@ export default function DonatePage() {
           </div>
           <div className="bg-white rounded-lg shadow p-6 text-center">
             <div className="text-3xl font-bold text-emerald-600 mb-2">Receipt</div>
-            <p className="text-gray-600">You'll receive a receipt via email</p>
+            <p className="text-gray-600">You&apos;ll receive a receipt via email</p>
           </div>
         </motion.div>
       </div>

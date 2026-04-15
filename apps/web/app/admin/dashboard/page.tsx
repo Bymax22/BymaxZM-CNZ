@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const userRole = session?.user?.role as string | undefined;
   const [stats, setStats] = useState<AdminStats | null>(null);
-  const [pendingItems, setPendingItems] = useState<PendingItem[]>([]);
+  const [pendingItems] = useState<PendingItem[]>([]);
   const [recentActivity, setRecentActivity] = useState<{ action: string; time: string; user: string; }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { FaHistory, FaSeedling, FaUsers, FaAward } from 'react-icons/fa';
+import { FaHistory } from 'react-icons/fa';
 
 export function StoryHero() {
   return (
@@ -31,7 +31,7 @@ export function StoryHero() {
           </h1>
           
           <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            From humble beginnings in 2008 to becoming one of Zambia's leading environmental 
+            From humble beginnings in 2008 to becoming one of Zambia&apos;s leading environmental 
             conservation organizations. Discover the journey that shaped our commitment to 
             protecting nature and empowering communities.
           </p>

@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   FaSearch,
-  FaFilter,
   FaDownload,
   FaEye,
   FaCheckCircle,

@@ -6,7 +6,6 @@ interface ClubForm {
   province: string;
   status: 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'INACTIVE';
 }
-// app/admin/clubs/page.tsx
 'use client';
 
 import { useSession } from 'next-auth/react';
@@ -39,6 +38,20 @@ interface Club {
   createdDate: string;
   lastActivity: string;
   projectsCount: number;
+}
+
+interface ApiClub {
+  id: string;
+  name: string;
+  description: string;
+  location: string;
+  province: string;
+  leader?: { firstName: string; lastName: string };
+  members?: unknown[];
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  projects?: unknown[];
 }
 
 export default function ClubsManagement() {
@@ -114,7 +127,7 @@ export default function ClubsManagement() {
       params.append('limit', '50');
       const clubsRes = await fetch(`/api/admin/clubs?${params.toString()}`);
       const clubsData = await clubsRes.json();
-      setClubs(clubsData.clubs.map((c: any) => ({
+      setClubs(clubsData.clubs.map((c: ApiClub) => ({
         id: c.id,
         name: c.name,
         description: c.description,
@@ -127,7 +140,7 @@ export default function ClubsManagement() {
         lastActivity: c.updatedAt,
         projectsCount: c.projects?.length || 0
       })));
-    } catch (err) {
+    } catch {
       setFormError('Failed to save club');
     } finally {
       setIsLoading(false);
@@ -168,7 +181,7 @@ export default function ClubsManagement() {
         const res = await fetch(`/api/admin/clubs?${params.toString()}`);
         const data = await res.json();
         if (res.ok) {
-          setClubs(data.clubs.map((c: any) => ({
+          setClubs(data.clubs.map((c: ApiClub) => ({
             id: c.id,
             name: c.name,
             description: c.description,
@@ -184,7 +197,7 @@ export default function ClubsManagement() {
         } else {
           setClubs([]);
         }
-      } catch (e) {
+      } catch {
         setClubs([]);
       } finally {
         setIsLoading(false);
