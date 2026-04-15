@@ -20,7 +20,8 @@ interface Project {
   stats: ProjectStats;
 }
 
-export function ProjectDetails() {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function ProjectDetails({ project: _project }: { project: Project }) {
   const features = [
     {
       icon: FaTree,
