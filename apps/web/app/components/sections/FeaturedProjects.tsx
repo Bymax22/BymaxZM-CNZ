@@ -69,7 +69,7 @@ export function FeaturedProjects() {
     <section className="relative py-24 overflow-hidden">
 
       {/* BACKGROUND (MATCH STORY SECTION FLOW) */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--secondary-green)] via-[#f7fcf6] to-white" />
+      <div className="absolute inset-0 bg-white" />
 
       {/* SOFT AMBIENT BLOBS */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-[var(--primary-green)]/10 rounded-full blur-3xl" />
