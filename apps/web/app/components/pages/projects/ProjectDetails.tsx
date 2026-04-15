@@ -20,7 +20,7 @@ interface Project {
   stats: ProjectStats;
 }
 
-export function ProjectDetails({ project: _project }: { project: Project }) {
+export function ProjectDetails() {
   const features = [
     {
       icon: FaTree,

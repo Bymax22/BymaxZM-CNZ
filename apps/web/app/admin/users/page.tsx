@@ -6,6 +6,7 @@ interface UserForm {
   role: string;
   phone?: string;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 'use client';
 
 import { useSession } from 'next-auth/react';
