@@ -1,251 +1,155 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { 
-  FaHandHoldingUsd, 
-  FaUsers, 
-  FaHandsHelping, 
-  FaShareAlt,
-  FaCalendarAlt,
+import {
   FaHeart,
+  FaUsers,
+  FaHandHoldingUsd,
+  FaShareAlt,
   FaArrowRight,
-  FaEye,
-  FaClock,
-  FaUserFriends,
-  FaMapMarkerAlt
 } from 'react-icons/fa';
 
-const waysToHelp = [
+type Step = {
+  icon: any;
+  title: string;
+  description: string;
+  step: number;
+};
+
+const steps: Step[] = [
   {
-    icon: FaHandHoldingUsd,
-    title: 'Donate',
-    description: 'Support conservation projects and community initiatives with your financial contribution.',
-    color: 'from-[#029346] to-[#0C4726]',
-    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
-    action: 'Donate Now',
-    impact: 'Plants 100 trees'
+    icon: FaHeart,
+    title: 'Discover Our Mission',
+    description:
+      'Learn about our conservation work and community impact across Zambia.',
+    step: 1,
   },
   {
     icon: FaUsers,
-    title: 'Volunteer',
-    description: 'Join our field operations, community outreach, or administrative tasks as a volunteer.',
-    color: 'from-[#F79021] to-[#AA5D26]',
-    bgColor: 'bg-gradient-to-br from-[#F79021]/10 to-[#AA5D26]/10',
-    action: 'Join Team',
-    impact: 'Helps 50 families'
+    title: 'Choose Your Impact',
+    description:
+      'Support through volunteering, partnerships, or community programs.',
+    step: 2,
   },
   {
-    icon: FaHandsHelping,
-    title: 'Partner',
-    description: 'Collaborate with us as a corporate partner, NGO, or community organization.',
-    color: 'from-[#029346] to-[#0C4726]',
-    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
-    action: 'Partner With Us',
-    impact: 'Scales impact'
+    icon: FaHandHoldingUsd,
+    title: 'Take Action',
+    description:
+      'Contribute through donations or active participation in our initiatives.',
+    step: 3,
   },
   {
     icon: FaShareAlt,
-    title: 'Share',
-    description: 'Spread our mission on social media and help us reach more supporters.',
-    color: 'from-[#F79021] to-[#AA5D26]',
-    bgColor: 'bg-gradient-to-br from-[#F79021]/10 to-[#AA5D26]/10',
-    action: 'Share Now',
-    impact: 'Reaches thousands'
+    title: 'Spread the Word',
+    description:
+      'Help amplify our mission and reach more communities.',
+    step: 4,
   },
-  {
-    icon: FaCalendarAlt,
-    title: 'Events',
-    description: 'Participate in workshops, tree planting events, and conservation campaigns.',
-    color: 'from-[#029346] to-[#0C4726]',
-    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
-    action: 'View Events',
-    impact: 'Joins community'
-  },
-  {
-    icon: FaHeart,
-    title: 'Join Clubs',
-    description: 'Join Care for Nature Clubs and be part of our conservation family.',
-    color: 'from-[#F79021] to-[#AA5D26]',
-    bgColor: 'bg-gradient-to-br from-[#F79021]/10 to-[#AA5D26]/10',
-    action: 'Join Club',
-    impact: 'Grows movement'
-  }
 ];
 
 export function HowToHelp() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white to-[#F0F9F4]">
-      {/* Background Elements - Simplified */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-64 h-64 bg-[#029346]/10 rounded-full blur-2xl sm:blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-56 h-56 bg-[#F79021]/10 rounded-full blur-2xl sm:blur-3xl"></div>
-      </div>
+    <section className="relative py-24 bg-white overflow-hidden">
+      
+      {/* SUBTLE BACKGROUND */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white to-[#f5faf7]" />
 
-      <div className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Section Header - Mobile Optimized */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true, margin: "-50px" }}
-            className="text-center mb-12 sm:mb-16 lg:mb-20"
-          >
+      <div className="relative max-w-6xl mx-auto px-6">
+
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <p className="text-sm uppercase tracking-[0.25em] text-[var(--primary-green)] font-semibold mb-4">
+            Get Involved
+          </p>
+
+          <h2 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-6">
+            Your Journey to <span className="text-[var(--primary-green)]">Impact</span>
+          </h2>
+
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+            A simple path to becoming part of our mission and creating lasting change.
+          </p>
+        </motion.div>
+
+        {/* STEPS */}
+        <div className="grid md:grid-cols-2 gap-10">
+          {steps.map((step, index) => (
             <motion.div
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-[#F79021] to-[#AA5D26] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg"
+              key={step.step}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.6 }}
+              viewport={{ once: true }}
+              className="group relative bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-xl transition-all"
             >
-              <FaHandsHelping className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              {/* STEP NUMBER */}
+              <div className="absolute top-6 right-6 text-6xl font-bold text-gray-100">
+                {step.step}
+              </div>
+
+              {/* ICON */}
+              <div className="w-14 h-14 rounded-xl bg-[var(--primary-green)]/10 flex items-center justify-center mb-6">
+                <step.icon className="text-[var(--primary-green)] w-6 h-6" />
+              </div>
+
+              {/* TEXT */}
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                {step.title}
+              </h3>
+
+              <p className="text-gray-600 leading-relaxed mb-6">
+                {step.description}
+              </p>
+
+              {/* CTA */}
+              <button className="inline-flex items-center gap-2 text-[var(--primary-green)] font-semibold group-hover:gap-3 transition-all">
+                Learn More <FaArrowRight />
+              </button>
             </motion.div>
-            
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-              How You Can <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Help</span>
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed px-2">
-              Discover meaningful ways to contribute your time, skills, and resources towards creating sustainable change.
-            </p>
-          </motion.div>
+          ))}
+        </div>
 
-          {/* Ways to Help Grid - Mobile First */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16">
-            {waysToHelp.map((way, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ 
-                  duration: 0.5, 
-                  delay: index * 0.1,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                viewport={{ once: true, margin: "-50px" }}
-                className="group relative"
-              >
-                {/* Main Card - Mobile Optimized */}
-                <div className={`relative p-4 sm:p-6 rounded-2xl ${way.bgColor} border border-white/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 group-hover:-translate-y-1 h-full flex flex-col overflow-hidden`}>
-                  
-                  {/* Animated Background Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${way.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-                  
-                  {/* Icon Container */}
-                  <div className="relative z-10 flex items-center justify-between mb-4 sm:mb-6">
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${way.color} flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105`}>
-                      <way.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                    </div>
-                    
-                    {/* Impact Badge */}
-                    <motion.div
-                      initial={{ opacity: 0, x: 15 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 + 0.2 }}
-                      viewport={{ once: true }}
-                      className="text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/80 backdrop-blur-sm text-gray-700 border border-white/50"
-                    >
-                      {way.impact}
-                    </motion.div>
-                  </div>
+        {/* CTA BLOCK */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.7 }}
+          viewport={{ once: true }}
+          className="mt-24"
+        >
+          <div className="relative bg-[var(--primary-green)] rounded-[40px] p-10 md:p-16 text-white overflow-hidden">
 
-                  {/* Content */}
-                  <div className="relative z-10 flex-1 flex flex-col">
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-3 group-hover:text-gray-900 transition-colors duration-300 leading-tight">
-                      {way.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed flex-1">
-                      {way.description}
-                    </p>
+            {/* SUBTLE SHAPE */}
+            <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
 
-                    {/* Action Button */}
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`group relative w-full py-2.5 sm:py-3 px-4 rounded-xl font-semibold text-white overflow-hidden bg-gradient-to-r ${way.color} shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base`}
-                    >
-                      <span>{way.action}</span>
-                      <motion.span
-                        initial={{ x: -3 }}
-                        whileHover={{ x: 3 }}
-                        transition={{ type: "spring", stiffness: 400 }}
-                      >
-                        <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
-                      </motion.span>
-                    </motion.button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+            <div className="relative z-10 text-center max-w-3xl mx-auto">
+              <h3 className="text-3xl md:text-4xl font-semibold mb-4">
+                Ready to Make a Difference?
+              </h3>
 
-          {/* Impact Summary - Simplified */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="bg-gradient-to-r from-[#029346] to-[#0C4726] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 text-white shadow-xl overflow-hidden">
-              <div className="relative z-10 text-center">
-                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4 leading-tight">
-                  Your Action Creates <span className="text-[#F79021]">Impact</span>
-                </h3>
-                <p className="text-white/80 text-sm sm:text-base mb-6 sm:mb-8 max-w-xl mx-auto leading-relaxed">
-                  Every contribution creates lasting change in communities and ecosystems across Zambia.
-                </p>
-                
-                {/* Impact Metrics - Mobile Optimized */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-                  {[
-                    { value: '100%', label: 'Transparent', icon: FaEye },
-                    { value: '15+', label: 'Years', icon: FaClock },
-                    { value: '50+', label: 'Team', icon: FaUserFriends },
-                    { value: '10', label: 'Provinces', icon: FaMapMarkerAlt }
-                  ].map((metric, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.6 + index * 0.1 }}
-                      viewport={{ once: true }}
-                      className="text-center"
-                    >
-                      <div className="flex justify-center mb-1">
-                        <metric.icon className="w-5 h-5 sm:w-6 sm:h-6 text-[#F79021]" />
-                      </div>
-                      <div className="text-lg sm:text-xl lg:text-2xl font-bold text-[#F79021] mb-1">
-                        {metric.value}
-                      </div>
-                      <div className="text-white/80 text-xs sm:text-sm font-medium">
-                        {metric.label}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+              <p className="text-white/90 text-lg mb-8">
+                Join our growing network of changemakers protecting Zambia’s environment and communities.
+              </p>
 
-                {/* CTA Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  viewport={{ once: true }}
-                  className="mt-6 sm:mt-8"
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="bg-white text-[#029346] px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto group"
-                  >
-                    Start Making a Difference
-                    <FaArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </motion.button>
-                </motion.div>
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <button className="bg-white text-[var(--primary-green)] px-8 py-4 rounded-full font-semibold hover:scale-105 transition">
+                  Donate Now
+                </button>
+
+                <button className="border border-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-[var(--primary-green)] transition">
+                  Become a Volunteer
+                </button>
               </div>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
+
       </div>
     </section>
   );

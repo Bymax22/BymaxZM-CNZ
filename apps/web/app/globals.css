@@ -8,6 +8,11 @@
   --secondary-brown: #AA5D26;
   --primary-green: #029346;
   --secondary-green: #0C4726;
+
+    /* Dark system (Ocean Cleanup style adaptation) */
+  --dark-bg: #062e2e;
+  --dark-deep: #041f1f;
+  --dark-accent: #0a4444;
   
   /* Extended palette */
   --light-orange: #FEF6E7;

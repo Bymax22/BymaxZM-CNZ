@@ -6,6 +6,7 @@ import './globals.css';
 import { CNZProvider } from './contexts/CNZContext';
 import AuthProvider from './providers/AuthProvider';
 import { Navigation } from './components/layout/Navigation';
+import { SecondaryNav } from './components/layout/SecondaryNav';
 import { Footer } from './components/layout/Footer';
 import { Toaster } from 'react-hot-toast';
 
@@ -173,6 +174,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
             {/* Navigation */}
             <Navigation />
+
+            {/* Secondary Navigation */}
+            <SecondaryNav />
 
             {/* Main content */}
             <main 

@@ -3,28 +3,19 @@
 
 import { useState, useEffect } from 'react';
 import { HeroSection } from './components/sections/HeroSection';
-import { ImpactStats } from './components/sections/ImpactStats';
+import { StorySection } from './components/sections/StorySection';
 import { FeaturedProjects } from './components/sections/FeaturedProjects';
 import { HowToHelp } from './components/sections/HowToHelp';
 import { LatestNews } from './components/sections/LatestNews';
-import { Testimonials } from './components/sections/Testimonials';
+
 import { Partners } from './components/sections/Partners';
 import { CTASection } from './components/sections/CTASection';
-import { LoadingScreen } from './components/ui/LoadingScreen';
 
 export default function HomePage() {
-  const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    
-    // Simulate loading time for animations and data fetching
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
-
-    return () => clearTimeout(timer);
   }, []);
 
   // Prevent hydration mismatch
@@ -39,10 +30,6 @@ export default function HomePage() {
     );
   }
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -52,7 +39,7 @@ export default function HomePage() {
       
       {/* Impact Statistics */}
       <section id="impact">
-        <ImpactStats />
+        <StorySection />
       </section>
       
       {/* Featured Projects */}
