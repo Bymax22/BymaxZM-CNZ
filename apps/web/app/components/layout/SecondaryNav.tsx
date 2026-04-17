@@ -21,15 +21,15 @@ const mobileMenus = [
   {
     name: 'Our Work',
     items: [
-      { title: 'Nature Conservation', href: '/conservation', desc: 'Protecting ecosystems & biodiversity' },
-      { title: 'Climate Action', href: '/climate', desc: 'Fighting climate change impacts' },
+      { title: 'Nature Conservation', href: '/projects/conservation', desc: 'Protecting ecosystems & biodiversity' },
+      { title: 'Climate Action', href: '/projects/climate', desc: 'Fighting climate change impacts' },
     ],
   },
   {
     name: 'Programs',
     items: [
-      { title: 'Child Rights', href: '/children', desc: 'Empowering children & youth' },
-      { title: 'Sustainable Mining', href: '/mining', desc: 'Responsible resource use' },
+      { title: 'Children & Education', href: '/projects/education', desc: 'Empowering children & youth' },
+      { title: 'Community Development', href: '/projects/community', desc: 'Supporting local communities' },
     ],
   },
 ];
@@ -122,11 +122,11 @@ export const SecondaryNav = () => {
 
                 <div className="border-t pt-4 flex flex-col gap-3">
                   <Link
-                    href="/impact"
+                    href="/projects"
                     className="block rounded-2xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Impact
+                    Our Work
                   </Link>
                   <Link
                     href="/get-involved"

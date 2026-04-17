@@ -20,26 +20,26 @@ export const Footer = () => {
   const footerLinks = {
     About: [
       { name: 'Who We Are', href: '/about' },
-      { name: 'Why We Exist', href: '/why-we-exist' },
-      { name: 'Mission & Vision', href: '/mission-vision' },
-      { name: 'Governance', href: '/governance' },
+      { name: 'Our Story', href: '/about/story' },
+      { name: 'Governance', href: '/about/governance' },
+      { name: 'Team', href: '/about/team' },
     ],
     'Our Work': [
-      { name: 'Nature Conservation', href: '/nature-conservation' },
-      { name: 'Child Rights', href: '/child-rights' },
-      { name: 'Sustainable Mining', href: '/sustainable-mining' },
-      { name: 'Our Initiatives', href: '/initiatives' },
+      { name: 'Nature Conservation', href: '/projects/conservation' },
+      { name: 'Children & Education', href: '/projects/education' },
+      { name: 'Climate Action', href: '/projects/climate' },
+      { name: 'Community Development', href: '/projects/community' },
     ],
     'Get Involved': [
-      { name: 'Join a Club', href: '/join-club' },
-      { name: 'Donate', href: '/donate' },
-      { name: 'Partnerships', href: '/partnerships' },
-      { name: 'Volunteer', href: '/volunteer' },
+      { name: 'Join Our Clubs', href: '/portal/clubs' },
+      { name: 'Donate', href: '/get-involved/donate' },
+      { name: 'Partnerships', href: '/get-involved/partnership' },
+      { name: 'Volunteer', href: '/get-involved/volunteer' },
     ],
     Resources: [
-      { name: 'Publications', href: '/publications' },
+      { name: 'Reports', href: '/about/reports' },
       { name: 'News & Stories', href: '/news' },
-      { name: 'Annual Reports', href: '/reports' },
+      { name: 'Career Opportunities', href: '/get-involved/careers' },
       { name: 'Contact', href: '/contact' },
     ],
   };
@@ -53,7 +53,7 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="bg-black text-gray-300">
+    <footer className="bg-[#029346] text-gray-300">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 md:py-16">
         {/* Top Section with Logo and Newsletter */}
@@ -177,16 +177,16 @@ export const Footer = () => {
               © {currentYear} Care for Nature Zambia. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <Link href="/privacy-policy" className="text-gray-500 hover:text-[#F79021] transition-colors">
+              <Link href="/privacy" className="text-gray-500 hover:text-[#F79021] transition-colors">
                 Privacy Policy
               </Link>
               <span className="text-gray-700">|</span>
-              <Link href="/terms-of-use" className="text-gray-500 hover:text-[#F79021] transition-colors">
+              <Link href="/terms" className="text-gray-500 hover:text-[#F79021] transition-colors">
                 Terms of Use
               </Link>
               <span className="text-gray-700">|</span>
-              <Link href="/accessibility" className="text-gray-500 hover:text-[#F79021] transition-colors">
-                Accessibility
+              <Link href="/contact" className="text-gray-500 hover:text-[#F79021] transition-colors">
+                Support
               </Link>
             </div>
             <p className="text-gray-600 text-xs flex items-center gap-1">

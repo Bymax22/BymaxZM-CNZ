@@ -16,13 +16,13 @@ export const Navigation = () => {
         {
           title: 'Nature Conservation',
           desc: 'Protecting ecosystems & biodiversity',
-          href: '/conservation',
+          href: '/projects/conservation',
           image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
         },
         {
           title: 'Climate Action',
           desc: 'Fighting climate change impacts',
-          href: '/climate',
+          href: '/projects/climate',
           image: 'https://images.unsplash.com/photo-1470115636492-6d2b56f9146d',
         },
       ],
@@ -31,15 +31,15 @@ export const Navigation = () => {
       name: 'Programs',
       items: [
         {
-          title: 'Child Rights',
+          title: 'Children & Education',
           desc: 'Empowering children & youth',
-          href: '/children',
+          href: '/projects/education',
           image: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a',
         },
         {
-          title: 'Sustainable Mining',
-          desc: 'Responsible resource use',
-          href: '/mining',
+          title: 'Community Development',
+          desc: 'Supporting local communities',
+          href: '/projects/community',
           image: 'https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0',
         },
       ],
@@ -108,7 +108,7 @@ export const Navigation = () => {
             </div>
           ))}
 
-          <Link href="/impact" className="hover:text-[#029346] transition-colors duration-200">Impact</Link>
+          <Link href="/projects" className="hover:text-[#029346] transition-colors duration-200">Our Work</Link>
           <Link href="/get-involved" className="hover:text-[#029346] transition-colors duration-200">Get Involved</Link>
         </nav>
 
