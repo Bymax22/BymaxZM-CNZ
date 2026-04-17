@@ -1,12 +1,19 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TypeAnimation } from 'react-type-animation';
 import { FaIndustry, FaHeart } from 'react-icons/fa';
 import { MdOutlinePeople } from 'react-icons/md';
-import { Caveat } from 'next/font/google';
+import { Caveat, Pacifico, Great_Vibes, Kalam } from 'next/font/google';
 
 const caveat = Caveat({ subsets: ['latin'], weight: '400' });
+const pacifico = Pacifico({ subsets: ['latin'], weight: '400' });
+const greatVibes = Great_Vibes({ subsets: ['latin'], weight: '400' });
+const kalam = Kalam({ subsets: ['latin'], weight: '400' });
+
+// Array of handwriting fonts for more realistic variety
+const handwritingFonts = [caveat.className, pacifico.className, greatVibes.className, kalam.className];
 
 const sections = [
   {
@@ -29,101 +36,69 @@ const sections = [
   },
 ];
 
-// Handwriting component with realistic letter-by-letter animation and pen cursor
+// Realistic handwriting component with variable speed and natural pauses
 const HandwritingText = ({ text, onComplete }: { text: string; onComplete: () => void }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [penPosition, setPenPosition] = useState({ x: 0, y: 0 });
-  const textRef = useRef<HTMLParagraphElement>(null);
-  const penRef = useRef<HTMLDivElement>(null);
+  // Randomly select a handwriting font for this story
+  const [selectedFont] = useState(() => handwritingFonts[Math.floor(Math.random() * handwritingFonts.length)]);
+  const [isComplete, setIsComplete] = useState(false);
 
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timer = setTimeout(() => {
-        // Add next character
-        setDisplayedText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-        
-        // Update pen position based on text metrics
-        if (textRef.current && penRef.current) {
-          const range = document.createRange();
-          const selection = window.getSelection();
-          if (textRef.current.firstChild) {
-            range.setStart(textRef.current.firstChild, currentIndex);
-            range.setEnd(textRef.current.firstChild, currentIndex + 1);
-            const rect = range.getBoundingClientRect();
-            const containerRect = textRef.current.parentElement?.getBoundingClientRect();
-            if (containerRect) {
-              setPenPosition({
-                x: rect.right - containerRect.left,
-                y: rect.bottom - containerRect.top - 4,
-              });
-            }
-          }
-        }
-      }, 60 + Math.random() * 40); // Random timing for realistic effect
-      return () => clearTimeout(timer);
-    } else {
-      // Animation complete
-      const completeTimer = setTimeout(() => {
-        onComplete();
-      }, 800);
-      return () => clearTimeout(completeTimer);
+  // Split text into segments for more natural pauses (commas, periods create longer pauses)
+  const getSequences = () => {
+    const sequences: (string | number)[] = [];
+    let currentSegment = '';
+    
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      currentSegment += char;
+      
+      // Add natural delays after punctuation
+      if (char === '.' || char === '!' || char === '?') {
+        sequences.push(currentSegment);
+        sequences.push(400); // Longer pause after sentence end
+        currentSegment = '';
+      } else if (char === ',' || char === ';') {
+        sequences.push(currentSegment);
+        sequences.push(250); // Medium pause after comma
+        currentSegment = '';
+      } else if (char === ' ') {
+        sequences.push(currentSegment);
+        sequences.push(40); // Small pause after words
+        currentSegment = '';
+      }
     }
-  }, [currentIndex, text, onComplete]);
+    
+    if (currentSegment) {
+      sequences.push(currentSegment);
+    }
+    
+    return sequences;
+  };
+
+  const sequences = getSequences();
 
   return (
-    <div className="relative mt-4">
-      <p
-        ref={textRef}
-        className={`text-white/80 leading-relaxed text-xl md:text-2xl ${caveat.className}`}
-        style={{ minHeight: '120px' }}
-      >
-        {displayedText}
-        {currentIndex < text.length && (
-          <span className="animate-pulse inline-block w-0.5 h-6 bg-orange-400 ml-0.5 align-middle" />
-        )}
-      </p>
-      {/* Pen cursor that follows writing */}
-      {currentIndex < text.length && (
-        <motion.div
-          ref={penRef}
-          className="absolute pointer-events-none"
-          animate={{
-            x: penPosition.x,
-            y: penPosition.y,
-          }}
-          transition={{ type: 'tween', duration: 0.05 }}
-          style={{
-            left: 0,
-            top: 0,
-          }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="text-orange-400 drop-shadow-lg"
-            style={{ transform: 'rotate(-45deg)' }}
-          >
-            <path
-              d="M17 3L21 7L7 21L3 21L3 17L17 3Z"
-              fill="currentColor"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M14 6L18 10"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </motion.div>
+    <div className="mt-4">
+      <TypeAnimation
+        sequence={[
+          ...sequences,
+          () => {
+            setIsComplete(true);
+            setTimeout(() => onComplete(), 600);
+          }
+        ]}
+        wrapper="div"
+        speed={65} // Base speed (slower for more realistic writing)
+        className={`text-white/90 leading-relaxed text-xl md:text-2xl tracking-wide ${selectedFont}`}
+        repeat={0}
+        cursor={true}
+        style={{
+          fontFamily: 'inherit',
+          textRendering: 'geometricPrecision',
+          letterSpacing: '0.02em',
+        }}
+      />
+      {!isComplete && (
+        <span className="inline-block ml-1 animate-pulse text-orange-400 text-2xl">✍️</span>
       )}
     </div>
   );
@@ -135,17 +110,18 @@ const StoryCard = ({ story, onComplete }: { story: typeof sections[0]; onComplet
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95, y: -20 }}
-      transition={{ duration: 0.4 }}
-      className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-white/10"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -30 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-8 md:p-12 shadow-2xl border border-white/20"
     >
       <div className="flex items-center gap-4 mb-6">
         <Icon className="text-3xl text-orange-400" />
         <div className="h-[2px] w-12 bg-orange-400" />
       </div>
 
+      {/* Title with original font */}
       <h2 className={`text-3xl md:text-4xl font-light text-orange-400 mb-6 ${caveat.className}`}>
         {story.title}
       </h2>
@@ -157,55 +133,66 @@ const StoryCard = ({ story, onComplete }: { story: typeof sections[0]; onComplet
 
 export default function StorySection() {
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
-  const [isWriting, setIsWriting] = useState(true);
+  const [isActive, setIsActive] = useState(true);
 
   const handleStoryComplete = () => {
-    setIsWriting(false);
-    // Wait a moment before showing the next story
+    setIsActive(false);
     setTimeout(() => {
       if (currentStoryIndex + 1 < sections.length) {
         setCurrentStoryIndex(prev => prev + 1);
-        setIsWriting(true);
-      } else {
-        // All stories completed, you could loop or show a completion message
-        console.log('All stories completed');
+        setIsActive(true);
       }
-    }, 500);
+    }, 800);
   };
+
+  const currentStory = sections[currentStoryIndex];
 
   return (
     <section className="relative bg-gradient-to-b from-green-900 to-[var(--primary-green)] text-white overflow-hidden min-h-screen flex items-center justify-center">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-orange-400 blur-3xl" />
-        <div className="absolute bottom-10 right-10 w-48 h-48 rounded-full bg-green-400 blur-3xl" />
+        <div className="absolute top-20 left-20 w-40 h-40 rounded-full bg-orange-400 blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-56 h-56 rounded-full bg-green-400 blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-yellow-500/20 blur-3xl" />
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 md:px-6 py-16 md:py-24 w-full">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 py-16 md:py-24 w-full relative z-10">
         <AnimatePresence mode="wait">
-          {isWriting && sections[currentStoryIndex] && (
+          {isActive && currentStory && (
             <StoryCard
-              key={sections[currentStoryIndex].id}
-              story={sections[currentStoryIndex]}
+              key={currentStory.id}
+              story={currentStory}
               onComplete={handleStoryComplete}
             />
           )}
         </AnimatePresence>
 
-        {/* Progress indicator */}
-        <div className="mt-8 flex justify-center gap-2">
+        {/* Progress indicators */}
+        <div className="mt-12 flex justify-center gap-3">
           {sections.map((_, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className={`h-1 rounded-full transition-all duration-300 ${
+              className={`h-1.5 rounded-full transition-all duration-500 ${
                 idx === currentStoryIndex
-                  ? 'w-8 bg-orange-400'
+                  ? 'w-10 bg-orange-400'
                   : idx < currentStoryIndex
-                  ? 'w-4 bg-orange-400/50'
-                  : 'w-4 bg-white/20'
+                  ? 'w-6 bg-orange-400/40'
+                  : 'w-6 bg-white/20'
               }`}
+              animate={{
+                scale: idx === currentStoryIndex ? [1, 1.2, 1] : 1,
+              }}
+              transition={{
+                repeat: idx === currentStoryIndex ? Infinity : 0,
+                duration: 1.5,
+              }}
             />
           ))}
+        </div>
+        
+        {/* Story counter */}
+        <div className="text-center mt-4 text-white/40 text-sm font-mono">
+          {currentStoryIndex + 1} / {sections.length}
         </div>
       </div>
     </section>
