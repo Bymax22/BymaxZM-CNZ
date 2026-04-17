@@ -53,11 +53,11 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[#029346] text-gray-300">
+    <footer className="bg-[rgb(0,78,37)] text-gray-200">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 md:py-16">
         {/* Top Section with Logo and Newsletter */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 pb-8 border-b border-gray-800">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 pb-8 border-b border-gray-700">
           <div>
             <div className="mb-4">
               <Image
@@ -65,7 +65,7 @@ export const Footer = () => {
                 alt="Care for Nature Zambia Logo"
                 width={200}
                 height={60}
-                className="h-12 w-auto"
+                className="h-8 md:h-12 w-auto"
               />
             </div>
             <p className="text-gray-400 text-sm max-w-md leading-relaxed">
@@ -79,10 +79,10 @@ export const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 bg-gray-800 hover:bg-[#029346] rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-9 h-9 bg-gray-700 hover:bg-[#029346] rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-4 h-4 text-gray-400 hover:text-white transition-colors" />
+                  <social.icon className="w-4 h-4 text-gray-300 hover:text-white transition-colors" />
                 </Link>
               ))}
             </div>
@@ -97,7 +97,7 @@ export const Footer = () => {
               <input
                 type="email"
                 placeholder="Your email address"
-                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
+                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
                 required
               />
               <button
@@ -132,7 +132,7 @@ export const Footer = () => {
         </div>
 
         {/* Contact Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-gray-800">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-gray-700">
           <div className="flex items-start space-x-3">
             <FaMapMarkerAlt className="text-[#F79021] mt-1 flex-shrink-0" />
             <div>
@@ -170,26 +170,26 @@ export const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-gray-700">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-500 text-xs text-center md:text-left">
+            <p className="text-gray-400 text-xs text-center md:text-left">
               © {currentYear} Care for Nature Zambia. All rights reserved.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <Link href="/privacy" className="text-gray-500 hover:text-[#F79021] transition-colors">
+              <Link href="/privacy" className="text-gray-400 hover:text-[#F79021] transition-colors">
                 Privacy Policy
               </Link>
-              <span className="text-gray-700">|</span>
-              <Link href="/terms" className="text-gray-500 hover:text-[#F79021] transition-colors">
+              <span className="text-gray-600">|</span>
+              <Link href="/terms" className="text-gray-400 hover:text-[#F79021] transition-colors">
                 Terms of Use
               </Link>
-              <span className="text-gray-700">|</span>
-              <Link href="/contact" className="text-gray-500 hover:text-[#F79021] transition-colors">
+              <span className="text-gray-600">|</span>
+              <Link href="/contact" className="text-gray-400 hover:text-[#F79021] transition-colors">
                 Support
               </Link>
             </div>
-            <p className="text-gray-600 text-xs flex items-center gap-1">
+            <p className="text-gray-500 text-xs flex items-center gap-1">
               Registered under Registrar of Societies
               <br className="hidden sm:inline" />
               Chapter 119: ORS/102/46/334
