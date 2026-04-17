@@ -86,7 +86,7 @@ export default function StorySection() {
     return () => window.clearInterval(interval);
   }, []);
 
-  const current = sections[active] ?? sections[0];
+  const current = sections[active] ?? sections[0]!;
 
   return (
     <section className="relative bg-[var(--primary-green)] text-white overflow-hidden min-h-screen flex items-center justify-center">
