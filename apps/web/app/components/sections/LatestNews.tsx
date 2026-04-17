@@ -59,7 +59,7 @@ const news = [
 
 export function LatestNews() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white to-[#F0F9F4]">
+    <section className="relative overflow-hidden bg-white">
       {/* Background Elements - Simplified */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-64 h-64 bg-[#029346]/10 rounded-full blur-2xl sm:blur-3xl"></div>
@@ -123,9 +123,6 @@ export function LatestNews() {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </div>
-                    
-                    {/* Gradient Overlay */}
-                    <div className={`absolute inset-0 bg-gradient-to-t ${item.color} bg-opacity-30`} />
                     
                     {/* Category Badge */}
                     <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
@@ -208,7 +205,7 @@ export function LatestNews() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="bg-gradient-to-r from-[#029346] to-[#0C4726] text-white px-8 sm:px-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 mx-auto group"
+              className="bg-[#029346] text-white px-8 sm:px-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 mx-auto group"
             >
               View All Articles
               <motion.span
@@ -228,7 +225,7 @@ export function LatestNews() {
             viewport={{ once: true }}
             className="relative"
           >
-            <div className="bg-gradient-to-r from-[#029346] to-[#0C4726] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 text-white shadow-xl overflow-hidden">
+            <div className="bg-[#029346] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-12 text-white shadow-xl overflow-hidden">
               <div className="relative z-10 text-center">
                 <motion.div
                   initial={{ scale: 0 }}

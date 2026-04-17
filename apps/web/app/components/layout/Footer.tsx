@@ -2,6 +2,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   FaFacebookF,
   FaTwitter,
@@ -12,7 +13,6 @@ import {
   FaPhone,
   FaMapMarkerAlt,
 } from 'react-icons/fa';
-import { MdOutlineWaves } from 'react-icons/md';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -53,19 +53,20 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-black text-gray-300">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 md:py-16">
         {/* Top Section with Logo and Newsletter */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 pb-8 border-b border-gray-800">
           <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-[#029346] rounded-lg flex items-center justify-center">
-                <MdOutlineWaves className="text-white text-xl" />
-              </div>
-              <h3 className="text-white text-xl font-bold">
-                Care for Nature <span className="text-[#F79021]">Zambia</span>
-              </h3>
+            <div className="mb-4">
+              <Image
+                src="/Care for Nature logo d-site-01.png"
+                alt="Care for Nature Zambia Logo"
+                width={200}
+                height={60}
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-gray-400 text-sm max-w-md leading-relaxed">
               Building resilient communities through citizen participation in nature conservation.

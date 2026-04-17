@@ -87,9 +87,10 @@ export function HowToHelp() {
 
         {/* IMAGE BANNERS */}
         <div className="-mx-6 px-6 mb-14">
-          <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory snap-always touch-pan-x">
+          {/* Desktop: Manual scroll */}
+          <div className="hidden sm:flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory snap-always touch-pan-x">
             {steps.map((step, index) => (
-              <article key={index} className="min-w-[220px] sm:min-w-[260px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+              <article key={index} className="min-w-[260px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
                 <Image
                   src={step.image}
                   alt={step.title}
@@ -113,6 +114,51 @@ export function HowToHelp() {
                 </div>
               </article>
             ))}
+          </div>
+
+          {/* Mobile: Auto scroll with 2 cards visible */}
+          <div className="sm:hidden relative overflow-hidden">
+            <motion.div
+              className="flex gap-3"
+              animate={{
+                x: [0, -((steps.length) * 196)], // Approximate card width + gap for smooth loop
+              }}
+              transition={{
+                x: {
+                  repeat: Infinity,
+                  repeatType: "loop",
+                  duration: 25,
+                  ease: "linear",
+                },
+              }}
+            >
+              {/* Duplicate steps for seamless loop */}
+              {[...steps, ...steps].map((step, index) => (
+                <article key={`${step.step}-${index}`} className="w-[calc(50%-6px)] flex-shrink-0 rounded-[24px] overflow-hidden border border-gray-100 bg-white shadow-sm">
+                  <Image
+                    src={step.image}
+                    alt={step.title}
+                    width={200}
+                    height={140}
+                    className="h-32 w-full object-cover"
+                  />
+                  <div className="p-3">
+                    <p className="text-xs uppercase tracking-[0.35em] text-[var(--primary-green)] font-semibold mb-1">
+                      Step {step.step}
+                    </p>
+                    <h3 className="text-sm font-semibold text-gray-900 leading-tight">
+                      {step.title}
+                    </h3>
+                    <p className="text-gray-600 mt-1 mb-2 text-xs leading-snug">
+                      {step.description}
+                    </p>
+                    <button className="inline-flex items-center gap-1 text-[var(--primary-green)] font-semibold hover:gap-2 transition-all text-xs">
+                      Learn More <FaArrowRight className="w-3 h-3" />
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </motion.div>
           </div>
         </div>
 

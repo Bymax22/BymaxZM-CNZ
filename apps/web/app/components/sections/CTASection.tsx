@@ -19,7 +19,7 @@ import {
 
 export function CTASection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#029346] via-[#0C4726] to-[#08331C]">
+    <section className="relative overflow-hidden bg-[var(--primary-green)]">
       {/* Background Elements - Simplified for Mobile */}
       <div className="absolute inset-0">
         {/* Animated Gradient Orbs */}
@@ -93,7 +93,7 @@ export function CTASection() {
               </motion.div>
 
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
-                Start Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F79021] to-[#FFA726]">Journey</span> with Us
+                Start Your <span className="text-[#F79021]">Journey</span> with Us
               </h2>
               <p className="text-base sm:text-lg text-white/90 mb-6 sm:mb-8 leading-relaxed">
                 Join thousands of passionate Zambians creating lasting environmental impact. Your action today shapes a sustainable tomorrow.
@@ -172,12 +172,12 @@ export function CTASection() {
                 whileHover={{ scale: 1.01 }}
                 className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 backdrop-blur-sm relative overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-bl from-[#029346] to-[#0C4726] rounded-bl-2xl sm:rounded-bl-3xl opacity-5 group-hover:opacity-10 transition-opacity duration-300" />
+                <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-[#029346] rounded-bl-2xl sm:rounded-bl-3xl opacity-5 group-hover:opacity-10 transition-opacity duration-300" />
                 
                 <div className="flex items-start gap-4 sm:gap-6">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#029346] to-[#0C4726] rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0"
+                    className="w-12 h-12 sm:w-14 sm:h-14 bg-[#029346] rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0"
                   >
                     <FaDonate className="w-5 h-5 sm:w-6 sm:h-6" />
                   </motion.div>
@@ -191,7 +191,7 @@ export function CTASection() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full bg-gradient-to-r from-[#029346] to-[#0C4726] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group/btn text-sm sm:text-base"
+                      className="w-full bg-[#029346] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group/btn text-sm sm:text-base"
                     >
                       <FaHeart className="w-4 h-4" />
                       Donate Now
@@ -206,12 +206,12 @@ export function CTASection() {
                 whileHover={{ scale: 1.01 }}
                 className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 backdrop-blur-sm relative overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-bl from-[#F79021] to-[#AA5D26] rounded-bl-2xl sm:rounded-bl-3xl opacity-5 group-hover:opacity-10 transition-opacity duration-300" />
+                <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-[#F79021] rounded-bl-2xl sm:rounded-bl-3xl opacity-5 group-hover:opacity-10 transition-opacity duration-300" />
                 
                 <div className="flex items-start gap-4 sm:gap-6">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#F79021] to-[#AA5D26] rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0"
+                    className="w-12 h-12 sm:w-14 sm:h-14 bg-[#F79021] rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0"
                   >
                     <FaHandsHelping className="w-5 h-5 sm:w-6 sm:h-6" />
                   </motion.div>
@@ -225,7 +225,7 @@ export function CTASection() {
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="w-full bg-gradient-to-r from-[#F79021] to-[#AA5D26] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group/btn text-sm sm:text-base"
+                      className="w-full bg-[#F79021] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group/btn text-sm sm:text-base"
                     >
                       <FaUsers className="w-4 h-4" />
                       Volunteer

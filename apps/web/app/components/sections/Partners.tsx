@@ -48,7 +48,7 @@ export function Partners() {
   const totalWidth = (partners.length * itemWidth) + ((partners.length - 1) * gap);
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-white to-[#F0F9F4] py-16 sm:py-20">
+    <section className="relative overflow-hidden bg-white py-16 sm:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -68,10 +68,6 @@ export function Partners() {
 
         {/* Auto-scrolling Logos Container */}
         <div className="relative">
-          {/* Gradient Overlays */}
-          <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-r from-white to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 bg-gradient-to-l from-white to-transparent z-10" />
-          
           {/* Scrolling Wrapper */}
           <div 
             className="overflow-hidden"
@@ -134,31 +130,6 @@ export function Partners() {
           </div>
         </div>
 
-        {/* Simple Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          className="text-center mt-12 sm:mt-16"
-        >
-          <div className="inline-grid grid-cols-3 gap-8 sm:gap-12 bg-white/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-100">
-            {[
-              { value: '50+', label: 'Partners' },
-              { value: '10', label: 'Years' },
-              { value: '15M+', label: 'Lives Impacted' }
-            ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-[#029346] mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-gray-600 font-medium">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
       </div>
     </section>
   );
