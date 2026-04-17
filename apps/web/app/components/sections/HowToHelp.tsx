@@ -86,37 +86,31 @@ export function HowToHelp() {
 
         {/* IMAGE BANNERS */}
         <div className="-mx-6 px-6 mb-14">
-          {(() => {
-            const banners = [...steps, ...steps];
-            return (
-              <motion.div
-                className="flex gap-4"
-                animate={{ x: [0, -1184] }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-              >
-                {banners.map((step, index) => (
-                  <article key={index} className="min-w-[280px] rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
-                    <img
-                      src={step.image}
-                      alt={step.title}
-                      className="h-48 w-full object-cover"
-                    />
-                    <div className="p-5">
-                      <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
-                        Step {step.step}
-                      </p>
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {step.title}
-                      </h3>
-                      <p className="text-gray-600 mt-2">
-                        {step.description}
-                      </p>
-                    </div>
-                  </article>
-                ))}
-              </motion.div>
-            );
-          })()}
+          <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory">
+            {steps.map((step, index) => (
+              <article key={index} className="min-w-[250px] sm:min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+                <img
+                  src={step.image}
+                  alt={step.title}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-5">
+                  <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
+                    Step {step.step}
+                  </p>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {step.title}
+                  </h3>
+                  <p className="text-gray-600 mt-2 mb-4">
+                    {step.description}
+                  </p>
+                  <button className="inline-flex items-center gap-2 text-[var(--primary-green)] font-semibold hover:gap-3 transition-all">
+                    Learn More <FaArrowRight />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
 
         {/* STEPS */}
