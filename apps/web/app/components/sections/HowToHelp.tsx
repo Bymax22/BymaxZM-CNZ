@@ -87,71 +87,33 @@ export function HowToHelp() {
 
         {/* IMAGE BANNERS */}
         <div className="-mx-6 px-6 mb-14">
-          <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory">
+          <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory snap-always touch-pan-x">
             {steps.map((step, index) => (
-              <article key={index} className="min-w-[250px] sm:min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+              <article key={index} className="min-w-[220px] sm:min-w-[260px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
                 <Image
                   src={step.image}
                   alt={step.title}
-                  width={280}
-                  height={192}
-                  className="h-48 w-full object-cover"
+                  width={260}
+                  height={180}
+                  className="h-44 w-full object-cover"
                 />
                 <div className="p-5">
-                  <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
+                  <p className="text-xs uppercase tracking-[0.35em] text-[var(--primary-green)] font-semibold mb-2">
                     Step {step.step}
                   </p>
-                  <h3 className="text-xl font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-900">
                     {step.title}
                   </h3>
-                  <p className="text-gray-600 mt-2 mb-4">
+                  <p className="text-gray-600 mt-2 mb-4 text-sm leading-snug">
                     {step.description}
                   </p>
-                  <button className="inline-flex items-center gap-2 text-[var(--primary-green)] font-semibold hover:gap-3 transition-all">
+                  <button className="inline-flex items-center gap-2 text-[var(--primary-green)] font-semibold hover:gap-3 transition-all text-sm">
                     Learn More <FaArrowRight />
                   </button>
                 </div>
               </article>
             ))}
           </div>
-        </div>
-
-        {/* STEPS */}
-        <div className="grid md:grid-cols-2 gap-10">
-          {steps.map((step, index) => (
-            <motion.div
-              key={step.step}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.6 }}
-              viewport={{ once: true }}
-              className="group relative bg-white border border-gray-100 rounded-3xl p-8 hover:shadow-xl transition-all"
-            >
-              {/* STEP NUMBER */}
-              <div className="absolute top-6 right-6 text-6xl font-bold text-gray-100">
-                {step.step}
-              </div>
-
-              {/* ICON */}
-              <div className="w-14 h-14 rounded-xl bg-[var(--primary-green)]/10 flex items-center justify-center mb-6">
-                <step.icon className="text-[var(--primary-green)] w-6 h-6" />
-              </div>
-
-              {/* TEXT */}
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {step.title}
-              </h3>
-
-              <p className="text-gray-600 leading-relaxed mb-6">
-                {step.description}
-              </p>
-
-              {/* CTA */}
-              <button className="inline-flex items-center gap-2 text-[var(--primary-green)] font-semibold group-hover:gap-3 transition-all">
-                Learn More <FaArrowRight />
-              </button>
-            </motion.div>
-          ))}
         </div>
 
         {/* CTA BLOCK */}
