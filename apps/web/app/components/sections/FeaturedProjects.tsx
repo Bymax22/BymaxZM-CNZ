@@ -44,7 +44,7 @@ const projects: Project[] = [
     title: 'Women in Conservation',
     description: 'Empowering women through conservation enterprise training and sustainable income sources.',
     icon: FaUsers,
-    image: '/women-conservation.jpg',
+    image: '/SAM_1430.JPG',
     accent: 'orange',
   },
 ];
