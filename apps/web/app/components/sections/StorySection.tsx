@@ -9,72 +9,75 @@ const sections = [
   {
     id: 0,
     title: 'A NATIONAL CHALLENGE',
+    text:
+      "Zambia's natural resources are under pressure from climate change and unsustainable practices. Deforestation, mining impacts, and water scarcity threaten our communities and future generations.",
     icon: <FaIndustry className="w-6 h-6 text-[#F79021]" />,
-    path: `
-      M10 90 
-      C 40 40, 80 40, 110 90 
-      S 180 140, 220 90 
-      S 300 40, 340 90 
-      S 420 140, 480 90 
-      S 560 40, 620 90
-    `,
   },
   {
     id: 1,
     title: 'WE EMPOWER COMMUNITIES',
+    text:
+      'We work with vulnerable communities, especially women, youth, and children, to promote sustainable livelihoods and defend their rights to natural resources.',
     icon: <MdOutlinePeople className="w-6 h-6 text-[#F79021]" />,
-    path: `
-      M10 90 
-      C 50 30, 120 30, 160 90 
-      S 260 150, 300 90 
-      S 380 40, 440 90 
-      S 520 140, 600 90
-    `,
   },
   {
     id: 2,
     title: 'DRIVING REAL IMPACT',
+    text:
+      "Through partnerships with Save the Children, UNDP, and local communities, we protect ecosystems, advocate for children's rights, and build climate resilience across Zambia.",
     icon: <FaHeart className="w-6 h-6 text-[#F79021]" />,
-    path: `
-      M10 90 
-      C 60 50, 140 50, 200 90 
-      S 320 130, 380 90 
-      S 460 50, 520 90 
-      S 600 140, 680 90
-    `,
   },
 ];
 
-const Handwriting = ({ path }: { path: string }) => {
+// ✨ Ink reveal (feels like handwriting appearing)
+const InkText = ({ text }: { text: string }) => {
   return (
-    <div className="mt-6 w-full">
-      <svg
-        viewBox="0 0 720 140"
-        className="w-full h-auto"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        strokeLinecap="round"
-      >
-        <motion.path
-          d={path}
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 2.5, ease: 'easeInOut' }}
-        />
-      </svg>
-    </div>
+    <motion.p
+      initial="hidden"
+      animate="visible"
+      className="mt-6 text-white/85 leading-relaxed text-lg md:text-xl"
+      style={{
+        fontFamily: '"Caveat", cursive',
+      }}
+    >
+      {text.split(' ').map((word, i) => (
+        <motion.span
+          key={i}
+          variants={{
+            hidden: {
+              opacity: 0,
+              filter: 'blur(6px)',
+              y: 6,
+            },
+            visible: {
+              opacity: 1,
+              filter: 'blur(0px)',
+              y: 0,
+            },
+          }}
+          transition={{
+            duration: 0.35,
+            delay: i * 0.05,
+          }}
+          className="inline-block mr-[6px]"
+        >
+          {word}
+        </motion.span>
+      ))}
+    </motion.p>
   );
 };
 
 export default function StorySection() {
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState(0);
 
   return (
-    <section className="relative text-white">
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary-green)] to-[var(--secondary-green)]" />
+    <section className="relative text-white overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0C4726] to-[#029346]" />
 
-      <div className="relative max-w-4xl mx-auto px-6 py-32 space-y-32">
+      <div className="relative max-w-4xl mx-auto px-6 py-28 space-y-28">
+
         {sections.map((sec, i) => {
           const isActive = active === i;
 
@@ -82,38 +85,43 @@ export default function StorySection() {
             <motion.div
               key={sec.id}
               onViewportEnter={() => setActive(i)}
-              viewport={{ amount: 0.3, once: true }}
+              viewport={{ amount: 0.4 }}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6 }}
+              className="cursor-pointer"
             >
-              <div className="flex items-center gap-4 mb-4">
+              {/* Header */}
+              <div className="flex items-center gap-4 mb-3">
                 {sec.icon}
                 <div
-                  className={`h-[2px] transition-all ${
+                  className={`h-[2px] transition-all duration-300 ${
                     isActive
-                      ? 'w-12 bg-[var(--primary-orange)]'
+                      ? 'w-12 bg-[#F79021]'
                       : 'w-6 bg-white/30'
                   }`}
                 />
               </div>
 
+              {/* Title (kept clean professional font) */}
               <h2
-                className={`text-3xl md:text-4xl font-light ${
+                className={`text-3xl md:text-4xl font-light transition ${
                   isActive
-                    ? 'text-[var(--primary-orange)]'
+                    ? 'text-[#F79021]'
                     : 'text-white/60'
                 }`}
               >
                 {sec.title}
               </h2>
 
-              {isActive && <Handwriting path={sec.path} />}
+              {/* ✨ Ink handwriting effect */}
+              {isActive && <InkText text={sec.text} />}
 
+              {/* Indicator */}
               {isActive && (
                 <motion.div
                   layoutId="indicator"
-                  className="mt-6 h-[2px] w-12 bg-[var(--primary-orange)]"
+                  className="mt-6 h-[2px] w-12 bg-[#F79021]"
                 />
               )}
             </motion.div>
