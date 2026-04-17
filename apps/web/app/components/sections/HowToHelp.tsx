@@ -16,6 +16,7 @@ type Step = {
   title: string;
   description: string;
   step: number;
+  image: string;
 };
 
 const steps: Step[] = [
@@ -25,6 +26,7 @@ const steps: Step[] = [
     description:
       'Learn about our conservation work and community impact across Zambia.',
     step: 1,
+    image: '/images/community.jpg',
   },
   {
     icon: FaUsers,
@@ -32,6 +34,7 @@ const steps: Step[] = [
     description:
       'Support through volunteering, partnerships, or community programs.',
     step: 2,
+    image: '/images/deforestation.jpg',
   },
   {
     icon: FaHandHoldingUsd,
@@ -39,6 +42,7 @@ const steps: Step[] = [
     description:
       'Contribute through donations or active participation in our initiatives.',
     step: 3,
+    image: '/images/partnership.jpg',
   },
   {
     icon: FaShareAlt,
@@ -46,6 +50,7 @@ const steps: Step[] = [
     description:
       'Help amplify our mission and reach more communities.',
     step: 4,
+    image: '/images/og-image.jpg',
   },
 ];
 
@@ -81,55 +86,37 @@ export function HowToHelp() {
 
         {/* IMAGE BANNERS */}
         <div className="-mx-6 px-6 mb-14">
-          <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory">
-            <article className="min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
-              <img
-                src="/images/community.jpg"
-                alt="Community conservation project"
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-5">
-                <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
-                  Community
-                </p>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Strong local partnerships
-                </h3>
-              </div>
-            </article>
-
-            <article className="min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
-              <img
-                src="/images/deforestation.jpg"
-                alt="Tree planting and reforestation work"
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-5">
-                <p className="text-sm uppercase tracking-[0.3em] text-[#F79021] font-semibold mb-2">
-                  Reforestation
-                </p>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Restoring Zambia’s forests
-                </h3>
-              </div>
-            </article>
-
-            <article className="min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
-              <img
-                src="/images/partnership.jpg"
-                alt="Partnerships for sustainable change"
-                className="h-48 w-full object-cover"
-              />
-              <div className="p-5">
-                <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
-                  Partnership
-                </p>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Meaningful collaboration
-                </h3>
-              </div>
-            </article>
-          </div>
+          {(() => {
+            const banners = [...steps, ...steps];
+            return (
+              <motion.div
+                className="flex gap-4"
+                animate={{ x: [0, -1184] }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+              >
+                {banners.map((step, index) => (
+                  <article key={index} className="min-w-[280px] rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
+                    <img
+                      src={step.image}
+                      alt={step.title}
+                      className="h-48 w-full object-cover"
+                    />
+                    <div className="p-5">
+                      <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] font-semibold mb-2">
+                        Step {step.step}
+                      </p>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        {step.title}
+                      </h3>
+                      <p className="text-gray-600 mt-2">
+                        {step.description}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </motion.div>
+            );
+          })()}
         </div>
 
         {/* STEPS */}
