@@ -7,11 +7,14 @@ import { usePathname } from 'next/navigation';
 import { MdOutlineWeb, MdOutlineGroup, MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
 import { FaFacebookF, FaEnvelope } from 'react-icons/fa';
 
-const tabs = [
+const socialLinks = [
+  { href: 'https://facebook.com/carefornaturezambia', icon: FaFacebookF, label: 'Facebook', external: true },
+  { href: 'mailto:info@carefornaturezambia.org', icon: FaEnvelope, label: 'Email', external: false },
+];
+
+const navLinks = [
   { name: 'Portal', href: '/portal', icon: MdOutlineWeb },
   { name: 'Clubs', href: '/clubs', icon: MdOutlineGroup },
-  { name: 'Facebook', href: 'https://facebook.com/carefornaturezambia', icon: FaFacebookF, external: true },
-  { name: 'Email', href: 'mailto:info@carefornaturezambia.org', icon: FaEnvelope, external: true },
 ];
 
 const mobileMenus = [
@@ -35,6 +38,7 @@ export const SecondaryNav = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,39 +48,54 @@ export const SecondaryNav = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPopupVisible(true), 10000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <nav className={`fixed top-16 left-0 w-full border-b z-40 md:hidden transition-colors duration-300 ${
         isScrolled ? 'bg-[var(--primary-orange)] border-orange-300' : 'bg-[var(--primary-green)] border-[var(--secondary-green)]'
       }`}>
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between gap-2 py-2">
-            <div className="flex items-center gap-2 overflow-x-auto pr-2">
-              {tabs.map((tab) => (
+            <div className="flex items-center gap-2">
+              {socialLinks.map((link) => (
                 <Link
-                  key={tab.href}
-                  href={tab.href}
-                  target={tab.external ? '_blank' : undefined}
-                  rel={tab.external ? 'noreferrer noopener' : undefined}
-                  className={`flex items-center justify-center gap-1 min-w-[4.5rem] px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 ${
-                    pathname === tab.href && !tab.external
-                      ? 'bg-white text-[var(--primary-green)] shadow-md'
-                      : 'text-white hover:bg-white/20 hover:shadow-sm'
-                  }`}
+                  key={link.label}
+                  href={link.href}
+                  target={link.external ? '_blank' : undefined}
+                  rel={link.external ? 'noreferrer noopener' : undefined}
+                  className="w-9 h-9 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
+                  aria-label={link.label}
                 >
-                  <tab.icon className="w-4 h-4" />
-                  {tab.external ? <span className="sr-only">{tab.name}</span> : tab.name}
+                  <link.icon className="w-4 h-4" />
                 </Link>
               ))}
             </div>
 
-            <button
-              className="p-2 text-white rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <MdOutlineClose className="w-6 h-6" /> : <MdOutlineMenu className="w-6 h-6" />}
-            </button>
+            <div className="flex items-center gap-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
+                    pathname === link.href ? 'bg-white text-[var(--primary-green)] shadow-md' : 'text-white hover:bg-white/20'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+
+              <button
+                className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <MdOutlineClose className="w-5 h-5" /> : <MdOutlineMenu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
           {isMenuOpen && (
@@ -130,24 +149,30 @@ export const SecondaryNav = () => {
         </div>
       </nav>
 
-      <div className="md:hidden fixed top-[5.5rem] left-0 right-0 px-4 z-30">
-        <div className="rounded-3xl bg-[#F79021] text-white p-4 shadow-2xl border border-white/10">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.3em] opacity-90 mb-1">Upcoming Event</p>
+      {isPopupVisible && (
+        <div className="md:hidden fixed left-4 right-4 top-[7.5rem] z-50">
+          <div className="relative rounded-3xl bg-[#F79021] text-white p-4 shadow-2xl border border-white/10">
+            <button
+              className="absolute top-3 right-3 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+              aria-label="Close event popup"
+              onClick={() => setIsPopupVisible(false)}
+            >
+              <MdOutlineClose className="w-4 h-4" />
+            </button>
+            <div className="pr-10">
+              <p className="text-[10px] uppercase tracking-[0.28em] opacity-90 mb-1">Upcoming Event</p>
               <h3 className="text-sm font-semibold">Community Clean-Up Day</h3>
               <p className="text-xs text-white/90">Sat, May 3 • Lusaka River Park</p>
             </div>
-
             <Link
               href="/events"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
+              className="mt-4 inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
             >
               View
             </Link>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
