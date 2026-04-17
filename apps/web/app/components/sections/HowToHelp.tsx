@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { IconType } from 'react-icons/lib';
 import {
   FaHeart,
@@ -89,9 +90,11 @@ export function HowToHelp() {
           <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory">
             {steps.map((step, index) => (
               <article key={index} className="min-w-[250px] sm:min-w-[280px] snap-start rounded-[32px] overflow-hidden border border-gray-100 bg-white shadow-sm flex-shrink-0">
-                <img
+                <Image
                   src={step.image}
                   alt={step.title}
+                  width={280}
+                  height={192}
                   className="h-48 w-full object-cover"
                 />
                 <div className="p-5">

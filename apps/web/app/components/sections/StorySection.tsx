@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaIndustry, FaHeart } from 'react-icons/fa';
 import { MdOutlinePeople } from 'react-icons/md';
+import { Caveat } from 'next/font/google';
+
+const caveat = Caveat({ subsets: ['latin'], weight: '400' });
 
 const sections = [
   {
@@ -31,7 +34,7 @@ const container = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.03,
+      staggerChildren: 0.05,
     },
   },
 };
@@ -48,13 +51,18 @@ const HandwritingText = ({ text }: { text: string }) => {
       variants={container}
       initial="hidden"
       animate="visible"
-      className="mt-4 text-white/80 leading-relaxed"
+      className={`mt-4 text-white/80 leading-relaxed ${caveat.className}`}
     >
       {text.split('').map((char, index) => (
         <motion.span key={index} variants={letter}>
           {char}
         </motion.span>
       ))}
+      <motion.span
+        animate={{ opacity: [1, 0, 1] }}
+        transition={{ repeat: Infinity, duration: 1 }}
+        className="inline-block w-0.5 h-5 bg-orange-400 ml-1"
+      />
     </motion.p>
   );
 };
@@ -63,7 +71,7 @@ export default function StorySection() {
   const [active, setActive] = useState<number | null>(null);
 
   return (
-    <section className="relative bg-gradient-to-b from-green-900 to-green-700 text-white overflow-hidden">
+    <section className="relative bg-gradient-to-b from-green-900 to-[var(--primary-green)] text-white overflow-hidden">
       <div className="max-w-4xl mx-auto px-6 py-24 space-y-24">
 
         {sections.map((sec, i) => {
