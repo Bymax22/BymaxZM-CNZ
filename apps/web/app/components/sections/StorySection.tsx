@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FaIndustry, FaHeart, FaUsers, FaLeaf } from 'react-icons/fa';
+import { FaIndustry, FaHeart } from 'react-icons/fa';
 import { MdOutlinePeople } from 'react-icons/md';
 
 const sections = [

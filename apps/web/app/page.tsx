@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { HeroSection } from './components/sections/HeroSection';
-import { StorySection } from './components/sections/StorySection';
+import StorySection from './components/sections/StorySection';
 import { FeaturedProjects } from './components/sections/FeaturedProjects';
 import { HowToHelp } from './components/sections/HowToHelp';
 import { LatestNews } from './components/sections/LatestNews';
