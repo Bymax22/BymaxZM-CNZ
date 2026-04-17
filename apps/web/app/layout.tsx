@@ -182,7 +182,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             {/* Main content */}
             <main 
               id="main-content" 
-              className="flex-1 w-full relative"
+              className="flex-1 w-full relative pt-[10rem] md:pt-0"
               role="main"
             >
               {children}
