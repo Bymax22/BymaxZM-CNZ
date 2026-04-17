@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { 
   FaPhone, 
   FaEnvelope, 
@@ -188,15 +189,14 @@ export function CTASection() {
                     <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">
                       Your donation supports conservation projects, community empowerment, and environmental education.
                     </p>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <Link
+                      href="/get-involved/donate"
                       className="w-full bg-[#029346] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group/btn text-sm sm:text-base"
                     >
                       <FaHeart className="w-4 h-4" />
                       Donate Now
                       <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover/btn:translate-x-1" />
-                    </motion.button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>
@@ -222,15 +222,14 @@ export function CTASection() {
                     <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">
                       Offer your skills and time to support field operations and community programs.
                     </p>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                    <Link
+                      href="/get-involved/volunteer"
                       className="w-full bg-[#F79021] text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 group/btn text-sm sm:text-base"
                     >
                       <FaUsers className="w-4 h-4" />
                       Volunteer
                       <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover/btn:translate-x-1" />
-                    </motion.button>
+                    </Link>
                   </div>
                 </div>
               </motion.div>

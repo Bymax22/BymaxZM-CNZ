@@ -13,8 +13,8 @@ const socialLinks = [
 ];
 
 const navLinks = [
-  { name: 'Portal', href: '/portal', icon: MdOutlineWeb },
-  { name: 'Clubs', href: '/clubs', icon: MdOutlineGroup },
+  { name: 'Portal', href: '/portal/dashboard', icon: MdOutlineWeb },
+  { name: 'Clubs', href: '/portal/clubs', icon: MdOutlineGroup },
 ];
 
 const mobileMenus = [
@@ -136,7 +136,7 @@ export const SecondaryNav = () => {
                     Get Involved
                   </Link>
                   <Link
-                    href="/donate"
+                    href="/get-involved/donate"
                     className="block rounded-2xl px-4 py-3 text-center text-sm font-semibold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -165,7 +165,7 @@ export const SecondaryNav = () => {
               <p className="text-xs text-white/90">Sat, May 3 • Lusaka River Park</p>
             </div>
             <Link
-              href="/events"
+              href="/portal/events"
               className="mt-4 inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
             >
               View

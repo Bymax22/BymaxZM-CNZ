@@ -115,7 +115,7 @@ export const Navigation = () => {
         {/* RIGHT */}
         <div className="hidden md:block">
           <Link
-            href="/donate"
+            href="/get-involved/donate"
             className="bg-[#F79021] text-white px-4 py-2 text-sm font-semibold rounded hover:bg-[#e67e1a] transition-colors duration-200"
           >
             Donate

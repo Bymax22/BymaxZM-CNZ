@@ -6,7 +6,8 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaLeaf, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -65,9 +66,15 @@ export default function LoginPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mb-4"
+            className="mx-auto mb-4"
           >
-            <FaLeaf className="w-8 h-8 text-white" />
+            <Image
+              src="/Care for Nature logo d-site-01.png"
+              alt="Care for Nature Zambia"
+              width={60}
+              height={60}
+              priority
+            />
           </motion.div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back

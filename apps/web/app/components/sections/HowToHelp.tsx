@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import Image from 'next/image';
 import { IconType } from 'react-icons/lib';
 import {
@@ -185,13 +186,13 @@ export function HowToHelp() {
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <button className="bg-white text-[var(--primary-green)] px-8 py-4 rounded-full font-semibold hover:scale-105 transition">
+                <Link href="/get-involved/donate" className="bg-white text-[var(--primary-green)] px-8 py-4 rounded-full font-semibold hover:scale-105 transition inline-block text-center">
                   Donate Now
-                </button>
+                </Link>
 
-                <button className="border border-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-[var(--primary-green)] transition">
+                <Link href="/get-involved/volunteer" className="border border-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-[var(--primary-green)] transition inline-block text-center">
                   Become a Volunteer
-                </button>
+                </Link>
               </div>
             </div>
           </div>
