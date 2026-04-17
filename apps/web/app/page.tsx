@@ -9,7 +9,7 @@ import { HowToHelp } from './components/sections/HowToHelp';
 import { LatestNews } from './components/sections/LatestNews';
 
 import { Partners } from './components/sections/Partners';
-import { CTASection } from './components/sections/CTASection';
+
 
 export default function HomePage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -63,10 +63,6 @@ export default function HomePage() {
         <Partners />
       </section>
       
-      {/* CTA Section */}
-      <section id="contact">
-        <CTASection />
-      </section>
 
       {/* Smooth Scroll Script */}
       <script

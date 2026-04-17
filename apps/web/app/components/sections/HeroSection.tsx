@@ -37,7 +37,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative w-full h-screen mt-24 md:mt-16 overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden">
 
       {/* VIDEO BACKGROUND WITH ANIMATION */}
       <AnimatePresence mode="wait">
