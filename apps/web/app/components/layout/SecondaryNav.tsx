@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
 import { FaFacebookF, FaEnvelope } from 'react-icons/fa';
+import { FaTree, FaUsers, FaTools, FaHandshake } from 'react-icons/fa';
+import React from 'react';
 
 const socialLinks = [
   { href: 'https://facebook.com/carefornaturezambia', icon: FaFacebookF, label: 'Facebook', external: true },
@@ -12,11 +14,11 @@ const socialLinks = [
 ];
 
 const thematicTabs = [
-  { label: 'Nature', icon: '🌿', href: '/projects/ncp' },
-  { label: 'Children', icon: '👶', href: '/projects/crdp' },
-  { label: 'Mining', icon: '⛏️', href: '/projects/smp' },
-  { label: 'Community Engagement', icon: '🤝', href: '/projects/community' },
-  { label: 'Our Stories', icon: '📖', href: '/our-stories' },
+  { label: 'Nature', icon: FaTree, href: '/projects/ncp' },
+  { label: 'Children', icon: FaUsers, href: '/projects/crdp' },
+  { label: 'Mining', icon: FaTools, href: '/projects/smp' },
+  { label: 'Community Engagement', icon: FaHandshake, href: '/projects/community' },
+  { label: 'Our Stories', icon: null, href: '/our-stories' },
 ];
 
 
@@ -64,6 +66,7 @@ export const SecondaryNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isStoriesOpen, setIsStoriesOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,15 +107,39 @@ export const SecondaryNav = () => {
 
             <div className="flex items-center justify-between flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold uppercase tracking-[0.24em] text-white/90">Explore</span>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsStoriesOpen(!isStoriesOpen)}
+                    className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20 transition"
+                    aria-expanded={isStoriesOpen}
+                    aria-label="Our Stories"
+                  >
+                    Our Stories
+                  </button>
+
+                  {isStoriesOpen && (
+                    <div className="absolute left-0 top-10 w-48 rounded-lg bg-white shadow-lg border mt-2 py-2">
+                      <nav className="flex flex-col">
+                        <Link href="/projects/ncp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nature</Link>
+                        <Link href="/projects/crdp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Children</Link>
+                        <Link href="/projects/smp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Mining</Link>
+                        <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community Engagement</Link>
+                        <Link href="/our-stories?scope=global" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Global</Link>
+                        <Link href="/our-stories?scope=regional" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Regional</Link>
+                        <Link href="/our-stories?scope=national" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nationwide</Link>
+                      </nav>
+                    </div>
+                  )}
+                </div>
+
               </div>
 
               <button
-                className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
+                className="w-8 h-8 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                {isMenuOpen ? <MdOutlineClose className="w-6 h-6" /> : <MdOutlineMenu className="w-6 h-6" />}
+                {isMenuOpen ? <MdOutlineClose className="w-4 h-4" /> : <MdOutlineMenu className="w-4 h-4" />}
               </button>
             </div>
           </div>
@@ -131,7 +158,9 @@ export const SecondaryNav = () => {
                         className="block rounded-xl p-2.5 text-center bg-gray-50 hover:bg-gray-100 transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <div className="text-lg">{tab.icon}</div>
+                        <div className="text-lg">
+                          {tab.icon ? React.createElement(tab.icon, { className: 'w-5 h-5 mx-auto text-gray-700' }) : <span className="text-2xl">📖</span>}
+                        </div>
                         <div className="text-xs font-semibold text-gray-900 mt-1">{tab.label}</div>
                       </Link>
                     ))}
