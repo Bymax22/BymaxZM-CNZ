@@ -3,8 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { MdOutlineWeb, MdOutlineGroup, MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
+import { MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
 import { FaFacebookF, FaEnvelope } from 'react-icons/fa';
 
 const socialLinks = [
@@ -12,27 +11,15 @@ const socialLinks = [
   { href: 'mailto:info@carefornaturezambia.org', icon: FaEnvelope, label: 'Email', external: false },
 ];
 
-const navLinks = [
-  { name: 'Portal', href: '/portal/dashboard', icon: MdOutlineWeb },
-  { name: 'Clubs', href: '/portal/clubs', icon: MdOutlineGroup },
-];
-
 const thematicTabs = [
   { label: 'Nature', icon: '🌿', href: '/projects/ncp' },
   { label: 'Children', icon: '👶', href: '/projects/crdp' },
   { label: 'Mining', icon: '⛏️', href: '/projects/smp' },
-  { label: 'Growth', icon: '📈', href: '/projects/odp' },
+  { label: 'Community Engagement', icon: '🤝', href: '/projects/community' },
+  { label: 'Our Stories', icon: '📖', href: '/our-stories' },
 ];
 
-const workStatements = [
-  'Protecting nature, children, and communities in Zambia',
-  'Building resilience through sustainable practices',
-  'Empowering youth and child-led environmental action',
-  'Advancing responsible mining for community benefit',
-  'Strengthening CNZ to scale impact across Zambia',
-  'Creating green jobs and economic opportunities',
-  'Advocating for child rights and environmental justice',
-];
+
 
 const mobileMenus = [
   {
@@ -74,11 +61,9 @@ const mobileMenus = [
 ];
 
 export const SecondaryNav = () => {
-  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [statementIndex, setStatementIndex] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,13 +76,6 @@ export const SecondaryNav = () => {
   useEffect(() => {
     const timer = setTimeout(() => setIsPopupVisible(true), 10000);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStatementIndex((prev) => (prev + 1) % workStatements.length);
-    }, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -124,20 +102,17 @@ export const SecondaryNav = () => {
               ))}
             </div>
 
-            <div className="flex items-center gap-2 flex-1">
-              {/* Rotating work statements */}
-              <div className="flex-1 overflow-hidden">
-                <div className="px-2 py-0.5 text-xs font-semibold text-white line-clamp-1 transition-all duration-500">
-                  {workStatements[statementIndex]}
-                </div>
+            <div className="flex items-center justify-between flex-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.24em] text-white/90">Explore</span>
               </div>
 
               <button
-                className="p-1.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
+                className="p-3 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                {isMenuOpen ? <MdOutlineClose className="w-4 h-4" /> : <MdOutlineMenu className="w-4 h-4" />}
+                {isMenuOpen ? <MdOutlineClose className="w-6 h-6" /> : <MdOutlineMenu className="w-6 h-6" />}
               </button>
             </div>
           </div>

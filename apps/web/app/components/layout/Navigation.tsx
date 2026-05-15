@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaBell } from 'react-icons/fa';
+import { FaBell, FaUserCircle } from 'react-icons/fa';
 
 export const Navigation = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -55,8 +55,8 @@ export const Navigation = () => {
           <Image
             src="/Care for Nature logo d-site-01.png"
             alt="Care for Nature Zambia"
-            width={140}
-            height={60}
+            width={170}
+            height={72}
             className="object-contain"
           />
         </Link>
@@ -109,6 +109,7 @@ export const Navigation = () => {
           ))}
 
           <Link href="/projects" className="hover:text-[#029346] transition-colors duration-200">Our Work</Link>
+          <Link href="/our-stories" className="hover:text-[#029346] transition-colors duration-200">Our Stories</Link>
           <Link href="/get-involved" className="hover:text-[#029346] transition-colors duration-200">Get Involved</Link>
         </nav>
 
@@ -123,12 +124,13 @@ export const Navigation = () => {
         </div>
 
         {/* MOBILE: show portal & clubs buttons in the main header */}
-        <div className="md:hidden flex items-center gap-1">
+        <div className="md:hidden flex items-center gap-2">
           <Link
-            href="/portal/dashboard"
-            className="px-2 py-1 rounded-full text-sm font-bold text-gray-700 bg-white/10 hover:bg-gray-50 transition-colors"
+            href="/auth/login"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-gray-700 hover:bg-gray-50 transition-colors"
+            aria-label="Sign in or sign up"
           >
-            Portal
+            <FaUserCircle className="w-5 h-5" />
           </Link>
 
           <button className="p-2 text-gray-700 ml-0.5" aria-label="Notifications">

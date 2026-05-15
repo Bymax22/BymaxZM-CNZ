@@ -20,7 +20,7 @@ export default withAuth(
     }
 
     // Portal routes require any authenticated user
-    if (pathname.startsWith('/portal') || pathname.startsWith('/clubs') || pathname.startsWith('/projects')) {
+    if (pathname.startsWith('/portal')) {
       if (!token) {
         return NextResponse.redirect(new URL('/auth/login', request.url));
       }
@@ -38,8 +38,6 @@ export default withAuth(
 export const config = {
   matcher: [
     '/admin/:path*',
-    '/portal/:path*',
-    '/clubs/:path*',
-    '/projects/:path*'
+    '/portal/:path*'
   ]
 };
