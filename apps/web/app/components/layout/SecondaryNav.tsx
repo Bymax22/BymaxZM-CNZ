@@ -17,11 +17,21 @@ const navLinks = [
   { name: 'Clubs', href: '/portal/clubs', icon: MdOutlineGroup },
 ];
 
-const thematicStatements = [
+const thematicTabs = [
   { label: 'Nature', icon: '🌿', href: '/projects/ncp' },
   { label: 'Children', icon: '👶', href: '/projects/crdp' },
   { label: 'Mining', icon: '⛏️', href: '/projects/smp' },
   { label: 'Growth', icon: '📈', href: '/projects/odp' },
+];
+
+const workStatements = [
+  'Protecting nature, children, and communities in Zambia',
+  'Building resilience through sustainable practices',
+  'Empowering youth and child-led environmental action',
+  'Advancing responsible mining for community benefit',
+  'Strengthening CNZ to scale impact across Zambia',
+  'Creating green jobs and economic opportunities',
+  'Advocating for child rights and environmental justice',
 ];
 
 const mobileMenus = [
@@ -68,6 +78,7 @@ export const SecondaryNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [statementIndex, setStatementIndex] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,6 +91,13 @@ export const SecondaryNav = () => {
   useEffect(() => {
     const timer = setTimeout(() => setIsPopupVisible(true), 10000);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStatementIndex((prev) => (prev + 1) % workStatements.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -106,21 +124,16 @@ export const SecondaryNav = () => {
               ))}
             </div>
 
-            <div className="flex items-center gap-1">
-              {/* Rotating thematic area statements */}
-              {thematicStatements.map((stmt) => (
-                <Link
-                  key={stmt.label}
-                  href={stmt.href}
-                  className="px-1.5 py-0.5 text-xs font-semibold text-white hover:bg-white/10 rounded transition-all"
-                  title={stmt.label}
-                >
-                  {stmt.icon} {stmt.label}
-                </Link>
-              ))}
+            <div className="flex items-center gap-2 flex-1">
+              {/* Rotating work statements */}
+              <div className="flex-1 overflow-hidden">
+                <div className="px-2 py-0.5 text-xs font-semibold text-white line-clamp-1 transition-all duration-500">
+                  {workStatements[statementIndex]}
+                </div>
+              </div>
 
               <button
-                className="p-1.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors ml-auto"
+                className="p-1.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
@@ -132,6 +145,24 @@ export const SecondaryNav = () => {
           {isMenuOpen && (
             <div className="bg-white border border-white/10 rounded-3xl p-4 shadow-2xl mt-2">
               <div className="space-y-4 max-h-96 overflow-y-auto">
+                {/* Thematic tabs at top of dropdown */}
+                <div>
+                  <div className="font-semibold text-gray-900 mb-3 text-sm border-b pb-2">Our Focus Areas</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {thematicTabs.map((tab) => (
+                      <Link
+                        key={tab.label}
+                        href={tab.href}
+                        className="block rounded-xl p-2.5 text-center bg-gray-50 hover:bg-gray-100 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <div className="text-lg">{tab.icon}</div>
+                        <div className="text-xs font-semibold text-gray-900 mt-1">{tab.label}</div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
                 {mobileMenus.map((menu) => (
                   <div key={menu.name}>
                     <div className="font-semibold text-gray-900 mb-3 text-sm border-b pb-2">{menu.name}</div>
