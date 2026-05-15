@@ -22,18 +22,17 @@ export function MissionVision() {
             
             <h3 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h3>
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              To protect and restore Zambia&apos;s natural environment through community-led conservation 
-              initiatives, sustainable development practices, and environmental education that 
-              empowers present and future generations.
+              To build resilient and prosperous communities through nature-based action, child-centred
+              development, sustainable extractives reforms and capacity building for local institutions.
             </p>
             
             <div className="space-y-3">
               {[
                 'Environmental conservation and restoration',
-                'Community empowerment and sustainable livelihoods',
-                'Youth education and leadership development',
-                'Climate change adaptation and mitigation',
-                'Wildlife protection and habitat preservation'
+                'Child rights and participation',
+                'Sustainable mining and extractives accountability',
+                'Organizational capacity and governance',
+                'Sustainable livelihoods and green jobs'
               ].map((item, index) => (
                 <motion.div
                   key={index}

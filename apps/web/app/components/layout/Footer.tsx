@@ -189,11 +189,7 @@ export const Footer = () => {
                 Support
               </Link>
             </div>
-            <p className="text-gray-500 text-xs flex items-center gap-1">
-              Registered under Registrar of Societies
-              <br className="hidden sm:inline" />
-              Chapter 119: ORS/102/46/334
-            </p>
+            
           </div>
         </div>
       </div>

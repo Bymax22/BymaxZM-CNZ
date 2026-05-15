@@ -13,21 +13,21 @@ const sections = [
     id: 0,
     title: 'A NATIONAL CHALLENGE',
     text:
-      "Zambia's natural resources are under pressure from climate change and unsustainable practices. Deforestation, mining impacts, and water scarcity threaten our communities and future generations.",
+      "Zambia faces interconnected challenges: environmental degradation, child rights risks, and unsustainable extractives. Our approach addresses ecosystems, people, and governance together.",
     icon: <FaIndustry className="w-6 h-6 text-[#F79021]" />,
   },
   {
     id: 1,
-    title: 'WE EMPOWER COMMUNITIES',
+    title: 'WE EMPOWER COMMUNITIES & CHILDREN',
     text:
-      'We work with vulnerable communities, especially women, youth, and children, to promote sustainable livelihoods and defend their rights to natural resources.',
+      'We partner with communities, schools and children to build leadership, improve livelihoods, and ensure rights are protected while conserving nature.',
     icon: <MdOutlinePeople className="w-6 h-6 text-[#F79021]" />,
   },
   {
     id: 2,
-    title: 'DRIVING REAL IMPACT',
+    title: 'DRIVING SYSTEMIC CHANGE',
     text:
-      "Through partnerships with Save the Children, UNDP, and local communities, we protect ecosystems, advocate for children's rights, and build climate resilience across Zambia.",
+      "We combine conservation, sustainable mining advocacy, and organizational strengthening to influence policy and scale impact nationally.",
     icon: <FaHeart className="w-6 h-6 text-[#F79021]" />,
   },
 ];

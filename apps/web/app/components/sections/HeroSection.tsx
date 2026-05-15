@@ -10,19 +10,19 @@ const slides = [
     video: '/videos/15336768-hd_1920_1080_30fps.mp4',
     title: 'Welcome to CARE FOR NATURE ZAMBIA',
     subtitle:
-      'We are humanity, Fauna and Flora flourish in harmony',
+      'We bring nature-based action, children’s rights, sustainable mining and community resilience together.',
   },
   {
     video: '/videos/9939406-hd_1920_1080_25fps.mp4',
-    title: 'PROTECTING ZAMBIA’S NATURAL RESOURCES',
+    title: 'BUILDING A JUST AND PROSPEROUS ZAMBIA',
     subtitle:
-      'Empowering communities to safeguard forests, land and water',
+      'Mobilizing communities, policy actors and children to protect ecosystems and human rights.',
   },
   {
     video: '/videos/11781635-Uhd 3840 2160 60Fps-1.m4v',
     title: 'CREATING SUSTAINABLE FUTURES',
     subtitle:
-      'Driving climate action, human rights and environmental justice',
+      'Strengthening organizations, mining accountability and sustainable livelihoods across Zambia',
   },
 ];
 

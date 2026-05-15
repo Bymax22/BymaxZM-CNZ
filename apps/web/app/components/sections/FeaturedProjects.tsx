@@ -34,7 +34,7 @@ const projects: Project[] = [
   {
     id: 3,
     title: "Children's Rights & Education",
-    description: 'Creating safe spaces for children to learn about their rights while engaging in environmental conservation.',
+    description: 'Programs that strengthen child participation, school clubs, and protect children from exploitation in extractives.',
     icon: FaHandsHelping,
     image: '/children.jpg',
     accent: 'green',
