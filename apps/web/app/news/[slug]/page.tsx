@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getNewsItemBySlug } from '../../components/sections/newsData';
 
-export default function NewsArticlePage({ params }: { params: { slug: string } }) {
+export default function NewsArticlePage({ params }: any) {
   const newsItem = getNewsItemBySlug(params.slug);
 
   if (!newsItem) {
