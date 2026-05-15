@@ -5,9 +5,9 @@
 :root {
   /* CNZ Official Colors - Enhanced */
   --primary-orange: #F79021;
-  --secondary-brown: #AA5D26;
+  --secondary-brown: #311a09;
   --primary-green: #029346;
-  --secondary-green: #0C4726;
+  --secondary-green: #2c6b48;
 
     /* Dark system (Ocean Cleanup style adaptation) */
   --dark-bg: #062e2e;
@@ -17,7 +17,7 @@
   /* Extended palette */
   --light-orange: #FEF6E7;
   --light-green: #F0F9F4;
-  --dark-green: #08331C;
+  --dark-green: #0e4126;
   
   /* Neutrals */
   --white: #ffffff;

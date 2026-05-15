@@ -97,10 +97,10 @@ export const SecondaryNav = () => {
                   href={link.href}
                   target={link.external ? '_blank' : undefined}
                   rel={link.external ? 'noreferrer noopener' : undefined}
-                  className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
+                  className="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
                   aria-label={link.label}
                 >
-                  <link.icon className="w-4 h-4" />
+                  <link.icon className="w-3.5 h-3.5" />
                 </Link>
               ))}
             </div>
@@ -118,7 +118,7 @@ export const SecondaryNav = () => {
                   </button>
 
                   {isStoriesOpen && (
-                    <div className="absolute left-0 top-10 w-48 rounded-lg bg-white shadow-lg border mt-2 py-2">
+                    <div className="absolute left-0 top-10 w-48 rounded-md bg-white border border-gray-200 mt-2 py-1">
                       <nav className="flex flex-col">
                         <Link href="/projects/ncp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nature</Link>
                         <Link href="/projects/crdp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Children</Link>
@@ -135,7 +135,7 @@ export const SecondaryNav = () => {
               </div>
 
               <button
-                className="w-8 h-8 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
+                className="w-7 h-7 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
@@ -145,7 +145,7 @@ export const SecondaryNav = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="bg-white border border-white/10 rounded-3xl p-4 shadow-2xl mt-2">
+            <div className="bg-white border border-gray-200 rounded-xl p-3 mt-2">
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {/* Thematic tabs at top of dropdown */}
                 <div>
@@ -155,7 +155,7 @@ export const SecondaryNav = () => {
                       <Link
                         key={tab.label}
                         href={tab.href}
-                        className="block rounded-xl p-2.5 text-center bg-gray-50 hover:bg-gray-100 transition-colors"
+                        className="block rounded-lg p-2 text-center bg-white hover:bg-gray-50 border border-gray-100 transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <div className="text-lg">
@@ -224,22 +224,22 @@ export const SecondaryNav = () => {
 
       {isPopupVisible && (
         <div className="md:hidden fixed left-4 right-4 top-[7.5rem] z-50">
-          <div className="relative rounded-3xl bg-[#F79021] text-white p-4 shadow-2xl border border-white/10">
+          <div className="relative rounded-xl bg-[var(--primary-orange)] text-white p-3 border border-orange-600">
             <button
-              className="absolute top-3 right-3 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+              className="absolute top-2 right-2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
               aria-label="Close event popup"
               onClick={() => setIsPopupVisible(false)}
             >
               <MdOutlineClose className="w-4 h-4" />
             </button>
-            <div className="pr-10">
+            <div className="pr-8">
               <p className="text-[10px] uppercase tracking-[0.28em] opacity-90 mb-1">Upcoming Event</p>
               <h3 className="text-sm font-semibold">Community Clean-Up Day</h3>
               <p className="text-xs text-white/90">Sat, May 3 • Lusaka River Park</p>
             </div>
             <Link
               href="/portal/events"
-              className="mt-4 inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
+              className="mt-3 inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
             >
               View
             </Link>
