@@ -8,9 +8,9 @@ import Link from 'next/link';
 const slides = [
   {
     video: '/videos/15336768-hd_1920_1080_30fps.mp4',
-    title: 'TOGETHER FOR HUMANITY AND NATURE',
+    title: 'CARE FOR NATURE ZAMBIA',
     subtitle:
-      'Building resilient communities through citizen participation in conservation',
+      'We are humanity, Fauna and Flora flourish in harmony',
   },
   {
     video: '/videos/9939406-hd_1920_1080_25fps.mp4',

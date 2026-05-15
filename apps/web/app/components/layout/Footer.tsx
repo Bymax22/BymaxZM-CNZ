@@ -69,8 +69,8 @@ export const Footer = () => {
               />
             </div>
             <p className="text-gray-400 text-sm max-w-md leading-relaxed">
-              Building resilient communities through citizen participation in nature conservation.
-              Together for humanity and nature.
+              We're humanity, Fauna and Flora flourish in harmony.
+              Care for Nature Zambia.
             </p>
             <div className="flex space-x-4 mt-6">
               {socialLinks.map((social, index) => (
