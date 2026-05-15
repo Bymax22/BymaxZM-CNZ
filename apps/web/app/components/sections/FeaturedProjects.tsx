@@ -25,7 +25,7 @@ const projects: Project[] = [
     icon: FaTree,
     image: '/green-schools.jpg',
     accent: 'green',
-    href: '/projects/ncp',
+    href: '/our-stories/nature',
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const projects: Project[] = [
     icon: FaGraduationCap,
     image: '/children.jpg',
     accent: 'green',
-    href: '/projects/crdp',
+    href: '/our-stories/children',
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ const projects: Project[] = [
     icon: FaHandsHelping,
     image: '/tree-planting.jpg',
     accent: 'orange',
-    href: '/projects/smp',
+    href: '/our-stories/mining',
   },
   {
     id: 4,

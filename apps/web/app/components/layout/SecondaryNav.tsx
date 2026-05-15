@@ -14,9 +14,9 @@ const socialLinks = [
 ];
 
 const thematicTabs = [
-  { label: 'Nature', icon: FaTree, href: '/projects/ncp' },
-  { label: 'Children', icon: FaUsers, href: '/projects/crdp' },
-  { label: 'Mining', icon: FaTools, href: '/projects/smp' },
+  { label: 'Nature', icon: FaTree, href: '/our-stories/nature' },
+  { label: 'Children', icon: FaUsers, href: '/our-stories/children' },
+  { label: 'Mining', icon: FaTools, href: '/our-stories/mining' },
   { label: 'Community Engagement', icon: FaHandshake, href: '/projects/community' },
   { label: 'Our Stories', icon: null, href: '/our-stories' },
 ];
@@ -27,28 +27,28 @@ const mobileMenus = [
   {
     name: 'Nature Conservation Program (NCP)',
     items: [
-      { title: 'Habitat Restoration', href: '/projects/ncp', desc: 'Protecting ecosystems & species diversity' },
-      { title: 'Climate Resilience', href: '/projects/ncp', desc: 'Building community capacity for climate action' },
-      { title: 'Resource Management', href: '/projects/ncp', desc: 'Sustainable use of natural resources' },
-      { title: 'Eco-Tourism', href: '/projects/ncp', desc: 'Green jobs & community development' },
+      { title: 'Habitat Restoration', href: '/our-stories/nature', desc: 'Protecting ecosystems & species diversity' },
+      { title: 'Climate Resilience', href: '/our-stories/nature', desc: 'Building community capacity for climate action' },
+      { title: 'Resource Management', href: '/our-stories/nature', desc: 'Sustainable use of natural resources' },
+      { title: 'Eco-Tourism', href: '/our-stories/nature', desc: 'Green jobs & community development' },
     ],
   },
   {
     name: 'Child Rights & Development (CRDP)',
     items: [
-      { title: 'Child Participation', href: '/projects/crdp', desc: 'Strengthening child voice in decision-making' },
-      { title: 'School Clubs', href: '/projects/crdp', desc: 'Building leadership & climate awareness' },
-      { title: 'Rights Protection', href: '/projects/crdp', desc: 'Protection from abuse & exploitation' },
-      { title: 'Youth Advocacy', href: '/projects/crdp', desc: 'Child-led initiatives for justice & equality' },
+      { title: 'Child Participation', href: '/our-stories/children', desc: 'Strengthening child voice in decision-making' },
+      { title: 'School Clubs', href: '/our-stories/children', desc: 'Building leadership & climate awareness' },
+      { title: 'Rights Protection', href: '/our-stories/children', desc: 'Protection from abuse & exploitation' },
+      { title: 'Youth Advocacy', href: '/our-stories/children', desc: 'Child-led initiatives for justice & equality' },
     ],
   },
   {
     name: 'Sustainable Mining Program (SMP)',
     items: [
-      { title: 'Legal Compliance', href: '/projects/smp', desc: 'Adhering to environmental & labor frameworks' },
-      { title: 'Community Monitoring', href: '/projects/smp', desc: 'Accountability & transparency in mining' },
-      { title: 'Land Restoration', href: '/projects/smp', desc: 'Reclamation & tree planting projects' },
-      { title: 'Stakeholder Partnerships', href: '/projects/smp', desc: 'Networks for responsible extractives' },
+      { title: 'Legal Compliance', href: '/our-stories/mining', desc: 'Adhering to environmental & labor frameworks' },
+      { title: 'Community Monitoring', href: '/our-stories/mining', desc: 'Accountability & transparency in mining' },
+      { title: 'Land Restoration', href: '/our-stories/mining', desc: 'Reclamation & tree planting projects' },
+      { title: 'Stakeholder Partnerships', href: '/our-stories/mining', desc: 'Networks for responsible extractives' },
     ],
   },
   {
