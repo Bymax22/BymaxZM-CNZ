@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaTree, FaGraduationCap, FaHandsHelping, FaUsers } from 'react-icons/fa';
 
@@ -12,40 +13,49 @@ type Project = {
   icon: typeof FaGraduationCap;
   image: string;
   accent: Accent;
+  href: string;
 };
 
 const projects: Project[] = [
   {
     id: 1,
-    title: 'Green Schools Initiative',
-    description: 'Empowering young environmental champions through school-based conservation clubs and eco-education programs.',
-    icon: FaGraduationCap,
+    title: 'Nature Conservation Program (NCP)',
+    description:
+      'Protecting natural resources, habitats and biodiversity while building community wealth through sustainable land, water, forest and wildlife management.',
+    icon: FaTree,
     image: '/green-schools.jpg',
     accent: 'green',
+    href: '/projects/ncp',
   },
   {
     id: 2,
-    title: 'Community Reforestation',
-    description: 'Planting indigenous trees and promoting sustainable forest management practices that restore ecosystems.',
-    icon: FaTree,
-    image: '/tree-planting.jpg',
-    accent: 'orange',
+    title: 'Child Rights & Development Program (CRDP)',
+    description:
+      'Strengthening child participation, school clubs and protection systems so every child can exercise their rights and thrive in a climate-aware society.',
+    icon: FaGraduationCap,
+    image: '/children.jpg',
+    accent: 'green',
+    href: '/projects/crdp',
   },
   {
     id: 3,
-    title: "Children's Rights & Education",
-    description: 'Programs that strengthen child participation, school clubs, and protect children from exploitation in extractives.',
+    title: 'Sustainable Mining Program (SMP)',
+    description:
+      'Promoting responsible mining practices, legal compliance and community-led restoration that protect people, land and ecosystems.',
     icon: FaHandsHelping,
-    image: '/children.jpg',
-    accent: 'green',
+    image: '/tree-planting.jpg',
+    accent: 'orange',
+    href: '/projects/smp',
   },
   {
     id: 4,
-    title: 'Women in Conservation',
-    description: 'Empowering women through conservation enterprise training and sustainable income sources.',
+    title: 'Organization Development Program (ODP)',
+    description:
+      'Building CNZ capacity in governance, finance, partnerships and operations to scale impact across environment, human rights and development work.',
     icon: FaUsers,
     image: '/SAM_1430.JPG',
     accent: 'orange',
+    href: '/projects/odp',
   },
 ];
 
@@ -86,18 +96,18 @@ export function FeaturedProjects() {
           className="text-center mb-20"
         >
           <p className="text-sm uppercase tracking-[0.3em] text-[var(--primary-green)] mb-4 font-semibold">
-            Our Work in Action
+            Thematic Areas
           </p>
 
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 leading-tight">
-            Transforming Communities Through
+            Care for Nature Zambia’s Strategic Focus
             <span className="block text-[var(--primary-green)] mt-2">
-              Sustainable Projects
+              for the Next Five Years
             </span>
           </h2>
 
           <p className="text-gray-600 max-w-2xl mx-auto mt-6 leading-relaxed">
-            Our initiatives combine environmental conservation, human rights, and community empowerment to build a more resilient Zambia.
+            Our work is organized around four program areas that align environment, children’s rights, sustainable extractives and organizational capacity.
           </p>
         </motion.div>
 
@@ -143,12 +153,12 @@ export function FeaturedProjects() {
                 </p>
 
                 {/* CTA */}
-                <button className={`inline-flex items-center gap-3 font-semibold transition-all duration-300 ${accentStyles[project.accent].text}`}>
+                <Link href={project.href} className={`inline-flex items-center gap-3 font-semibold transition-all duration-300 ${accentStyles[project.accent].text}`}>
                   <span>Learn More</span>
                   <span className="transition-transform group-hover:translate-x-1">
                     →
                   </span>
-                </button>
+                </Link>
 
               </div>
 

@@ -130,12 +130,6 @@ export const Navigation = () => {
           >
             Portal
           </Link>
-          <Link
-            href="/portal/clubs"
-            className="px-2 py-1 rounded-full text-sm font-bold text-gray-700 bg-white/10 hover:bg-gray-50 transition-colors"
-          >
-            Clubs
-          </Link>
 
           <button className="p-2 text-gray-700 ml-0.5" aria-label="Notifications">
             <FaBell className="w-5 h-5" />
