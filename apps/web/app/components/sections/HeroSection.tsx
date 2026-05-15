@@ -8,7 +8,7 @@ import Link from 'next/link';
 const slides = [
   {
     video: '/videos/15336768-hd_1920_1080_30fps.mp4',
-    title: 'CARE FOR NATURE ZAMBIA',
+    title: 'Welcome to CARE FOR NATURE ZAMBIA',
     subtitle:
       'We are humanity, Fauna and Flora flourish in harmony',
   },
