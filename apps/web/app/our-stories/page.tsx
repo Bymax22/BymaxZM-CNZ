@@ -34,27 +34,26 @@ const stories = [
 
 export default function OurStoriesPage() {
   return (
-    <main className="min-h-screen bg-slate-50">
-      <section className="relative overflow-hidden bg-emerald-900 py-20 text-white">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.18),_transparent_55%)]" />
-        <div className="relative max-w-6xl mx-auto px-4 text-center">
-          <p className="mb-4 inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-emerald-100">
+    <main className="min-h-screen bg-[var(--gray-50)]">
+      <section className="py-20 bg-[var(--primary-green)] text-white">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="mb-4 inline-flex rounded-full border border-white/20 px-4 py-2 text-sm font-semibold uppercase tracking-[0.35em] text-white/90">
             Our Stories
           </p>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Real people, real action, real change</h1>
-          <p className="mx-auto mt-5 max-w-3xl text-base sm:text-lg text-emerald-100/90">
+          <p className="mx-auto mt-5 max-w-3xl text-base sm:text-lg text-white/90">
             Discover the stories behind our work: youth climate champions, community conservation leaders, and partners building a stronger, greener Zambia.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               href="/get-involved"
-              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-emerald-900 shadow-lg shadow-emerald-900/20 transition hover:bg-slate-100"
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-[var(--primary-green)] transition"
             >
               Join a story
             </Link>
             <Link
               href="/projects"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition"
             >
               Explore projects
             </Link>
@@ -65,16 +64,16 @@ export default function OurStoriesPage() {
       <section className="max-w-7xl mx-auto px-4 py-16">
         <div className="grid gap-8 lg:grid-cols-2">
           {stories.map((story) => (
-            <article key={story.title} className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-              <div className="bg-gradient-to-br from-emerald-700 to-slate-900 px-6 py-7 text-white">
-                <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.24em] text-emerald-100">
+            <article key={story.title} className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition">
+              <div className="px-6 py-6 bg-[var(--primary-green)] text-white">
+                <span className="inline-flex rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.24em] text-white/90">
                   {story.category}
                 </span>
                 <h2 className="mt-5 text-2xl font-semibold leading-tight">{story.title}</h2>
               </div>
               <div className="p-6">
-                <p className="text-sm leading-6 text-slate-700">{story.summary}</p>
-                <div className="mt-6 rounded-3xl bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-900">
+                <p className="text-sm leading-6 text-gray-700">{story.summary}</p>
+                <div className="mt-6 rounded-lg border border-[var(--primary-green)] px-5 py-3 text-sm font-semibold text-[var(--primary-green)] bg-white">
                   {story.highlight}
                 </div>
               </div>

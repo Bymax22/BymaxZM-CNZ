@@ -53,7 +53,7 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="bg-[rgb(0,78,37)] text-gray-200">
+    <footer className="bg-[var(--secondary-brown)] text-gray-100">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 md:py-16">
         {/* Top Section with Logo and Newsletter */}

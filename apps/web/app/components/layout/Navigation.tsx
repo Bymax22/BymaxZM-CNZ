@@ -4,7 +4,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaBell, FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
+import { FiUser, FiBell } from 'react-icons/fi';
 
 export const Navigation = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
@@ -130,11 +131,11 @@ export const Navigation = () => {
             className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-gray-700 hover:bg-gray-50 transition-colors"
             aria-label="Sign in or sign up"
           >
-            <FaUserCircle className="w-7 h-7" />
+            <FiUser className="w-7 h-7 stroke-current" />
           </Link>
 
           <button className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-gray-700 ml-0.5" aria-label="Notifications">
-            <FaBell className="w-7 h-7" />
+            <FiBell className="w-7 h-7 stroke-current" />
           </button>
         </div>
       </div>
