@@ -6,56 +6,12 @@ import {
   FaUser, 
   FaArrowRight,
   FaRegNewspaper,
-  FaTree,
-  FaUsers,
   FaEnvelope
 } from 'react-icons/fa';
 import Image from 'next/image';
+import Link from 'next/link';
+import { news } from './newsData';
 
-const news = [
-  {
-    id: 1,
-    title: 'Mass Tree Planting Reaches 10,000 Seedlings',
-    excerpt: 'Community-led reforestation planted 10,000 indigenous trees in Luapula Province with 500 local volunteers.',
-    image: '/images/news/tree-planting.jpg',
-    category: 'Conservation',
-    date: '2024-01-15',
-    author: 'Sarah Chibwe',
-    readTime: '3 min',
-    icon: FaTree,
-    color: 'from-[#029346] to-[#0C4726]',
-    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
-    tags: ['Reforestation', 'Community']
-  },
-  {
-    id: 2,
-    title: 'New Partnership with Zambia Wildlife Authority',
-    excerpt: 'CNZ signs MOU with ZAWA to enhance wildlife conservation and anti-poaching efforts.',
-    image: '/images/news/partnership.jpg',
-    category: 'Partnership',
-    date: '2024-01-12',
-    author: 'David Mwansa',
-    readTime: '4 min',
-    icon: FaUsers,
-    color: 'from-[#F79021] to-[#AA5D26]',
-    bgColor: 'bg-gradient-to-br from-[#F79021]/10 to-[#AA5D26]/10',
-    tags: ['Partnership', 'Wildlife']
-  },
-  {
-    id: 3,
-    title: 'Children Environmental Program Launched',
-    excerpt: 'Empowering young Zambians with conservation skills across 10 schools in Copperbelt Province.',
-    image: '/images/news/children-program.jpg',
-    category: 'Education',
-    date: '2024-01-08',
-    author: 'Grace Banda',
-    readTime: '5 min',
-    icon: FaRegNewspaper,
-    color: 'from-[#029346] to-[#0C4726]',
-    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
-    tags: ['Education', 'Youth']
-  }
-];
 
 export function LatestNews() {
   return (
@@ -114,15 +70,25 @@ export function LatestNews() {
                   
                   {/* Image Container */}
                   <div className="relative h-40 sm:h-48 overflow-hidden">
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    {item.video ? (
+                      <video
+                        controls
+                        playsInline
+                        preload="metadata"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        src={item.video}
                       />
-                    </div>
+                    ) : (
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={item.image!}
+                          alt={item.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                    )}
                     
                     {/* Category Badge */}
                     <div className="absolute top-3 left-3 sm:top-4 sm:left-4">
@@ -159,7 +125,7 @@ export function LatestNews() {
                     </h3>
 
                     {/* Excerpt */}
-                    <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4 leading-relaxed line-clamp-2 flex-1">
+                    <p className="text-gray-600 text-sm sm:text-base mb-3 sm:mb-4 leading-relaxed line-clamp-4 flex-1">
                       {item.excerpt}
                     </p>
 
@@ -177,7 +143,10 @@ export function LatestNews() {
 
                     {/* Read More */}
                     <div className="mt-auto pt-3 sm:pt-4 border-t border-gray-100">
-                      <button className="w-full flex items-center justify-between group/btn text-[#029346] font-semibold hover:text-[#0C4726] transition-colors duration-300 text-sm sm:text-base">
+                      <Link
+                        href={item.href}
+                        className="w-full flex items-center justify-between group/btn text-[#029346] font-semibold hover:text-[#0C4726] transition-colors duration-300 text-sm sm:text-base"
+                      >
                         <span>Read Story</span>
                         <motion.span
                           animate={{ x: [0, 4, 0] }}
@@ -186,7 +155,7 @@ export function LatestNews() {
                         >
                           <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover/btn:translate-x-1" />
                         </motion.span>
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -202,19 +171,13 @@ export function LatestNews() {
             viewport={{ once: true }}
             className="text-center mb-12 sm:mb-16"
           >
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-[#029346] text-white px-8 sm:px-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 sm:gap-3 mx-auto group"
+            <Link
+              href="/news"
+              className="inline-flex items-center justify-center bg-[#029346] text-white px-8 sm:px-12 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 gap-2 sm:gap-3 mx-auto"
             >
               View All Articles
-              <motion.span
-                animate={{ x: [0, 6, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <FaArrowRight className="w-4 h-4" />
-              </motion.span>
-            </motion.button>
+              <FaArrowRight className="w-4 h-4" />
+            </Link>
           </motion.div>
 
           {/* Newsletter Signup - Simplified */}
