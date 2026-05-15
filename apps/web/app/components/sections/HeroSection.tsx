@@ -10,7 +10,7 @@ const slides = [
     video: '/videos/15336768-hd_1920_1080_30fps.mp4',
     title: 'Welcome to CARE FOR NATURE ZAMBIA',
     subtitle:
-      'We bring nature-based action, children’s rights, sustainable mining and community resilience together.',
+      'Were humanity, Fauna and Flora flourish in harmony',
   },
   {
     video: '/videos/9939406-hd_1920_1080_25fps.mp4',
