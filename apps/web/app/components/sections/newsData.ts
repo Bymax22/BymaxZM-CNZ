@@ -36,10 +36,10 @@ export const news: NewsItem[] = [
       'Newly elected Children’s Climate Council President ASHLEY PHIRI said the council will work to represent all children, including those in hard-to-reach areas across the country, on climate-related matters.',
       'Meanwhile, Ministry of Education Director of Primary Education LANGFORD CHIBUYE said the newly introduced competence-based curriculum includes sustainable skills aimed at promoting environmental protection.'
     ],
-    video:
-      '/AQPbPZQM5lsjIvuM9BBoWuNddk3w3LcCi0aPrsL2JmXcB_L_GpRszX6I2a1iKdPrKzd_VKeW7KEs5-gmncfoezvJsl1eGCjm9SoAQVdPNBVakQ.mp4',
+    // Use Cloudinary video URLs (set via uploader). Leave empty until uploaded.
+    // video: 'https://res.cloudinary.com/<cloud_name>/video/upload/v1234567890/your_video.mp4',
     category: 'Conservation',
-    date: '2024-01-15',
+    date: '2026-05-07',
     author: 'Raphael Kumwenda',
     readTime: '3 min',
     icon: FaTree,
