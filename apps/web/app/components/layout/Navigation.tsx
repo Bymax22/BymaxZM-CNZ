@@ -122,9 +122,25 @@ export const Navigation = () => {
           </Link>
         </div>
 
-        <button className="md:hidden p-2 text-gray-700" aria-label="Notifications">
-          <FaBell className="w-6 h-6" />
-        </button>
+        {/* MOBILE: show portal & clubs buttons in the main header */}
+        <div className="md:hidden flex items-center gap-2">
+          <Link
+            href="/portal/dashboard"
+            className="px-3 py-2 rounded-full text-xs font-semibold text-gray-700 bg-white/10 hover:bg-gray-50"
+          >
+            Portal
+          </Link>
+          <Link
+            href="/portal/clubs"
+            className="px-3 py-2 rounded-full text-xs font-semibold text-gray-700 bg-white/10 hover:bg-gray-50"
+          >
+            Clubs
+          </Link>
+
+          <button className="p-2 text-gray-700" aria-label="Notifications">
+            <FaBell className="w-6 h-6" />
+          </button>
+        </div>
       </div>
     </header>
   );

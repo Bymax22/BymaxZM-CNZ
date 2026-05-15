@@ -55,11 +55,13 @@ export const SecondaryNav = () => {
 
   return (
     <>
-      <nav className={`fixed top-16 left-0 w-full border-b z-40 md:hidden transition-colors duration-300 ${
-        isScrolled ? 'bg-[var(--primary-orange)] border-orange-300' : 'bg-[var(--primary-green)] border-[var(--secondary-green)]'
-      }`}>
+      <nav
+        className={`fixed top-16 left-0 w-full border-b z-40 md:hidden transition-colors duration-300 ${
+          isScrolled ? 'bg-[var(--primary-orange)] border-orange-300' : 'bg-[var(--primary-green)] border-[var(--secondary-green)]'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between gap-2 py-2">
+          <div className="flex items-center justify-between gap-2 py-1">
             <div className="flex items-center gap-2">
               {socialLinks.map((link) => (
                 <Link
@@ -67,7 +69,7 @@ export const SecondaryNav = () => {
                   href={link.href}
                   target={link.external ? '_blank' : undefined}
                   rel={link.external ? 'noreferrer noopener' : undefined}
-                  className="w-9 h-9 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
+                  className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
                   aria-label={link.label}
                 >
                   <link.icon className="w-4 h-4" />
@@ -76,16 +78,14 @@ export const SecondaryNav = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className={`rounded-full px-3 py-2 text-xs font-semibold transition-colors ${
-                    pathname === link.href ? 'bg-white text-[var(--primary-green)] shadow-md' : 'text-white hover:bg-white/20'
-                  }`}
+              {/* Thematic tabs on the secondary header (mobile) */}
+              {mobileMenus.map((menu) => (
+                <button
+                  key={menu.name}
+                  className="px-2 py-1 text-xs font-semibold text-white hover:bg-white/10 rounded-md"
                 >
-                  {link.name}
-                </Link>
+                  {menu.name}
+                </button>
               ))}
 
               <button
