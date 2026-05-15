@@ -123,22 +123,22 @@ export const Navigation = () => {
         </div>
 
         {/* MOBILE: show portal & clubs buttons in the main header */}
-        <div className="md:hidden flex items-center gap-2">
+        <div className="md:hidden flex items-center gap-1">
           <Link
             href="/portal/dashboard"
-            className="px-3 py-2 rounded-full text-xs font-semibold text-gray-700 bg-white/10 hover:bg-gray-50"
+            className="px-2 py-1 rounded-full text-sm font-bold text-gray-700 bg-white/10 hover:bg-gray-50 transition-colors"
           >
             Portal
           </Link>
           <Link
             href="/portal/clubs"
-            className="px-3 py-2 rounded-full text-xs font-semibold text-gray-700 bg-white/10 hover:bg-gray-50"
+            className="px-2 py-1 rounded-full text-sm font-bold text-gray-700 bg-white/10 hover:bg-gray-50 transition-colors"
           >
             Clubs
           </Link>
 
-          <button className="p-2 text-gray-700" aria-label="Notifications">
-            <FaBell className="w-6 h-6" />
+          <button className="p-2 text-gray-700 ml-0.5" aria-label="Notifications">
+            <FaBell className="w-5 h-5" />
           </button>
         </div>
       </div>

@@ -17,19 +17,48 @@ const navLinks = [
   { name: 'Clubs', href: '/portal/clubs', icon: MdOutlineGroup },
 ];
 
+const thematicStatements = [
+  { label: 'Nature', icon: '🌿', href: '/projects/ncp' },
+  { label: 'Children', icon: '👶', href: '/projects/crdp' },
+  { label: 'Mining', icon: '⛏️', href: '/projects/smp' },
+  { label: 'Growth', icon: '📈', href: '/projects/odp' },
+];
+
 const mobileMenus = [
   {
-    name: 'Our Work',
+    name: 'Nature Conservation Program (NCP)',
     items: [
-      { title: 'Nature Conservation', href: '/projects/conservation', desc: 'Protecting ecosystems & biodiversity' },
-      { title: 'Climate Action', href: '/projects/climate', desc: 'Fighting climate change impacts' },
+      { title: 'Habitat Restoration', href: '/projects/ncp', desc: 'Protecting ecosystems & species diversity' },
+      { title: 'Climate Resilience', href: '/projects/ncp', desc: 'Building community capacity for climate action' },
+      { title: 'Resource Management', href: '/projects/ncp', desc: 'Sustainable use of natural resources' },
+      { title: 'Eco-Tourism', href: '/projects/ncp', desc: 'Green jobs & community development' },
     ],
   },
   {
-    name: 'Programs',
+    name: 'Child Rights & Development (CRDP)',
     items: [
-      { title: 'Children & Education', href: '/projects/education', desc: 'Empowering children & youth' },
-      { title: 'Community Development', href: '/projects/community', desc: 'Supporting local communities' },
+      { title: 'Child Participation', href: '/projects/crdp', desc: 'Strengthening child voice in decision-making' },
+      { title: 'School Clubs', href: '/projects/crdp', desc: 'Building leadership & climate awareness' },
+      { title: 'Rights Protection', href: '/projects/crdp', desc: 'Protection from abuse & exploitation' },
+      { title: 'Youth Advocacy', href: '/projects/crdp', desc: 'Child-led initiatives for justice & equality' },
+    ],
+  },
+  {
+    name: 'Sustainable Mining Program (SMP)',
+    items: [
+      { title: 'Legal Compliance', href: '/projects/smp', desc: 'Adhering to environmental & labor frameworks' },
+      { title: 'Community Monitoring', href: '/projects/smp', desc: 'Accountability & transparency in mining' },
+      { title: 'Land Restoration', href: '/projects/smp', desc: 'Reclamation & tree planting projects' },
+      { title: 'Stakeholder Partnerships', href: '/projects/smp', desc: 'Networks for responsible extractives' },
+    ],
+  },
+  {
+    name: 'Organization Development (ODP)',
+    items: [
+      { title: 'Institutional Capacity', href: '/projects/odp', desc: 'Strengthening systems & governance' },
+      { title: 'Resource Mobilization', href: '/projects/odp', desc: 'Social enterprises & financial sustainability' },
+      { title: 'Partnerships & Networks', href: '/projects/odp', desc: 'Collaboration across sectors' },
+      { title: 'Operations & Compliance', href: '/projects/odp', desc: 'Effective NGO management & scaling' },
     ],
   },
 ];
@@ -77,39 +106,41 @@ export const SecondaryNav = () => {
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Thematic tabs on the secondary header (mobile) */}
-              {mobileMenus.map((menu) => (
-                <button
-                  key={menu.name}
-                  className="px-2 py-1 text-xs font-semibold text-white hover:bg-white/10 rounded-md"
+            <div className="flex items-center gap-1">
+              {/* Rotating thematic area statements */}
+              {thematicStatements.map((stmt) => (
+                <Link
+                  key={stmt.label}
+                  href={stmt.href}
+                  className="px-1.5 py-0.5 text-xs font-semibold text-white hover:bg-white/10 rounded transition-all"
+                  title={stmt.label}
                 >
-                  {menu.name}
-                </button>
+                  {stmt.icon} {stmt.label}
+                </Link>
               ))}
 
               <button
-                className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                className="p-1.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors ml-auto"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                {isMenuOpen ? <MdOutlineClose className="w-5 h-5" /> : <MdOutlineMenu className="w-5 h-5" />}
+                {isMenuOpen ? <MdOutlineClose className="w-4 h-4" /> : <MdOutlineMenu className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
           {isMenuOpen && (
             <div className="bg-white border border-white/10 rounded-3xl p-4 shadow-2xl mt-2">
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-96 overflow-y-auto">
                 {mobileMenus.map((menu) => (
                   <div key={menu.name}>
-                    <div className="font-semibold text-gray-900 mb-2">{menu.name}</div>
-                    <div className="space-y-3 pl-2">
+                    <div className="font-semibold text-gray-900 mb-3 text-sm border-b pb-2">{menu.name}</div>
+                    <div className="space-y-2 pl-2">
                       {menu.items.map((item) => (
                         <Link
                           key={item.title}
                           href={item.href}
-                          className="block rounded-2xl p-3 hover:bg-gray-50 transition-colors"
+                          className="block rounded-xl p-2.5 hover:bg-gray-100 transition-colors"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <div className="font-medium text-sm text-gray-900">{item.title}</div>
@@ -120,24 +151,31 @@ export const SecondaryNav = () => {
                   </div>
                 ))}
 
-                <div className="border-t pt-4 flex flex-col gap-3">
+                <div className="border-t pt-4 flex flex-col gap-2">
                   <Link
-                    href="/projects"
-                    className="block rounded-2xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
+                    href="/portal/dashboard"
+                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-white bg-[var(--primary-green)] hover:bg-[var(--secondary-green)] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Our Work
+                    Portal
+                  </Link>
+                  <Link
+                    href="/portal/clubs"
+                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-white bg-[var(--primary-green)] hover:bg-[var(--secondary-green)] transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Clubs
                   </Link>
                   <Link
                     href="/get-involved"
-                    className="block rounded-2xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
+                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Get Involved
                   </Link>
                   <Link
                     href="/get-involved/donate"
-                    className="block rounded-2xl px-4 py-3 text-center text-sm font-semibold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
+                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Donate
