@@ -29,23 +29,23 @@ const slides = [
 
 export const HeroSection = () => {
   const [index, setIndex] = useState(0);
-  const [galleryIndex, setGalleryIndex] = useState(0);
 
   const heroGallery = [
     {
       src: '/children-program.jpg',
       title: 'Children’s Climate Summit',
-      subtitle: 'Young climate leaders sharing ideas and climate action plans.',
     },
     {
       src: '/green-schools.jpg',
       title: 'Enviromentors Project',
-      subtitle: 'Mentoring students in environmental stewardship workshops.',
     },
     {
       src: '/tree-planting.jpg',
       title: 'Community Reforestation',
-      subtitle: 'Restoring habitats with local families and school clubs.',
+    },
+    {
+      src: '/women-conservation.jpg',
+      title: 'Women Conservation Leaders',
     },
   ];
 
@@ -54,13 +54,6 @@ export const HeroSection = () => {
       setIndex((prev) => (prev + 1) % slides.length);
     }, 15000);
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const galleryTimer = setInterval(() => {
-      setGalleryIndex((prev) => (prev + 1) % heroGallery.length);
-    }, 10000);
-    return () => clearInterval(galleryTimer);
   }, []);
 
   return (
@@ -92,7 +85,7 @@ export const HeroSection = () => {
       <div className="absolute bottom-0 left-0 w-full h-72 bg-gradient-to-b from-transparent via-black/30 to-[var(--primary-green)] z-10" />
 
       {/* CONTENT */}
-      <div className="relative z-20 h-full flex flex-col md:flex-row items-center md:items-stretch">
+      <div className="relative z-20 h-full flex flex-col md:flex-row items-center md:items-stretch pt-24 md:pt-28">
         <div className="max-w-5xl px-8 md:w-1/2">
 
           <AnimatePresence mode="wait">
@@ -129,46 +122,25 @@ export const HeroSection = () => {
         </div>
 
         <div className="hidden md:flex items-center justify-center w-full md:w-1/2 px-8">
-          <div className="w-full max-w-[32rem]">
-            <AnimatePresence mode="wait">
-              {heroGallery[galleryIndex] && (
-                <motion.div
-                  key={galleryIndex}
-                  initial={{ opacity: 0, x: 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -40 }}
-                  transition={{ duration: 0.9, ease: 'easeOut' }}
-                  className="relative overflow-hidden rounded-[2rem] border border-white/20 shadow-2xl bg-black/20"
-                >
-                  <div className="relative h-[28rem] w-full">
-                    <Image
-                      src={heroGallery[galleryIndex].src}
-                      alt={heroGallery[galleryIndex].title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 45vw"
-                      priority
-                    />
-                  </div>
-
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-                    <p className="text-[10px] uppercase tracking-[0.28em] text-white/80">Featured project</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">{heroGallery[galleryIndex].title}</h2>
-                    <p className="mt-3 text-sm text-white/80 max-w-sm">{heroGallery[galleryIndex].subtitle}</p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="mt-4 flex items-center justify-center gap-2">
-              {heroGallery.map((item, dotIndex) => (
-                <button
+          <div className="w-full max-w-[36rem]">
+            <div className="grid grid-cols-2 gap-4">
+              {heroGallery.map((item) => (
+                <div
                   key={item.title}
-                  type="button"
-                  onClick={() => setGalleryIndex(dotIndex)}
-                  className={`h-2.5 w-2.5 rounded-full transition-colors ${galleryIndex === dotIndex ? 'bg-white' : 'bg-white/40'}`}
-                  aria-label={`Show ${item.title}`}
-                />
+                  className="relative overflow-hidden rounded-[1.75rem] border border-white/20 shadow-2xl bg-black/20 h-56"
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 18vw"
+                    priority
+                  />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                    <p className="text-sm font-semibold text-white">{item.title}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>

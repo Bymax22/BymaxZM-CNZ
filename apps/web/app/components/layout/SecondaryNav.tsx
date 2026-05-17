@@ -263,8 +263,8 @@ export const SecondaryNav = () => {
             </button>
             <div className="pr-8">
               <p className="text-[10px] uppercase tracking-[0.28em] opacity-90 mb-1">Upcoming Event</p>
-              <h3 className="text-sm font-semibold">Community Clean-Up Day</h3>
-              <p className="text-xs text-white/90">Sat, May 3 • Lusaka River Park</p>
+              <h3 className="text-sm font-semibold">No Upcoming Events Available</h3>
+              <p className="text-xs text-white/90">Date • Location</p>
             </div>
             <Link
               href="/portal/events"

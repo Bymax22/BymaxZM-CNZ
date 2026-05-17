@@ -101,9 +101,6 @@ export function FeaturedProjects() {
 
           <h2 className="text-4xl md:text-5xl font-light text-gray-900 leading-tight">
             Care for Nature Zambia’s Strategic Focus
-            <span className="block text-[var(--primary-green)] mt-2">
-              for the Next Five Years
-            </span>
           </h2>
 
           <p className="text-gray-600 max-w-2xl mx-auto mt-6 leading-relaxed">
