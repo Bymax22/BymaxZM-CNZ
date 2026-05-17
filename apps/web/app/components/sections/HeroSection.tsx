@@ -58,10 +58,10 @@ const projectGallery: ProjectItem[] = [
     {
     id: 'Zambia Children’s Climate Council',
     images: [
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053977/690996805_1447540874071848_3843758380802091016_n_cgphr1.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053940/689017787_1446466237512645_3296548968846505307_n_op12vu.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053942/689492563_1446768487482420_110659043026616476_n_qpnfwy.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053944/689870554_1020652813653190_5398139666292164193_n_c8e1cx.jpg'
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053977/690996805_1447540874071848_3843758380802091016_n_cgphr1.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053940/689017787_1446466237512645_3296548968846505307_n_op12vu.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053942/689492563_1446768487482420_110659043026616476_n_qpnfwy.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053944/689870554_1020652813653190_5398139666292164193_n_c8e1cx.jpg'
     ],
     title: 'Zambia Children’s Climate Council Luanch',
     description: 'The Zambia Children’s Climate Council (ZCCC) is a child and youth-led platform established to give children a coordinated voice in environmental policy and climate action.',
@@ -71,10 +71,10 @@ const projectGallery: ProjectItem[] = [
   {
     id: 'EnviroMentors',
     images: [
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050151/691922078_1446763210816281_7392245079690066370_n_oxszzn.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/691844117_1446768817482387_1213552780943615364_n_bzjcmq.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/689842600_1446768710815731_6105767634409331045_n_pnlc30.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053946/692938516_1446768550815747_5499726643162476941_n_nv4vge.jpg'
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050151/691922078_1446763210816281_7392245079690066370_n_oxszzn.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/691844117_1446768817482387_1213552780943615364_n_bzjcmq.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/689842600_1446768710815731_6105767634409331045_n_pnlc30.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053946/692938516_1446768550815747_5499726643162476941_n_nv4vge.jpg'
     ],
     title: 'EnviroMentors Program Launch',
     description: 'Implemented by Care For Nature Zambia in collaboration with the Global Council for Science and Environment based in the United States of America.',
@@ -85,10 +85,10 @@ const projectGallery: ProjectItem[] = [
   {
     id: 'The Ecological Restoration Project',
     images: [
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053032/680486668_1434164385409497_8680235893458201048_n_nbltmu.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053043/677802714_1429815159177753_3243166880859856057_n_qq9hfy.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053035/679892067_1434164485409487_1368698975194245651_n_txyhcj.jpg', 
-      '/https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053097/677790147_1429823699176899_1661133342896079994_n_xhjbav.jpg'
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053032/680486668_1434164385409497_8680235893458201048_n_nbltmu.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053043/677802714_1429815159177753_3243166880859856057_n_qq9hfy.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053035/679892067_1434164485409487_1368698975194245651_n_txyhcj.jpg', 
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053097/677790147_1429823699176899_1661133342896079994_n_xhjbav.jpg'
     ],
     title: 'The Ecological Restoration Project',
     description: 'Phytoremediation is a technique which uses plants to clean up polluted soil, water and air.',
