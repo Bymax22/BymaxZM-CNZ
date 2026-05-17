@@ -49,7 +49,7 @@ const projectGallery: ProjectItem[] = [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050051/689491941_1446467464179189_3634010048253755955_n_exgv7s.jpg',
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050102/691536929_1446465980846004_1994393868613685973_n_udcivx.jpg',
     ],
-    title: 'THE 2026 CHILDREN'S CLIMATE SUMMIT',
+    title: "THE 2026 CHILDREN'S CLIMATE SUMMIT",
     description: 'Securing for every child through Climate Action',
     date: '6th May 2026',
     partners: ['/sweden.png', '/images/partners/save-children.png', '/Coat_of_arms_of_Zambia.svg (1).png', '/keepers-foundation.png'],
@@ -65,7 +65,7 @@ const projectGallery: ProjectItem[] = [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053940/689017787_1446466237512645_3296548968846505307_n_op12vu.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053942/689492563_1446768487482420_110659043026616476_n_qpnfwy.jpg',       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053944/689870554_1020652813653190_5398139666292164193_n_c8e1cx.jpg'
     ],
-    title: 'ZAMBIA CHILDREN'S CLIMATE COUNCIL LAUNCH',
+    title: "ZAMBIA CHILDREN'S CLIMATE COUNCIL LAUNCH",
     description: 'The Zambia Children’s Climate Council (ZCCC) is a child and youth-led platform established to give children a coordinated voice in environmental policy and climate action.',
     date: '6th May 2026',
     partners: ['/images/partners/zawa.png', '/images/partners/international-fund.png'],
