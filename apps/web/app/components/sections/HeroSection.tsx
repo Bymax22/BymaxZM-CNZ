@@ -49,7 +49,7 @@ const projectGallery: ProjectItem[] = [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050051/689491941_1446467464179189_3634010048253755955_n_exgv7s.jpg',
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050102/691536929_1446465980846004_1994393868613685973_n_udcivx.jpg',
     ],
-    title: 'The 2026 Children’s Climate Summit',
+    title: 'THE 2026 CHILDREN'S CLIMATE SUMMIT',
     description: 'Securing for every child through Climate Action',
     date: '6th May 2026',
     partners: ['/sweden.png', '/images/partners/save-children.png', '/Coat_of_arms_of_Zambia.svg (1).png', '/keepers-foundation.png'],
@@ -65,7 +65,7 @@ const projectGallery: ProjectItem[] = [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053940/689017787_1446466237512645_3296548968846505307_n_op12vu.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053942/689492563_1446768487482420_110659043026616476_n_qpnfwy.jpg',       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053944/689870554_1020652813653190_5398139666292164193_n_c8e1cx.jpg'
     ],
-    title: 'Zambia Children’s Climate Council Luanch',
+    title: 'ZAMBIA CHILDREN'S CLIMATE COUNCIL LAUNCH',
     description: 'The Zambia Children’s Climate Council (ZCCC) is a child and youth-led platform established to give children a coordinated voice in environmental policy and climate action.',
     date: '6th May 2026',
     partners: ['/images/partners/zawa.png', '/images/partners/international-fund.png'],
@@ -82,7 +82,7 @@ const projectGallery: ProjectItem[] = [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/689842600_1446768710815731_6105767634409331045_n_pnlc30.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053946/692938516_1446768550815747_5499726643162476941_n_nv4vge.jpg'
     ],
-    title: 'EnviroMentors Program Launch',
+    title: 'ENVIRMENTORS PROGRAM LAUNCH',
     description: 'Implemented by Care For Nature Zambia in collaboration with the Global Council for Science and Environment based in the United States of America.',
     date: '8th May 2026',
     partners: ['/images/partners/ministry-green-economy.png', '/images/partners/international-fund.png'],
@@ -100,7 +100,7 @@ const projectGallery: ProjectItem[] = [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053035/679892067_1434164485409487_1368698975194245651_n_txyhcj.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053097/677790147_1429823699176899_1661133342896079994_n_xhjbav.jpg'
     ],
-    title: 'The Ecological Restoration Project',
+    title: 'THE ECOLOGICAL RESTORATION PROJECT',
     description: 'Phytoremediation is a technique which uses plants to clean up polluted soil, water and air.',
     date: 'Feb 2026',
     partners: ['/images/partners/zawa.png', '/images/partners/international-fund.png'],
@@ -278,7 +278,7 @@ export const HeroSection = () => {
 
                 <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-xs">Recent Projects</div>
 
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 rounded-b-lg">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent/40 p-4 rounded-b-lg">
                 <p className="text-sm font-semibold text-white">{currentProject.title}</p>
                 <p className="mt-1 text-xs text-white/70 leading-tight">{currentProject.description}</p>
                 <div className="mt-3 flex items-center justify-between gap-3">
