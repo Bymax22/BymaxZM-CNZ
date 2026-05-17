@@ -67,6 +67,7 @@ export const SecondaryNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isStoriesOpen, setIsStoriesOpen] = useState(false);
+  const [isProgramsOpen, setIsProgramsOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -109,7 +110,10 @@ export const SecondaryNav = () => {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <button
-                    onClick={() => setIsStoriesOpen(!isStoriesOpen)}
+                    onClick={() => {
+                      setIsStoriesOpen(!isStoriesOpen);
+                      setIsProgramsOpen(false);
+                    }}
                     className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20 transition"
                     aria-expanded={isStoriesOpen}
                     aria-label="Our Stories"
@@ -127,6 +131,31 @@ export const SecondaryNav = () => {
                         <Link href="/our-stories?scope=global" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Global</Link>
                         <Link href="/our-stories?scope=regional" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Regional</Link>
                         <Link href="/our-stories?scope=national" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nationwide</Link>
+                      </nav>
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsProgramsOpen(!isProgramsOpen);
+                      setIsStoriesOpen(false);
+                    }}
+                    className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20 transition"
+                    aria-expanded={isProgramsOpen}
+                    aria-label="Programs"
+                  >
+                    Programs
+                  </button>
+
+                  {isProgramsOpen && (
+                    <div className="absolute left-0 top-10 w-56 rounded-md bg-white border border-gray-200 mt-2 py-1">
+                      <nav className="flex flex-col">
+                        <Link href="/projects" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">All Programs</Link>
+                        <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community</Link>
+                        <Link href="/projects/odp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Organisation Development</Link>
+                        <Link href="/our-stories" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Story Library</Link>
                       </nav>
                     </div>
                   )}
