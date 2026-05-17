@@ -150,7 +150,7 @@ export const HeroSection = () => {
 
   useEffect(() => {
     const shuffleInterval = setInterval(() => {
-      setShuffleStage((stage) => stage + 1);
+      setShuffleStage((stage) => (stage + 1) % 4);
     }, 5000);
     return () => clearInterval(shuffleInterval);
   }, [currentProject.id]);
