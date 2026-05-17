@@ -135,12 +135,14 @@ export const HeroSection = () => {
         <div className="hidden md:flex items-center justify-center w-full md:w-1/2 px-8">
           <div className="w-full max-w-[36rem]">
             <div className="relative">
-              <div className="grid grid-cols-2 gap-3">
-                {currentProject.images.map((src, i) => (
-                  <div key={src + i} className="relative overflow-hidden rounded-lg border border-white/10 h-36">
-                    <Image src={src} alt={`${currentProject.title} ${i + 1}`} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 18vw" />
-                  </div>
-                ))}
+              <div className="overflow-hidden rounded-lg border border-white/10">
+                <div className="grid grid-cols-2 grid-rows-2 h-72">
+                  {currentProject.images.slice(0, 4).map((src, i) => (
+                    <div key={src + i} className="relative h-full">
+                      <Image src={src} alt={`${currentProject.title} ${i + 1}`} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 18vw" />
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-xs">Recent Projects</div>
