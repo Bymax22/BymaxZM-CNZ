@@ -6,6 +6,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 
+type ProjectItem = {
+  id: string;
+  images: string[];
+  title: string;
+  description: string;
+  date: string;
+  partners: string[];
+};
+
 const slides = [
   {
     video: '/videos/15336768-hd_1920_1080_30fps.mp4',
@@ -27,36 +36,66 @@ const slides = [
   },
 ];
 
+const projectGallery: ProjectItem[] = [
+  {
+    id: 'children',
+    images: [
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050049/692066766_1446470007512268_6438163747249751749_n_r6dnst.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050048/688852805_1446469347512334_6499262433093471038_n_ozx6uq.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050051/689491941_1446467464179189_3634010048253755955_n_exgv7s.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050065/690822822_1446469870845615_2517492534617368429_n_cr2ym2.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050059/693557373_1446466034179332_2255816289780254286_n_lzng31.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050042/692549481_1446466477512621_8596614007717111887_n_euvkoj.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050051/689491941_1446467464179189_3634010048253755955_n_exgv7s.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050102/691536929_1446465980846004_1994393868613685973_n_udcivx.jpg',
+    ],
+    title: 'The 2026 Children’s Climate Summit',
+    description: 'Securing for every child through Climate Action',
+    date: '6th May 2026',
+    partners: ['/images/partners/save-children.png', '/images/partners/community-schools.png'],
+  },
+  {
+    id: 'EnviroMentors',
+    images: ['/green-schools.jpg', '/CFN40.jpg', '/women-conservation.jpg', '/reforestation.jpg'],
+    title: 'Enviromentors Program Launch',
+    description: 'Mentorship sessions empowering students to become environmental champions.',
+    date: '8th May 2026',
+    partners: ['/images/partners/ministry-green-economy.png', '/images/partners/international-fund.png'],
+  },
+  {
+    id: 'reforestation',
+    images: ['/tree-planting.jpg', '/partnership.jpg', '/SAM_1430.JPG', '/504824918_1125090142983591_1606545278639346897_n.jpg'],
+    title: 'Community Reforestation',
+    description: 'Local communities planted native trees across vulnerable watersheds.',
+    date: 'Feb 2026',
+    partners: ['/images/partners/zawa.png', '/images/partners/green-growth.png'],
+  },
+];
+
+const shuffleArray = (items: string[]) => {
+  const next = [...items];
+  for (let i = next.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = next[i]!;
+    next[i] = next[j]!;
+    next[j] = temp;
+  }
+  return next;
+};
+
+const getProjectBatch = (project: ProjectItem, batch: number) => {
+  const start = batch * 4;
+  return project.images.slice(start, start + 4);
+};
+
+const fallbackProject: ProjectItem = projectGallery[0]!;
+
 export const HeroSection = () => {
   const [index, setIndex] = useState(0);
   const [projectIndex, setProjectIndex] = useState(0);
-
-  const projectGallery = [
-    {
-      id: 'children',
-      images: ['/children-program.jpg', '/children.jpg', '/slide1.jpg', '/slide2.jpg'],
-      title: 'Children’s Climate Summit',
-      description: 'Youth leaders discuss practical climate solutions for schools and communities.',
-      date: 'Apr 2026',
-      partners: ['/images/partners/save-children.png', '/images/partners/community-schools.png'],
-    },
-    {
-      id: 'enviromentors',
-      images: ['/green-schools.jpg', '/CFN40.jpg', '/women-conservation.jpg', '/reforestation.jpg'],
-      title: 'Enviromentors Project',
-      description: 'Mentorship sessions empowering students to become environmental champions.',
-      date: 'Mar 2026',
-      partners: ['/images/partners/ministry-green-economy.png', '/images/partners/international-fund.png'],
-    },
-    {
-      id: 'reforestation',
-      images: ['/tree-planting.jpg', '/partnership.jpg', '/SAM_1430.JPG', '/504824918_1125090142983591_1606545278639346897_n.jpg'],
-      title: 'Community Reforestation',
-      description: 'Local communities planted native trees across vulnerable watersheds.',
-      date: 'Feb 2026',
-      partners: ['/images/partners/zawa.png', '/images/partners/green-growth.png'],
-    },
-  ];
+  const [batchIndex, setBatchIndex] = useState(0);
+  const [displayImages, setDisplayImages] = useState<string[]>(getProjectBatch(fallbackProject, 0));
+  const [shuffleStage, setShuffleStage] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -65,14 +104,41 @@ export const HeroSection = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const projectInterval = setInterval(() => {
-      setProjectIndex((prev) => (prev + 1) % projectGallery.length);
-    }, 12000);
-    return () => clearInterval(projectInterval);
-  }, [projectGallery.length]);
+  const currentProject = projectGallery[projectIndex] ?? fallbackProject;
 
-  const currentProject = projectGallery[projectIndex] ?? projectGallery[0] ?? { id: 'fallback', images: [], title: '', description: '', date: '', partners: [] };
+  useEffect(() => {
+    setBatchIndex(0);
+    setShuffleStage(0);
+    setDisplayImages(getProjectBatch(currentProject, 0));
+  }, [currentProject.id]);
+
+  useEffect(() => {
+    const shuffleInterval = setInterval(() => {
+      setShuffleStage((stage) => stage + 1);
+    }, 5000);
+    return () => clearInterval(shuffleInterval);
+  }, [currentProject.id]);
+
+  useEffect(() => {
+    if (shuffleStage === 1) {
+      setDisplayImages((current) => shuffleArray(current));
+      return;
+    }
+
+    if (shuffleStage === 2) {
+      if (currentProject.images.length > 4) {
+        setBatchIndex(1);
+        setDisplayImages(getProjectBatch(currentProject, 1));
+      } else {
+        setProjectIndex((prev) => (prev + 1) % projectGallery.length);
+      }
+      return;
+    }
+
+    if (shuffleStage === 3) {
+      setProjectIndex((prev) => (prev + 1) % projectGallery.length);
+    }
+  }, [shuffleStage, currentProject]);
 
   return (
     <section className="relative w-full min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-4rem)] overflow-hidden">
@@ -152,7 +218,7 @@ export const HeroSection = () => {
               >
                 <div className="overflow-hidden rounded-lg border border-white/10">
                   <div className="grid grid-cols-2 grid-rows-2 h-80">
-                    {currentProject.images.slice(0, 4).map((src, i) => (
+                    {displayImages.map((src, i) => (
                       <motion.div
                         key={src + i}
                         layout
@@ -160,9 +226,15 @@ export const HeroSection = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.98, y: -16 }}
                         transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.05 }}
-                        className="relative h-full"
+                        className="relative h-full overflow-hidden rounded-md group"
                       >
-                        <Image src={src} alt={`${currentProject.title} ${i + 1}`} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 18vw" />
+                        <Image
+                          src={src}
+                          alt={`${currentProject.title} ${i + 1}`}
+                          fill
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                          sizes="(max-width: 1024px) 50vw, 18vw"
+                        />
                       </motion.div>
                     ))}
                   </div>
