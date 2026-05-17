@@ -29,35 +29,32 @@ const slides = [
 
 export const HeroSection = () => {
   const [index, setIndex] = useState(0);
+  const [projectIndex, setProjectIndex] = useState(0);
 
-  const heroGallery = [
+  const projectGallery = [
     {
-      src: '/children-program.jpg',
+      id: 'children',
+      images: ['/children-program.jpg', '/children.jpg', '/slide1.jpg', '/slide2.jpg'],
       title: 'Children’s Climate Summit',
       description: 'Youth leaders discuss practical climate solutions for schools and communities.',
       date: 'Apr 2026',
-      partners: ['/images/partners/save-children.png', '/images/partners/zambia-environment.png'],
+      partners: ['/images/partners/save-children.png', '/images/partners/community-schools.png'],
     },
     {
-      src: '/green-schools.jpg',
+      id: 'enviromentors',
+      images: ['/green-schools.jpg', '/CFN40.jpg', '/women-conservation.jpg', '/reforestation.jpg'],
       title: 'Enviromentors Project',
       description: 'Mentorship sessions empowering students to become environmental champions.',
       date: 'Mar 2026',
-      partners: ['/images/partners/community-schools.png', '/images/partners/ministry-green-economy.png'],
+      partners: ['/images/partners/ministry-green-economy.png', '/images/partners/international-fund.png'],
     },
     {
-      src: '/tree-planting.jpg',
+      id: 'reforestation',
+      images: ['/tree-planting.jpg', '/partnership.jpg', '/SAM_1430.JPG', '/504824918_1125090142983591_1606545278639346897_n.jpg'],
       title: 'Community Reforestation',
       description: 'Local communities planted native trees across vulnerable watersheds.',
       date: 'Feb 2026',
       partners: ['/images/partners/zawa.png', '/images/partners/green-growth.png'],
-    },
-    {
-      src: '/women-conservation.jpg',
-      title: 'Women Conservation Leaders',
-      description: 'Women-led conservation teams restoring riverine habitats and food security.',
-      date: 'Jan 2026',
-      partners: ['/images/partners/keepers-foundation.png', '/images/partners/international-fund.png'],
     },
   ];
 
@@ -67,6 +64,8 @@ export const HeroSection = () => {
     }, 15000);
     return () => clearInterval(interval);
   }, []);
+
+  const currentProject = projectGallery[projectIndex] ?? projectGallery[0] ?? { images: [], title: '', description: '', date: '', partners: [] };
 
   return (
     <section className="relative w-full min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-4rem)] overflow-hidden">
@@ -135,48 +134,48 @@ export const HeroSection = () => {
 
         <div className="hidden md:flex items-center justify-center w-full md:w-1/2 px-8">
           <div className="w-full max-w-[36rem]">
-            <div className="mb-6">
-              <p className="text-sm uppercase tracking-[0.32em] text-white/70">Recent Projects</p>
-              <p className="mt-2 text-base text-white/80 max-w-xl">Featured work from our latest project portfolio, including youth-led climate action, mentorship and habitat restoration.</p>
-            </div>
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-3">
+                {currentProject.images.map((src, i) => (
+                  <div key={src + i} className="relative overflow-hidden rounded-lg border border-white/10 h-36">
+                    <Image src={src} alt={`${currentProject.title} ${i + 1}`} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 18vw" />
+                  </div>
+                ))}
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {heroGallery.map((item) => (
-                <div
-                  key={item.title}
-                  className="relative overflow-hidden rounded-[1.75rem] border border-white/20 shadow-2xl bg-black/20 h-72"
-                >
-                  <Image
-                    src={item.src}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 18vw"
-                    priority
-                  />
+              <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-xs">Recent Projects</div>
 
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4">
-                    <p className="text-sm font-semibold text-white">{item.title}</p>
-                    <p className="mt-1 text-xs text-white/70 leading-tight">{item.description}</p>
-                    <div className="mt-3 flex items-center justify-between gap-3">
-                      <span className="text-[11px] uppercase tracking-[0.24em] text-white/70">{item.date}</span>
-                      <div className="flex items-center gap-2">
-                        {item.partners.map((logo) => (
-                          <div key={logo} className="h-6 w-6 overflow-hidden rounded-full bg-white/10">
-                            <Image
-                              src={logo}
-                              alt="Partner logo"
-                              width={24}
-                              height={24}
-                              className="object-contain"
-                            />
-                          </div>
-                        ))}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 rounded-b-lg">
+                <p className="text-sm font-semibold text-white">{currentProject.title}</p>
+                <p className="mt-1 text-xs text-white/70 leading-tight">{currentProject.description}</p>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <span className="text-[11px] uppercase tracking-[0.24em] text-white/70">{currentProject.date}</span>
+                  <div className="flex items-center gap-2">
+                    {currentProject.partners.map((logo) => (
+                      <div key={logo} className="h-6 w-6 overflow-hidden rounded-full bg-white/10">
+                        <Image src={logo} alt="Partner logo" width={24} height={24} className="object-contain" />
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+                <button
+                  onClick={() => setProjectIndex((projectIndex - 1 + projectGallery.length) % projectGallery.length)}
+                  aria-label="Previous project"
+                  className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => setProjectIndex((projectIndex + 1) % projectGallery.length)}
+                  aria-label="Next project"
+                  className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
+                >
+                  ›
+                </button>
+              </div>
             </div>
           </div>
         </div>
