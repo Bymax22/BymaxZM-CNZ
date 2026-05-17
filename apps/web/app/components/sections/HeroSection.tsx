@@ -56,7 +56,7 @@ const projectGallery: ProjectItem[] = [
   },
 
     {
-    id: 'Zambia Children’s Climate Council',
+    id: 'zambia-children-climate-council',
     images: [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053977/690996805_1447540874071848_3843758380802091016_n_cgphr1.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053940/689017787_1446466237512645_3296548968846505307_n_op12vu.jpg', 
@@ -71,7 +71,7 @@ const projectGallery: ProjectItem[] = [
     partners: ['/images/partners/zawa.png', '/images/partners/international-fund.png'],
   },
   {
-    id: 'EnviroMentors',
+    id: 'enviromentors',
     images: [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050151/691922078_1446763210816281_7392245079690066370_n_oxszzn.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/691844117_1446768817482387_1213552780943615364_n_bzjcmq.jpg', 
@@ -89,7 +89,7 @@ const projectGallery: ProjectItem[] = [
   },
 
   {
-    id: 'The Ecological Restoration Project',
+    id: 'ecological-restoration-project',
     images: [
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053032/680486668_1434164385409497_8680235893458201048_n_nbltmu.jpg', 
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053043/677802714_1429815159177753_3243166880859856057_n_qq9hfy.jpg', 
@@ -146,14 +146,14 @@ export const HeroSection = () => {
     setBatchIndex(0);
     setShuffleStage(0);
     setDisplayImages(getProjectBatch(currentProject, 0));
-  }, [currentProject.id]);
+  }, [projectIndex]);
 
   useEffect(() => {
     const shuffleInterval = setInterval(() => {
       setShuffleStage((stage) => (stage + 1) % 4);
     }, 5000);
     return () => clearInterval(shuffleInterval);
-  }, [currentProject.id]);
+  }, [projectIndex]);
 
   useEffect(() => {
     if (shuffleStage === 1) {
@@ -174,7 +174,7 @@ export const HeroSection = () => {
     if (shuffleStage === 3) {
       setProjectIndex((prev) => (prev + 1) % projectGallery.length);
     }
-  }, [shuffleStage, currentProject]);
+  }, [shuffleStage, projectIndex]);
 
   return (
     <section className="relative w-full min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-4rem)] overflow-hidden">
@@ -295,14 +295,14 @@ export const HeroSection = () => {
 
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col gap-2">
                 <button
-                  onClick={() => setProjectIndex((projectIndex - 1 + projectGallery.length) % projectGallery.length)}
+                  onClick={() => setProjectIndex((prev) => (prev - 1 + projectGallery.length) % projectGallery.length)}
                   aria-label="Previous project"
                   className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
                 >
                   ‹
                 </button>
                 <button
-                  onClick={() => setProjectIndex((projectIndex + 1) % projectGallery.length)}
+                  onClick={() => setProjectIndex((prev) => (prev + 1) % projectGallery.length)}
                   aria-label="Next project"
                   className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20"
                 >
