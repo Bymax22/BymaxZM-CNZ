@@ -65,7 +65,14 @@ export const HeroSection = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const currentProject = projectGallery[projectIndex] ?? projectGallery[0] ?? { images: [], title: '', description: '', date: '', partners: [] };
+  useEffect(() => {
+    const projectInterval = setInterval(() => {
+      setProjectIndex((prev) => (prev + 1) % projectGallery.length);
+    }, 12000);
+    return () => clearInterval(projectInterval);
+  }, [projectGallery.length]);
+
+  const currentProject = projectGallery[projectIndex] ?? projectGallery[0] ?? { id: 'fallback', images: [], title: '', description: '', date: '', partners: [] };
 
   return (
     <section className="relative w-full min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-4rem)] overflow-hidden">
@@ -134,18 +141,34 @@ export const HeroSection = () => {
 
         <div className="hidden md:flex items-center justify-center w-full md:w-1/2 px-8">
           <div className="w-full max-w-[36rem]">
-            <div className="relative">
-              <div className="overflow-hidden rounded-lg border border-white/10">
-                <div className="grid grid-cols-2 grid-rows-2 h-72">
-                  {currentProject.images.slice(0, 4).map((src, i) => (
-                    <div key={src + i} className="relative h-full">
-                      <Image src={src} alt={`${currentProject.title} ${i + 1}`} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 18vw" />
-                    </div>
-                  ))}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentProject.id}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -24 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="relative"
+              >
+                <div className="overflow-hidden rounded-lg border border-white/10">
+                  <div className="grid grid-cols-2 grid-rows-2 h-80">
+                    {currentProject.images.slice(0, 4).map((src, i) => (
+                      <motion.div
+                        key={src + i}
+                        layout
+                        initial={{ opacity: 0, scale: 0.98, y: 16 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.98, y: -16 }}
+                        transition={{ duration: 0.6, ease: 'easeOut', delay: i * 0.05 }}
+                        className="relative h-full"
+                      >
+                        <Image src={src} alt={`${currentProject.title} ${i + 1}`} fill className="object-cover" sizes="(max-width: 1024px) 50vw, 18vw" />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-xs">Recent Projects</div>
+                <div className="absolute top-4 left-4 bg-black/60 text-white px-3 py-1 rounded text-xs">Recent Projects</div>
 
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 rounded-b-lg">
                 <p className="text-sm font-semibold text-white">{currentProject.title}</p>
@@ -178,7 +201,8 @@ export const HeroSection = () => {
                   ›
                 </button>
               </div>
-            </div>
+            </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>
