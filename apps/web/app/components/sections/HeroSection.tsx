@@ -52,7 +52,7 @@ const projectGallery: ProjectItem[] = [
     title: 'The 2026 Children’s Climate Summit',
     description: 'Securing for every child through Climate Action',
     date: '6th May 2026',
-    partners: ['/images/partners/save-children.png', '/images/partners/community-schools.png'],
+    partners: ['/sweden.png', '/images/partners/save-children.png', '/Coat_of_arms_of_Zambia.svg (1).png', '/keepers-foundation.png'],
   },
   {
     id: 'EnviroMentors',
@@ -68,7 +68,7 @@ const projectGallery: ProjectItem[] = [
     title: 'Community Reforestation',
     description: 'Local communities planted native trees across vulnerable watersheds.',
     date: 'Feb 2026',
-    partners: ['/images/partners/zawa.png', '/images/partners/green-growth.png'],
+    partners: ['/images/partners/zawa.png', '/images/partners/international-fund.png'],
   },
 ];
 
