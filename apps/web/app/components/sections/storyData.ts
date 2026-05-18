@@ -1,5 +1,3 @@
-'use client';
-
 export type StoryTopic = {
   id: string;
   category: 'National' | 'Regional' | 'Global' | 'Other';

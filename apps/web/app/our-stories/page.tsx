@@ -4,11 +4,6 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { storyCategories, storyThemes, storyTopics } from '../components/sections/storyData';
 
-export const metadata = {
-  title: 'Our Stories | Care for Nature Zambia',
-  description: 'Read authentic stories of conservation, youth leadership, and community transformation across Zambia.',
-};
-
 export default function OurStoriesPage() {
   const [activeCategory, setActiveCategory] = useState<(typeof storyCategories)[number]>('All');
   const [activeTheme, setActiveTheme] = useState<(typeof storyThemes)[number]>('All');
