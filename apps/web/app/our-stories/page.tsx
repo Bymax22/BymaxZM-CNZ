@@ -1,38 +1,28 @@
+'use client';
+
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { storyCategories, storyThemes, storyTopics } from '../components/sections/storyData';
 
 export const metadata = {
   title: 'Our Stories | Care for Nature Zambia',
   description: 'Read authentic stories of conservation, youth leadership, and community transformation across Zambia.',
 };
 
-const stories = [
-  {
-    title: 'River Guardians of Lusaka',
-    category: 'Community Conservation',
-    summary: 'Local youth joined forces to restore riverbanks, reduce pollution, and protect critical wetland habitat.',
-    highlight: '250 trees planted and 12 clean-up actions completed',
-  },
-  {
-    title: 'Children Leading Climate Action',
-    category: 'Youth Empowerment',
-    summary: 'School clubs launched climate campaigns that reached hundreds of families with resilient farming skills.',
-    highlight: '40 child-led climate clubs active across 3 districts',
-  },
-  {
-    title: 'Community Engagement for Wildlife',
-    category: 'Conservation Impact',
-    summary: 'Village committees adopted sustainable grazing and found new sources of livelihoods aligned with conservation.',
-    highlight: 'Improved habitat access across 18 protected zones',
-  },
-  {
-    title: 'A New Voice for Nature',
-    category: 'Storytelling & Advocacy',
-    summary: 'Women leaders shared personal stories that inspired policy-makers and amplified conservation priorities.',
-    highlight: '6 community forums and a national storytelling series',
-  },
-];
-
 export default function OurStoriesPage() {
+  const [activeCategory, setActiveCategory] = useState<(typeof storyCategories)[number]>('All');
+  const [activeTheme, setActiveTheme] = useState<(typeof storyThemes)[number]>('All');
+
+  const filteredStories = useMemo(
+    () =>
+      storyTopics.filter(
+        (story) =>
+          (activeCategory === 'All' || story.category === activeCategory) &&
+          (activeTheme === 'All' || story.theme === activeTheme),
+      ),
+    [activeCategory, activeTheme],
+  );
+
   return (
     <main className="min-h-screen bg-[var(--gray-50)]">
       <section className="py-20 bg-[var(--primary-green)] text-white">
@@ -62,24 +52,95 @@ export default function OurStoriesPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid gap-8 lg:grid-cols-2">
-          {stories.map((story) => (
-            <article key={story.title} className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition">
-              <div className="px-6 py-6 bg-[var(--primary-green)] text-white">
-                <span className="inline-flex rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-[0.24em] text-white/90">
-                  {story.category}
-                </span>
-                <h2 className="mt-5 text-2xl font-semibold leading-tight">{story.title}</h2>
-              </div>
-              <div className="p-6">
-                <p className="text-sm leading-6 text-gray-700">{story.summary}</p>
-                <div className="mt-6 rounded-lg border border-[var(--primary-green)] px-5 py-3 text-sm font-semibold text-[var(--primary-green)] bg-white">
-                  {story.highlight}
-                </div>
-              </div>
-            </article>
-          ))}
+        <div className="space-y-8">
+          <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-6 text-sm font-semibold uppercase tracking-[0.28em] text-slate-900">Browse by scope</div>
+            <div className="flex flex-wrap gap-3">
+              {storyCategories.map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => setActiveCategory(category)}
+                  className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                    category === activeCategory
+                      ? 'border-[var(--primary-green)] bg-[var(--primary-green)] text-white'
+                      : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+            <div className="mb-6 text-sm font-semibold uppercase tracking-[0.28em] text-slate-900">Filter by theme</div>
+            <div className="flex flex-wrap gap-3">
+              {storyThemes.map((theme) => (
+                <button
+                  key={theme}
+                  type="button"
+                  onClick={() => setActiveTheme(theme)}
+                  className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                    theme === activeTheme
+                      ? 'border-[var(--primary-green)] bg-[var(--primary-green)] text-white'
+                      : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
+                >
+                  {theme}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
+
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
+          <p className="text-sm text-slate-600">
+            Showing <span className="font-semibold text-slate-900">{filteredStories.length}</span> stories for{' '}
+            <span className="font-semibold text-slate-900">{activeCategory}</span> &bull; <span className="font-semibold text-slate-900">{activeTheme}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setActiveCategory('All');
+              setActiveTheme('All');
+            }}
+            className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+          >
+            Reset filters
+          </button>
+        </div>
+
+        {filteredStories.length === 0 ? (
+          <div className="mt-10 rounded-[32px] border border-slate-200 bg-white p-10 text-center text-slate-600">
+            No stories match this selection. Try another scope or theme.
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredStories.map((story) => (
+              <article key={story.id} className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1">
+                <div className="p-6">
+                  <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-[var(--primary-green)]">
+                    <span>{story.category}</span>
+                    <span className="text-slate-400">•</span>
+                    <span>{story.theme}</span>
+                  </div>
+                  <h2 className="mt-4 text-xl font-semibold text-slate-900">{story.title}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{story.summary}</p>
+                  <div className="mt-6 rounded-3xl border border-[var(--primary-green)] bg-[var(--primary-green)]/5 px-5 py-3 text-sm font-semibold text-[var(--primary-green)]">
+                    {story.highlight}
+                  </div>
+                  <Link
+                    href={`/our-stories/${story.id}`}
+                    className="mt-6 inline-flex items-center justify-center rounded-full border border-[var(--primary-green)] bg-[var(--primary-green)]/10 px-5 py-3 text-sm font-semibold text-[var(--primary-green)] transition hover:bg-[var(--primary-green)]/15"
+                  >
+                    See full story
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="bg-white py-16">

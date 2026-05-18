@@ -3,95 +3,11 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-
-const categories = ['All', 'National', 'Regional', 'Global', 'Other'];
-
-const storyTopics = [
-  {
-    id: 'community-engagement',
-    category: 'National',
-    title: 'Community engagement',
-    description:
-      'Stories from field visits, local partnerships and community-led conservation work.',
-    mediaType: 'image',
-    media: '/images/topics/community-engagement.jpg',
-  },
-  {
-    id: 'advocacy-work',
-    category: 'National',
-    title: 'Advocacy work',
-    description:
-      'Video coverage highlighting our policy advocacy and mining accountability efforts.',
-    mediaType: 'video',
-    media: '/videos/advocacy-work.mp4',
-  },
-  {
-    id: 'women-in-manganese-communities',
-    category: 'National',
-    title: 'Women in manganese communities',
-    description:
-      'News coverage on women’s leadership, rights and livelihood stories in mining areas.',
-    mediaType: 'image',
-    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779064259/_MG_2437_jlo9ix.jpg',
-  },
-  {
-    id: 'national-mining-dialogue',
-    category: 'National',
-    title: 'National Mining Dialogue',
-    description:
-      'Highlights from participation in the National Mining Dialogue and policy engagements.',
-    mediaType: 'image',
-    media: '/images/topics/national-mining-dialogue.jpg',
-  },
-  {
-    id: 'luapula-alternative-mining-indaba',
-    category: 'Regional',
-    title: 'Luapula Alternative Mining Indaba',
-    description:
-      'Provincial dialogue on mining at the Luapula Alternative Mining Indaba (LUAMI).',
-    mediaType: 'video',
-    media: '/videos/luapula-indaba.mp4',
-  },
-  {
-    id: 'regional-ami-cape-town',
-    category: 'Regional',
-    title: 'Alternative Mining Indaba, Cape Town',
-    description:
-      'Regional meeting coverage from the Alternative Mining Indaba (AMI) in Cape Town.',
-    mediaType: 'video',
-    media: '/videos/ami-cape-town.mp4',
-  },
-  {
-    id: 'mining-pollution',
-    category: 'Global',
-    title: 'Addressing mining pollution',
-    description:
-      'Visual stories about pollution issues in the mining sector and our response.',
-    mediaType: 'image',
-    media: '/images/topics/mining-pollution.jpg',
-  },
-  {
-    id: 'community-capacity-building',
-    category: 'Other',
-    title: 'Community capacity building',
-    description:
-      'Projects that strengthen community skills, governance and environmental resilience.',
-    mediaType: 'image',
-    media: '/images/topics/community-capacity-building.jpg',
-  },
-  {
-    id: 'year-2024-highlights',
-    category: 'Other',
-    title: '2024 highlights',
-    description:
-      'Milestones from 2024 across national, regional and global engagements.',
-    mediaType: 'image',
-    media: '/images/topics/2024-highlights.jpg',
-  },
-];
+import Link from 'next/link';
+import { storyCategories as categories, storyTopics } from './storyData';
 
 export default function StorySection() {
-  const [activeCategory, setActiveCategory] = useState('National');
+  const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>('National');
 
   const filteredTopics =
     activeCategory === 'All'
@@ -174,6 +90,14 @@ export default function StorySection() {
                   </div>
                   <h3 className="mt-4 text-xl font-semibold text-white">{topic.title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-white/75">{topic.description}</p>
+                  <div className="mt-6">
+                    <Link
+                      href={`/our-stories/${topic.id}`}
+                      className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold text-white transition hover:border-white hover:bg-white/20"
+                    >
+                      See full story
+                    </Link>
+                  </div>
                 </div>
               </motion.article>
             ))}

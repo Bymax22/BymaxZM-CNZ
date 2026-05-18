@@ -7,12 +7,12 @@
   "theme_color": "#f97316",
   "icons": [
     {
-      "src": "/Care for Nature logo d-site-01.png",
+      "src": "/siteicone22.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/Care for Nature logo dd-01.png",
+      "src": "/siteicone22.png",
       "sizes": "512x512",
       "type": "image/png"
     }
