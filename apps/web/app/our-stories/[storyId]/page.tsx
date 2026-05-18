@@ -6,7 +6,7 @@ export async function generateStaticParams() {
   return storyTopics.map((story) => ({ storyId: story.id }));
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadata({ params }: { params: { storyId: string } }) {
   const story = storyTopics.find((item) => item.id === params.storyId);
 
   return {
