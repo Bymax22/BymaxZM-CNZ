@@ -174,23 +174,23 @@ export const SecondaryNav = () => {
           </div>
 
           {isMenuOpen && (
-            <div className="bg-white border border-gray-200 rounded-xl p-3 mt-2">
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 mt-2 shadow-lg">
+              <div className="space-y-5 max-h-[calc(100vh-280px)] overflow-y-auto">
                 {/* Thematic tabs at top of dropdown */}
                 <div>
-                  <div className="font-semibold text-gray-900 mb-3 text-sm border-b pb-2">Our Focus Areas</div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider border-b pb-3">Our Focus Areas</div>
+                  <div className="grid grid-cols-2 gap-3">
                     {thematicTabs.map((tab) => (
                       <Link
                         key={tab.label}
                         href={tab.href}
-                        className="block rounded-lg p-2 text-center bg-white hover:bg-gray-50 border border-gray-100 transition-colors"
+                        className="block rounded-lg p-3 text-center bg-gradient-to-br from-gray-50 to-white hover:from-[#f0f9f4] hover:to-gray-50 border border-gray-200 transition-all"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <div className="text-lg">
-                          {tab.icon ? React.createElement(tab.icon, { className: 'w-5 h-5 mx-auto text-gray-700' }) : <span className="text-2xl">📖</span>}
+                        <div className="text-2xl mb-2">
+                          {tab.icon ? React.createElement(tab.icon, { className: 'w-6 h-6 mx-auto text-[#029346]' }) : <span className="text-2xl">📖</span>}
                         </div>
-                        <div className="text-xs font-semibold text-gray-900 mt-1">{tab.label}</div>
+                        <div className="text-xs font-bold text-gray-900 uppercase tracking-wider">{tab.label}</div>
                       </Link>
                     ))}
                   </div>
@@ -198,69 +198,104 @@ export const SecondaryNav = () => {
 
                 {mobileMenus.map((menu) => (
                   <div key={menu.name}>
-                    <div className="font-semibold text-gray-900 mb-3 text-sm border-b pb-2">{menu.name}</div>
-                    <div className="space-y-2 pl-2">
+                    <div className="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider border-b pb-3">{menu.name}</div>
+                    <div className="space-y-3 pl-1">
                       {menu.items.map((item) => (
                         <Link
                           key={item.title}
                           href={item.href}
-                          className="block rounded-xl p-2.5 hover:bg-gray-100 transition-colors"
+                          className="block rounded-lg p-3 hover:bg-[#f0f9f4] transition-colors border border-transparent hover:border-[#029346]/20"
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <div className="font-medium text-sm text-gray-900">{item.title}</div>
-                          <div className="text-xs text-gray-500">{item.desc}</div>
+                          <div className="font-semibold text-sm text-gray-900">{item.title}</div>
+                          <div className="text-xs text-gray-600 mt-1">{item.desc}</div>
                         </Link>
                       ))}
                     </div>
                   </div>
                 ))}
 
-                <div className="border-t pt-4 flex flex-col gap-2">
+                <div className="border-t pt-5 flex flex-col gap-3">
                   <Link
                     href="/portal/dashboard"
-                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-white bg-[var(--primary-green)] hover:bg-[var(--secondary-green)] transition-colors"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#029346] hover:bg-[#027437] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Portal
                   </Link>
                   <Link
                     href="/portal/clubs"
-                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-white bg-[var(--primary-green)] hover:bg-[var(--secondary-green)] transition-colors"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#029346] hover:bg-[#027437] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Clubs
                   </Link>
-                    <Link
-                      href="/about"
-                      className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      About
-                    </Link>
-                    <Link
-                      href="/our-initiatives"
-                      className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Initiatives
-                    </Link>
-                    <Link
-                      href="/news"
-                      className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      News
-                    </Link>
+                  <Link
+                    href="/auth/register"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Create Account
+                  </Link>
+                  <Link
+                    href="/auth/login"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    About
+                  </Link>
+                  <Link
+                    href="/our-initiatives"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Initiatives
+                  </Link>
+                  <Link
+                    href="/news"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    News
+                  </Link>
+                  <Link
+                    href="/careers"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Careers
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Contact
+                  </Link>
+                  <Link
+                    href="/privacy"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Policies
+                  </Link>
                   <Link
                     href="/get-involved"
-                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Get Involved
                   </Link>
                   <Link
                     href="/get-involved/donate"
-                    className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
+                    className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#029346] hover:bg-[#027437] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Donate

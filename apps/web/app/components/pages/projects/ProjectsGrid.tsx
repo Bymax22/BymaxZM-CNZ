@@ -17,10 +17,10 @@ export function ProjectsGrid() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Our <span className="text-[#029346]">Project Portfolio</span>
+            Our Project Portfolio
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comprehensive environmental conservation and community development initiatives across Zambia
+            Environmental conservation and community development initiatives across Zambia
           </p>
         </motion.div>
 

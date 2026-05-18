@@ -48,100 +48,119 @@ export const Navigation = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white z-50 border-b">
-      <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-6">
+    <>
+      {/* PRIMARY HEADER */}
+      <header className="fixed top-0 left-0 w-full bg-white z-50 border-b">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-6">
 
-        {/* LOGO */}
-        <Link href="/" className="flex items-center">
-          <Image
-            src="/Care for Nature logo d-site-01.png"
-            alt="Care for Nature Zambia"
-            width={170}
-            height={72}
-            className="object-contain"
-          />
-        </Link>
+          {/* LOGO */}
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/Care for Nature logo d-site-01.png"
+              alt="Care for Nature Zambia"
+              width={170}
+              height={72}
+              className="object-contain"
+            />
+          </Link>
 
-        {/* NAV */}
-        <nav className="hidden md:flex gap-10 text-sm font-medium text-gray-700">
+          {/* DESKTOP NAV - Only "Our Work" and "Programs" dropdowns */}
+          <nav className="hidden md:flex gap-10 text-sm font-medium text-gray-700">
+            {menus.map((menu) => (
+              <div
+                key={menu.name}
+                onMouseEnter={() => setActiveMenu(menu.name)}
+                onMouseLeave={() => setActiveMenu(null)}
+                className="relative"
+              >
+                <span className="cursor-pointer hover:text-[#029346] transition-colors duration-200">
+                  {menu.name}
+                </span>
 
-          {menus.map((menu) => (
-            <div
-              key={menu.name}
-              onMouseEnter={() => setActiveMenu(menu.name)}
-              onMouseLeave={() => setActiveMenu(null)}
-              className="relative"
-            >
-              <span className="cursor-pointer hover:text-[#029346] transition-colors duration-200">
-                {menu.name}
-              </span>
-
-              {/* DROPDOWN */}
-              {activeMenu === menu.name && (
-                <div className="absolute left-0 top-10 w-[600px] bg-white shadow-xl border rounded-xl p-6 grid grid-cols-2 gap-6">
-
-                  {menu.items.map((item) => (
-                    <Link key={item.title} href={item.href}>
-                      <div className="group cursor-pointer">
-
-                        <div className="relative h-32 rounded-lg overflow-hidden">
-                          <Image
-                            src={item.image}
-                            alt=""
-                            fill
-                            className="object-cover group-hover:scale-105 transition"
-                          />
+                {/* DROPDOWN */}
+                {activeMenu === menu.name && (
+                  <div className="absolute left-0 top-10 w-[800px] bg-white shadow-2xl border rounded-2xl p-8 grid grid-cols-2 gap-8 z-50">
+                    {menu.items.map((item) => (
+                      <Link key={item.title} href={item.href}>
+                        <div className="group cursor-pointer">
+                          <div className="relative h-56 rounded-lg overflow-hidden mb-4">
+                            <Image
+                              src={item.image}
+                              alt=""
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
+                          </div>
+                          <h4 className="text-lg font-semibold text-gray-900 group-hover:text-[#029346] mb-2">
+                            {item.title}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {item.desc}
+                          </p>
                         </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
 
-                        <h4 className="mt-3 font-semibold text-gray-900 group-hover:text-[#029346]">
-                          {item.title}
-                        </h4>
+          {/* MOBILE: show portal & clubs buttons in the main header */}
+          <div className="md:hidden flex items-center gap-3">
+            <Link
+              href="/auth/login"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-gray-700 hover:bg-gray-50 transition-colors"
+              aria-label="Sign in or sign up"
+            >
+              <FiUser className="w-7 h-7 stroke-current" />
+            </Link>
 
-                        <p className="text-xs text-gray-500">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-
-                </div>
-              )}
-            </div>
-          ))}
-
-          <Link href="/projects" className="hover:text-[#029346] transition-colors duration-200">Our Work</Link>
-          <Link href="/our-initiatives" className="hover:text-[#029346] transition-colors duration-200">Initiatives</Link>
-          <Link href="/our-stories" className="hover:text-[#029346] transition-colors duration-200">Our Stories</Link>
-          <Link href="/about" className="hover:text-[#029346] transition-colors duration-200">About</Link>
-          <Link href="/news" className="hover:text-[#029346] transition-colors duration-200">News</Link>
-          <Link href="/get-involved" className="hover:text-[#029346] transition-colors duration-200">Get Involved</Link>
-        </nav>
-
-        {/* RIGHT */}
-        <div className="hidden md:block">
-          <Link
-            href="/get-involved/donate"
-            className="bg-[#F79021] text-white px-4 py-2 text-sm font-semibold rounded hover:bg-[#e67e1a] transition-colors duration-200"
-          >
-            Donate
-          </Link>
+            <button className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-gray-700 ml-0.5" aria-label="Notifications">
+              <FiBell className="w-7 h-7 stroke-current" />
+            </button>
+          </div>
         </div>
+      </header>
 
-        {/* MOBILE: show portal & clubs buttons in the main header */}
-        <div className="md:hidden flex items-center gap-3">
-          <Link
-            href="/auth/login"
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-gray-700 hover:bg-gray-50 transition-colors"
-            aria-label="Sign in or sign up"
-          >
-            <FiUser className="w-7 h-7 stroke-current" />
-          </Link>
+      {/* SECONDARY DESKTOP HEADER */}
+      <nav className="hidden md:block fixed top-16 left-0 w-full bg-white z-40 border-b">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-6">
+          {/* LEFT SECTION */}
+          <div className="flex items-center gap-8 text-sm">
+            <Link href="/projects" className="text-gray-700 hover:text-[#029346] transition-colors">Our Work</Link>
+            <Link href="/our-initiatives" className="text-gray-700 hover:text-[#029346] transition-colors">Initiatives</Link>
+            <Link href="/our-stories" className="text-gray-700 hover:text-[#029346] transition-colors">Our Stories</Link>
+            <Link href="/about" className="text-gray-700 hover:text-[#029346] transition-colors">About</Link>
+            <Link href="/news" className="text-gray-700 hover:text-[#029346] transition-colors">News</Link>
+            <Link href="/get-involved" className="text-gray-700 hover:text-[#029346] transition-colors">Get Involved</Link>
+          </div>
 
-          <button className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-gray-700 ml-0.5" aria-label="Notifications">
-            <FiBell className="w-7 h-7 stroke-current" />
-          </button>
+          {/* RIGHT SECTION */}
+          <div className="flex items-center gap-6 text-sm">
+            <Link href="/portal/dashboard" className="text-gray-700 hover:text-[#029346] transition-colors">Portal</Link>
+            <Link href="/portal/clubs" className="text-gray-700 hover:text-[#029346] transition-colors">Clubs</Link>
+            <Link href="/auth/register" className="text-gray-700 hover:text-[#029346] transition-colors">Create Account</Link>
+            <Link href="/auth/login" className="text-gray-700 hover:text-[#029346] transition-colors">Login</Link>
+            <Link href="/careers" className="text-gray-700 hover:text-[#029346] transition-colors">Careers</Link>
+            <Link href="/contact" className="text-gray-700 hover:text-[#029346] transition-colors">Contact</Link>
+            <Link href="/privacy" className="text-gray-700 hover:text-[#029346] transition-colors">Policies</Link>
+
+            {/* NOTIFICATION BELL + DONATE */}
+            <button className="relative p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <FiBell className="w-5 h-5 text-gray-700" />
+              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold text-white bg-[#F79021] rounded-full">3</span>
+            </button>
+            
+            <Link
+              href="/get-involved/donate"
+              className="bg-[#029346] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#027437] transition-colors"
+            >
+              Donate
+            </Link>
+          </div>
         </div>
-      </div>
-    </header>
+      </nav>
+    </>
   );
 };
