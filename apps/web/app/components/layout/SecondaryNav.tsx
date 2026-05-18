@@ -124,9 +124,9 @@ export const SecondaryNav = () => {
                   {isStoriesOpen && (
                     <div className="absolute left-0 top-10 w-48 rounded-md bg-white border border-gray-200 mt-2 py-1">
                       <nav className="flex flex-col">
-                        <Link href="/projects/ncp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nature</Link>
-                        <Link href="/projects/crdp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Children</Link>
-                        <Link href="/projects/smp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Mining</Link>
+                        <Link href="/our-stories/nature" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nature</Link>
+                        <Link href="/our-stories/children" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Children</Link>
+                        <Link href="/our-stories/mining" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Mining</Link>
                         <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community Engagement</Link>
                         <Link href="/our-stories?scope=global" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Global</Link>
                         <Link href="/our-stories?scope=regional" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Regional</Link>
@@ -154,7 +154,7 @@ export const SecondaryNav = () => {
                       <nav className="flex flex-col">
                         <Link href="/projects" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">All Programs</Link>
                         <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community</Link>
-                        <Link href="/projects/odp" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Organisation Development</Link>
+                        <Link href="/about/programs" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Organisation Development</Link>
                         <Link href="/our-stories" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Story Library</Link>
                       </nav>
                     </div>
@@ -230,6 +230,20 @@ export const SecondaryNav = () => {
                   >
                     Clubs
                   </Link>
+                    <Link
+                      href="/about"
+                      className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      About
+                    </Link>
+                    <Link
+                      href="/news"
+                      className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      News
+                    </Link>
                   <Link
                     href="/get-involved"
                     className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
