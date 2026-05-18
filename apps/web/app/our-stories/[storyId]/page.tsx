@@ -6,7 +6,7 @@ export async function generateStaticParams() {
   return storyTopics.map((story) => ({ storyId: story.id }));
 }
 
-export function generateMetadata({ params }: { params: { storyId: string } }) {
+export function generateMetadata({ params }) {
   const story = storyTopics.find((item) => item.id === params.storyId);
 
   return {
@@ -15,7 +15,7 @@ export function generateMetadata({ params }: { params: { storyId: string } }) {
   };
 }
 
-export default function StoryDetailPage({ params }: { params: { storyId: string } }) {
+export default function StoryDetailPage({ params }) {
   const story = storyTopics.find((item) => item.id === params.storyId);
 
   if (!story) {
