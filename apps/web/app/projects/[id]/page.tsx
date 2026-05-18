@@ -1,10 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { getProjectById } from '../../../components/sections/projectsData';
+import { getProjectById } from '../../components/sections/projectsData';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
-  const { projects } = await import('../../../components/sections/projectsData');
+  const { projects } = await import('../../components/sections/projectsData');
   return projects.map((project) => ({
     id: project.id,
   }));
