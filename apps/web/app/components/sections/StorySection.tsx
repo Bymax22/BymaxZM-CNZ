@@ -91,10 +91,10 @@ const storyTopics = [
 ];
 
 export default function StorySection() {
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeCategory, setActiveCategory] = useState('National');
 
   const filteredTopics =
-    activeCategory === 'All'
+    activeCategory === 'National'
       ? storyTopics
       : storyTopics.filter((topic) => topic.category === activeCategory);
 
