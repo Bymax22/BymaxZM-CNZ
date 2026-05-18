@@ -47,7 +47,11 @@ export function AboutHero() {
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6">
             About <span className="text-[#F79021]">Care for Nature</span> Zambia
           </h1>
-          
+
+          <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+            A non-governmental organization working to promote environmental conservation, 
+            children's rights and sustainable development across Zambia since 2010
+          </p>
           <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
             Since 2008, we&apos;ve been at the forefront of environmental conservation and community 
             empowerment in Zambia, creating sustainable impact through innovative solutions and 
