@@ -6,8 +6,9 @@ export async function generateStaticParams() {
   return storyTopics.map((story) => ({ storyId: story.id }));
 }
 
-export function generateMetadata({ params }: { params: { storyId: string } }) {
-  const story = storyTopics.find((item) => item.id === params.storyId);
+export async function generateMetadata({ params }: { params: Promise<{ storyId: string }> }) {
+  const resolvedParams = await params;
+  const story = storyTopics.find((item) => item.id === resolvedParams.storyId);
 
   return {
     title: story ? `${story.title} | Our Stories` : 'Story not found',
@@ -15,8 +16,9 @@ export function generateMetadata({ params }: { params: { storyId: string } }) {
   };
 }
 
-export default function StoryDetailPage({ params }) {
-  const story = storyTopics.find((item) => item.id === params.storyId);
+export default async function StoryDetailPage({ params }: { params: Promise<{ storyId: string }> }) {
+  const resolvedParams = await params;
+  const story = storyTopics.find((item) => item.id === resolvedParams.storyId);
 
   if (!story) {
     notFound();
