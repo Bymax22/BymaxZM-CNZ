@@ -54,10 +54,10 @@ const mobileMenus = [
   {
     name: 'Organization Development (ODP)',
     items: [
-      { title: 'Institutional Capacity', href: '/projects/odp', desc: 'Strengthening systems & governance' },
-      { title: 'Resource Mobilization', href: '/projects/odp', desc: 'Social enterprises & financial sustainability' },
-      { title: 'Partnerships & Networks', href: '/projects/odp', desc: 'Collaboration across sectors' },
-      { title: 'Operations & Compliance', href: '/projects/odp', desc: 'Effective NGO management & scaling' },
+      { title: 'Institutional Capacity', href: '/projects', desc: 'Strengthening systems & governance' },
+      { title: 'Resource Mobilization', href: '/projects', desc: 'Social enterprises & financial sustainability' },
+      { title: 'Partnerships & Networks', href: '/projects', desc: 'Collaboration across sectors' },
+      { title: 'Operations & Compliance', href: '/projects', desc: 'Effective NGO management & scaling' },
     ],
   },
 ];
@@ -154,7 +154,7 @@ export const SecondaryNav = () => {
                       <nav className="flex flex-col">
                         <Link href="/projects" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">All Programs</Link>
                         <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community</Link>
-                        <Link href="/about/programs" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Organisation Development</Link>
+                        <Link href="/our-initiatives" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Initiatives</Link>
                         <Link href="/our-stories" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Story Library</Link>
                       </nav>
                     </div>
@@ -236,6 +236,13 @@ export const SecondaryNav = () => {
                       onClick={() => setIsMenuOpen(false)}
                     >
                       About
+                    </Link>
+                    <Link
+                      href="/our-initiatives"
+                      className="block rounded-xl px-4 py-3 text-center text-sm font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Initiatives
                     </Link>
                     <Link
                       href="/news"

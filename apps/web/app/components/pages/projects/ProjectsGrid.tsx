@@ -17,7 +17,7 @@ export function ProjectsGrid() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Project Portfolio</span>
+            Our <span className="text-[#029346]">Project Portfolio</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Comprehensive environmental conservation and community development initiatives across Zambia
@@ -27,11 +27,11 @@ export function ProjectsGrid() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => {
             const categoryColors: Record<string, string> = {
-              'conservation': 'from-[#029346] to-[#0C4726]',
-              'climate': 'from-[#00bcd4] to-[#0097a7]',
-              'education': 'from-[#9c27b0] to-[#7b1fa2]',
-              'mining': 'from-[#F79021] to-[#AA5D26]',
-              'livelihoods': 'from-[#4caf50] to-[#388e3c]',
+              'conservation': 'bg-[#029346] text-white',
+              'climate': 'bg-[#00bcd4] text-white',
+              'education': 'bg-[#9c27b0] text-white',
+              'mining': 'bg-[#F79021] text-white',
+              'livelihoods': 'bg-[#4caf50] text-white',
             };
 
             return (
@@ -46,7 +46,7 @@ export function ProjectsGrid() {
               <Link href={`/projects/${project.id}`}>
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100 h-full flex flex-col overflow-hidden">
                   {/* Image */}
-                  <div className={`relative h-48 bg-gradient-to-br ${categoryColors[project.category]} overflow-hidden flex items-center justify-center`}>
+                  <div className={`relative h-48 ${categoryColors[project.category]} overflow-hidden flex items-center justify-center`}>
                     {project.image.includes('cloudinary') || project.image.includes('http') ? (
                       <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                     ) : (
@@ -60,7 +60,7 @@ export function ProjectsGrid() {
                   {/* Content */}
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="flex items-center gap-2 mb-3">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${categoryColors[project.category]}`}>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${categoryColors[project.category]}`}>
                         {project.category.charAt(0).toUpperCase() + project.category.slice(1)}
                       </span>
                       <span className={`text-xs font-semibold px-2 py-1 rounded ${project.status === 'ongoing' ? 'bg-green-100 text-green-700' : project.status === 'completed' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
@@ -114,14 +114,14 @@ export function ProjectsGrid() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <div className="bg-gradient-to-r from-[#029346] to-[#0C4726] rounded-2xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-4">
-              Want to See <span className="text-[#F79021]">More Projects</span>?
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            <h3 className="text-2xl font-bold mb-4 text-gray-900">
+              Want to See <span className="text-[#029346]">More Projects</span>?
             </h3>
-            <p className="text-white/90 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
               Explore our complete project portfolio with detailed reports, impact metrics, and success stories.
             </p>
-            <button className="bg-white text-[#029346] px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
+            <button className="bg-[#029346] text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:bg-[#027437] transition-all duration-300">
               View Full Project Database
             </button>
           </div>

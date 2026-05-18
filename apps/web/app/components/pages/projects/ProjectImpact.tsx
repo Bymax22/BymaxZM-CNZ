@@ -58,7 +58,7 @@ const impactStats = [
 
 export function ProjectImpact() {
   return (
-    <section className="py-20 bg-gradient-to-br from-[#F0F9F4] to-white">
+    <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -68,7 +68,7 @@ export function ProjectImpact() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Project <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Impact</span>
+            Project <span className="text-[#029346]">Impact</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Measurable results and tangible benefits from our conservation and development initiatives
@@ -85,7 +85,7 @@ export function ProjectImpact() {
               viewport={{ once: true }}
               className="text-center group"
             >
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#029346] to-[#0C4726] rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#029346] flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
               

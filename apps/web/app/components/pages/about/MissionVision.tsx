@@ -5,7 +5,7 @@ import { FaBullseye, FaEye } from 'react-icons/fa';
 
 export function MissionVision() {
   return (
-    <section className="py-20 bg-gradient-to-br from-[#F0F9F4] to-white">
+    <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Mission */}
@@ -16,7 +16,7 @@ export function MissionVision() {
             viewport={{ once: true }}
             className="text-center lg:text-left"
           >
-            <div className="w-20 h-20 mx-auto lg:mx-0 mb-6 bg-gradient-to-br from-[#029346] to-[#0C4726] rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 mx-auto lg:mx-0 mb-6 rounded-2xl bg-[#029346] flex items-center justify-center shadow-lg">
               <FaBullseye className="w-8 h-8 text-white" />
             </div>
             
@@ -57,7 +57,7 @@ export function MissionVision() {
             viewport={{ once: true }}
             className="text-center lg:text-left"
           >
-            <div className="w-20 h-20 mx-auto lg:mx-0 mb-6 bg-gradient-to-br from-[#F79021] to-[#AA5D26] rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 mx-auto lg:mx-0 mb-6 rounded-2xl bg-[#F79021] flex items-center justify-center shadow-lg">
               <FaEye className="w-8 h-8 text-white" />
             </div>
             

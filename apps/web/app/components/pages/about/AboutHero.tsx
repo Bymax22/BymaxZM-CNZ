@@ -5,57 +5,30 @@ import { FaLeaf, FaUsers, FaHeart, FaGlobeAfrica } from 'react-icons/fa';
 
 export function AboutHero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#029346] via-[#0C4726] to-[#08331C]">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-[#F79021]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-[#029346]/10 rounded-full blur-3xl"></div>
-        
-        {/* Floating Icons */}
-        <motion.div
-          animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
-          transition={{ duration: 6, repeat: Infinity }}
-          className="absolute top-20 left-20 text-white/20"
-        >
-          <FaLeaf className="w-16 h-16" />
-        </motion.div>
-        <motion.div
-          animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
-          transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-          className="absolute bottom-32 right-20 text-white/20"
-        >
-          <FaUsers className="w-12 h-12" />
-        </motion.div>
-      </div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gray-50">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(2,147,70,0.06),transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(15,118,110,0.08),transparent_28%)] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8"
+          className="mb-12"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="w-24 h-24 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20"
-          >
-            <FaGlobeAfrica className="w-12 h-12 text-white" />
-          </motion.div>
-          
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-6">
-            About <span className="text-[#F79021]">Care for Nature</span> Zambia
+          <div className="mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-[#029346] text-white shadow-lg">
+            <FaGlobeAfrica className="w-10 h-10" />
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            About Care for Nature Zambia
           </h1>
 
-          <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-            A non-governmental organization working to promote environmental conservation, 
-            children's rights and sustainable development across Zambia since 2010
+          <p className="text-lg sm:text-xl text-gray-700 mb-5 max-w-3xl mx-auto leading-relaxed">
+            We are a Zambian non-governmental organization supporting environmental conservation, children&apos;s rights, strong governance, and sustainable development across rural and peri-urban communities.
           </p>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            Since 2008, we&apos;ve been at the forefront of environmental conservation and community 
-            empowerment in Zambia, creating sustainable impact through innovative solutions and 
-            collaborative partnerships.
+
+          <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Our work brings together conservation, youth leadership, community accountability and climate justice to deliver long-term results for people and nature.
           </p>
         </motion.div>
 
@@ -77,11 +50,13 @@ export function AboutHero() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 + index * 0.1 }}
-              className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+              className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm"
             >
-              <stat.icon className="w-8 h-8 text-[#F79021] mx-auto mb-3" />
-              <div className="text-2xl font-bold text-white mb-1">{stat.number}</div>
-              <div className="text-white/80 text-sm">{stat.label}</div>
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#029346] text-white">
+                <stat.icon className="w-6 h-6" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900 mb-1">{stat.number}</div>
+              <div className="text-sm text-gray-600">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>

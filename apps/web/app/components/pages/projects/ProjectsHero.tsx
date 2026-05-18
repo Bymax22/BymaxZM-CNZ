@@ -5,11 +5,8 @@ import { FaSeedling, FaTree, FaUsers, FaHandHoldingHeart } from 'react-icons/fa'
 
 export function ProjectsHero() {
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-[#029346] via-[#0C4726] to-[#08331C]">
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[#F79021]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#029346]/10 rounded-full blur-3xl"></div>
-      </div>
+    <section className="relative min-h-[60vh] flex items-center justify-center bg-gray-100">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(2,147,70,0.08),transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(15,118,110,0.06),transparent_30%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
         <motion.div
@@ -21,13 +18,13 @@ export function ProjectsHero() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="w-20 h-20 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20"
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white shadow-sm flex items-center justify-center"
           >
-            <FaSeedling className="w-10 h-10 text-white" />
+            <FaSeedling className="w-10 h-10 text-[#029346]" />
           </motion.div>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
-            Our <span className="text-[#F79021]">Projects</span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            Our <span className="text-[#029346]">Projects</span>
           </h1>
           
           <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
@@ -54,11 +51,11 @@ export function ProjectsHero() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 + index * 0.1 }}
-              className="text-center p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+              className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm"
             >
-              <stat.icon className="w-6 h-6 text-[#F79021] mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white mb-1">{stat.number}</div>
-              <div className="text-white/80 text-sm">{stat.label}</div>
+              <stat.icon className="w-6 h-6 text-[#029346] mx-auto mb-2" />
+              <div className="text-2xl font-bold text-gray-900 mb-1">{stat.number}</div>
+              <div className="text-gray-600 text-sm">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>

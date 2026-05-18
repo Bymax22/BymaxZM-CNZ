@@ -110,6 +110,7 @@ export const Navigation = () => {
           ))}
 
           <Link href="/projects" className="hover:text-[#029346] transition-colors duration-200">Our Work</Link>
+          <Link href="/our-initiatives" className="hover:text-[#029346] transition-colors duration-200">Initiatives</Link>
           <Link href="/our-stories" className="hover:text-[#029346] transition-colors duration-200">Our Stories</Link>
           <Link href="/about" className="hover:text-[#029346] transition-colors duration-200">About</Link>
           <Link href="/news" className="hover:text-[#029346] transition-colors duration-200">News</Link>

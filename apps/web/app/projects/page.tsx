@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { ProjectsHero } from '../components/pages/projects/ProjectsHero';
 import { ProjectsGrid } from '../components/pages/projects/ProjectsGrid';
+import { OurWorkProjects } from '../components/pages/projects/OurWorkProjects';
 import { ProjectImpact } from '../components/pages/projects/ProjectImpact';
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export default function ProjectsPage() {
     <>
       <ProjectsHero />
       <ProjectsGrid />
+      <OurWorkProjects />
       <ProjectImpact />
     </>
   );

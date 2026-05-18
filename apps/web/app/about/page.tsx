@@ -3,6 +3,7 @@ import { AboutHero } from '../components/pages/about/AboutHero';
 import { MissionVision } from '../components/pages/about/MissionVision';
 import { OurValues } from '../components/pages/about/OurValues';
 import { QuickStats } from '../components/pages/about/QuickStats';
+import { AboutDetails } from '../components/pages/about/AboutDetails';
 
 export const metadata: Metadata = {
   title: 'About Us - Care for Nature Zambia',
@@ -13,9 +14,10 @@ export default function AboutPage() {
   return (
     <>
       <AboutHero />
-      <QuickStats />
       <MissionVision />
       <OurValues />
+      <AboutDetails />
+      <QuickStats />
     </>
   );
 }

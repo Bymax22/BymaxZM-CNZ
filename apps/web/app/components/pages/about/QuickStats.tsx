@@ -17,42 +17,42 @@ const stats = [
     end: 50000,
     suffix: '+',
     label: 'Trees Planted',
-    color: 'from-[#029346] to-[#0C4726]',
+    color: 'bg-[#029346]',
   },
   {
     icon: FaUsers,
     end: 100,
     suffix: '+',
     label: 'Communities Reached',
-    color: 'from-[#F79021] to-[#AA5D26]',
+    color: 'bg-[#F79021]',
   },
   {
     icon: FaSchool,
     end: 5000,
     suffix: '+',
     label: 'Children Educated',
-    color: 'from-[#029346] to-[#0C4726]',
+    color: 'bg-[#029346]',
   },
   {
     icon: FaHandHoldingHeart,
     end: 10000,
     suffix: '+',
     label: 'Lives Impacted',
-    color: 'from-[#F79021] to-[#AA5D26]',
+    color: 'bg-[#F79021]',
   },
   {
     icon: FaRecycle,
     end: 200,
     suffix: '+',
     label: 'Conservation Projects',
-    color: 'from-[#029346] to-[#0C4726]',
+    color: 'bg-[#029346]',
   },
   {
     icon: FaSun,
     end: 15000,
     suffix: '+',
     label: 'Solar Lights Installed',
-    color: 'from-[#F79021] to-[#AA5D26]',
+    color: 'bg-[#F79021]',
   }
 ];
 
@@ -68,7 +68,7 @@ export function QuickStats() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Impact</span> in Numbers
+            Our <span className="text-[#029346]">Impact</span> in Numbers
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Measurable results from our dedication to environmental conservation and community development
@@ -85,10 +85,10 @@ export function QuickStats() {
               viewport={{ once: true }}
               className="text-center group"
             >
-              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+              <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl ${stat.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                 <stat.icon className="w-7 h-7 text-white" />
               </div>
-              <div className={`text-2xl md:text-3xl font-bold bg-gradient-to-br ${stat.color} text-transparent bg-clip-text mb-2`}>
+              <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
                 <CountUp end={stat.end} suffix={stat.suffix} duration={2.5} separator="," />
               </div>
               <div className="text-gray-600 text-sm font-medium">{stat.label}</div>

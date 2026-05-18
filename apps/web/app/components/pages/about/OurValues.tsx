@@ -15,37 +15,37 @@ const values = [
     icon: FaHandsHelping,
     title: 'Community First',
     description: 'We prioritize community needs and involve local people in every step of our conservation efforts.',
-    color: 'from-[#029346] to-[#0C4726]'
+    color: 'bg-[#029346]'
   },
   {
     icon: FaLeaf,
     title: 'Environmental Stewardship',
     description: 'We are committed to protecting and restoring Zambia\'s natural heritage for future generations.',
-    color: 'from-[#029346] to-[#0C4726]'
+    color: 'bg-[#029346]'
   },
   {
     icon: FaUsers,
     title: 'Collaboration',
     description: 'We believe in the power of partnerships and work together with communities, government, and organizations.',
-    color: 'from-[#F79021] to-[#AA5D26]'
+    color: 'bg-[#F79021]'
   },
   {
     icon: FaShieldAlt,
     title: 'Transparency',
     description: 'We maintain open communication and accountability in all our operations and financial management.',
-    color: 'from-[#F79021] to-[#AA5D26]'
+    color: 'bg-[#F79021]'
   },
   {
     icon: FaLightbulb,
     title: 'Innovation',
     description: 'We embrace creative solutions and adapt to new challenges in conservation and community development.',
-    color: 'from-[#029346] to-[#0C4726]'
+    color: 'bg-[#029346]'
   },
   {
     icon: FaHeart,
     title: 'Compassion',
     description: 'We approach our work with empathy, respect, and genuine care for both people and the planet.',
-    color: 'from-[#F79021] to-[#AA5D26]'
+    color: 'bg-[#F79021]'
   }
 ];
 
@@ -61,7 +61,7 @@ export function OurValues() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Values</span>
+            Our <span className="text-[#029346]">Values</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             The principles that guide our work and define who we are as an organization
@@ -78,7 +78,7 @@ export function OurValues() {
               viewport={{ once: true }}
               className="text-center group"
             >
-              <div className={`w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${value.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
+              <div className={`w-20 h-20 mx-auto mb-6 rounded-2xl ${value.color} flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                 <value.icon className="w-8 h-8 text-white" />
               </div>
               
@@ -101,18 +101,18 @@ export function OurValues() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-r from-[#029346] to-[#0C4726] rounded-3xl p-12 text-white shadow-2xl">
+          <div className="rounded-3xl border border-gray-200 bg-white p-12 text-gray-900 shadow-lg">
             <h3 className="text-3xl font-bold mb-4">
-              Ready to Make a <span className="text-[#F79021]">Difference</span>?
+              Ready to Make a <span className="text-[#029346]">Difference</span>?
             </h3>
-            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Join us in our mission to protect Zambia&apos;s environment and empower communities for a sustainable future.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-[#029346] px-8 py-4 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all duration-300">
+              <button className="bg-[#029346] text-white px-8 py-4 rounded-2xl font-bold shadow-lg hover:bg-[#027437] transition-all duration-300">
                 Get Involved
               </button>
-              <button className="border-2 border-white text-white hover:bg-white hover:text-[#029346] px-8 py-4 rounded-2xl font-bold transition-all duration-300">
+              <button className="border border-gray-300 text-gray-900 hover:bg-gray-100 px-8 py-4 rounded-2xl font-bold transition-all duration-300">
                 Learn More
               </button>
             </div>
