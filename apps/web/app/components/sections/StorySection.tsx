@@ -32,7 +32,7 @@ const storyTopics = [
     description:
       'News coverage on women’s leadership, rights and livelihood stories in mining areas.',
     mediaType: 'image',
-    media: '/images/topics/women-manganese.jpg',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779064259/_MG_2437_jlo9ix.jpg',
   },
   {
     id: 'national-mining-dialogue',
@@ -107,12 +107,12 @@ export default function StorySection() {
 
       <div className="relative max-w-6xl mx-auto px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <p className="text-sm uppercase tracking-[0.35em] text-white/70">National, regional and global topics</p>
+          <p className="text-sm uppercase tracking-[0.35em] text-white/70">CaNZ Involvement</p>
           <h2 className="mt-5 text-4xl md:text-5xl font-light leading-tight">
-            Media-backed stories for advocacy, engagement and dialogue.
+            Our stories for advocacy, engagement and dialogue.
           </h2>
           <p className="mt-5 text-base md:text-lg text-white/75 leading-relaxed">
-            Use this section to showcase the latest videos and photos from national dialogues, regional indabas, community work and global advocacy.
+            National, Regional and Global Engagements, advocacy and dialogue.
           </p>
         </div>
 
