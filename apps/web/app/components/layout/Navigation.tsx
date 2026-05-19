@@ -5,8 +5,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaUserCircle, FaSearch, FaFacebookF, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { FiBell } from 'react-icons/fi';
+import { FaSearch, FaFacebookF, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FiBell, FiLogIn } from 'react-icons/fi';
 
 export const Navigation = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -75,7 +75,7 @@ export const Navigation = () => {
     <>
       {/* PRIMARY HEADER */}
       <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-xl z-50 border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-6 gap-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-16 md:h-20 px-4 md:px-6 gap-8">
 
           {/* LOGO */}
           <Link href="/" className="flex items-center gap-3">
@@ -142,7 +142,7 @@ export const Navigation = () => {
               className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
               aria-label="Login or sign up"
             >
-              <FaUserCircle className="w-6 h-6" />
+              <FiLogIn className="w-6 h-6" />
             </Link>
 
             <button
@@ -163,19 +163,11 @@ export const Navigation = () => {
 
           <div className="md:hidden flex items-center gap-2">
             <Link
-              href="/search"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
-              aria-label="Search"
-            >
-              <FaSearch className="w-6 h-6" />
-            </Link>
-
-            <Link
               href="/auth/login"
               className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Sign in or sign up"
             >
-              <FaUserCircle className="w-6 h-6" />
+              <FiLogIn className="w-6 h-6" />
             </Link>
 
             <button

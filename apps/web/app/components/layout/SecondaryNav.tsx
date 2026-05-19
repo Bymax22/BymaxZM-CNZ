@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
-import { FaFacebookF, FaEnvelope, FaWhatsapp, FaPhone } from 'react-icons/fa';
+import { FaSearch, FaFacebookF, FaEnvelope, FaWhatsapp, FaPhone } from 'react-icons/fa';
 import { FaTree, FaUsers, FaTools, FaHandshake } from 'react-icons/fa';
 import React from 'react';
 
@@ -13,6 +13,7 @@ const socialLinks = [
   { href: 'https://wa.me/260965638175', icon: FaWhatsapp, label: 'WhatsApp', external: true },
   { href: 'mailto:info@carefornaturezambia.org', icon: FaEnvelope, label: 'Email', external: false },
   { href: 'tel:+260965638175', icon: FaPhone, label: 'Call', external: false },
+  { href: '/search', icon: FaSearch, label: 'Search', external: false },
 ];
 
 type MobileMenuItem = {
@@ -27,61 +28,50 @@ type MobileMenu = {
 };
 
 const thematicTabs = [
-  { label: 'Our Projects', icon: FaTree, href: '/our-stories/nature' },
-  { label: 'Our Initiatives', icon: FaUsers, href: '/our-stories/children' },
-  { label: 'Our Stories', icon: FaTools, href: '/our-stories/mining' },
+  { label: 'Our Projects', icon: FaTree, href: '/projects' },
+  { label: 'Our Initiatives', icon: FaUsers, href: '/our-initiatives' },
+  { label: 'Our Work', icon: FaTools, href: '/projects' },
   { label: 'Our Stories', icon: null, href: '/our-stories' },
 ];
 
-const mobileMenus: MobileMenu[] = [
-  {
-    name: 'Nature Conservation Program (NCP)',
-    items: [
-      { title: 'Program Overview', href: '/about/programs', desc: 'Learn about our nature conservation strategy' },
-      { title: 'Conservation Projects', href: '/projects/conservation', desc: 'Explore habitat and wildlife protection work' },
-      { title: 'Climate Action', href: '/projects/climate', desc: 'See how nature and climate work connect' },
-    ],
-  },
-  {
-    name: 'Child Rights & Development (CRDP)',
-    items: [
-      { title: 'Program Overview', href: '/about/programs', desc: 'Discover our child rights and development efforts' },
-      { title: 'Education Projects', href: '/projects/education', desc: 'Read about child-focused education support' },
-      { title: 'Community Stories', href: '/our-stories/children', desc: 'See stories from children and families we support' },
-    ],
-  },
-  {
-    name: 'Sustainable Mining Program (SMP)',
-    items: [
-      { title: 'Program Overview', href: '/about/programs', desc: 'Understand our approach to sustainable mining' },
-      { title: 'Mining Stories', href: '/our-stories/mining', desc: 'Explore mining-related impact stories' },
-      { title: 'Climate Action', href: '/projects/climate', desc: 'See how mining and climate action overlap' },
-    ],
-  },
-  {
-    name: 'Organization Development (ODP)',
-    items: [
-      { title: 'Program Overview', href: '/about/programs', desc: 'Learn how we strengthen communities and systems' },
-      { title: 'About CNZ', href: '/about', desc: 'Read about our organization and mission' },
-      { title: 'Impact Reports', href: '/reports', desc: 'Review our progress and transparency reports' },
-    ],
-  },
+const mobileMenus: MobileMenu[] = [ 
 ];
 
 export const SecondaryNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPopupVisible(true), 10000);
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    let scrollTimeout: number | undefined;
+
+    const handleScroll = () => {
+      setIsScrolling(true);
+      if (scrollTimeout) {
+        window.clearTimeout(scrollTimeout);
+      }
+      scrollTimeout = window.setTimeout(() => setIsScrolling(false), 250);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollTimeout) {
+        window.clearTimeout(scrollTimeout);
+      }
+    };
+  }, []);
+
   return (
     <>
-      <nav className="fixed top-20 left-0 w-full border-b border-[var(--secondary-green)] z-40 md:hidden bg-[var(--primary-green)] transition-transform duration-300">
+      <nav className={`fixed top-16 md:top-20 left-0 w-full border-b border-[var(--secondary-green)] z-40 md:hidden bg-[var(--primary-green)] transition-transform duration-300 ${isScrolling ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between gap-2 py-2">
+          <div className="flex items-center justify-between gap-2 py-1 h-8">
             <div className="flex items-center gap-2">
               {socialLinks.map((link) => (
                 <Link
@@ -98,7 +88,7 @@ export const SecondaryNav = () => {
             </div>
 
             <button
-              className="h-12 w-12 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center"
+              className="h-10 w-10 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
