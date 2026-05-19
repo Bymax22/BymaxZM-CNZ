@@ -20,10 +20,10 @@ export const projects: Project[] = [
     title: 'Protecting Zambia\'s Ecosystems',
     shortDescription: 'Restoring and protecting natural habitats across Zambia',
     description: 'Our flagship conservation program protects forests, wetlands, fisheries and wildlife across Zambia. We work with communities to sustainably manage natural resources while combating climate change through nature-based solutions.',
-    location: 'Nationwide - All 10 Provinces',
+    location: 'Lusaka, Zambia',
     status: 'ongoing',
     impact: [
-      'Protected 50,000+ hectares of forest',
+      'Protected 50+',
       '25,000+ trees planted',
       'Community conservation clubs established',
       'Sustainable resource management practices',

@@ -46,11 +46,10 @@ export function ProjectDetails({ project: _project }: { project: Project }) {
   ];
 
   const objectives = [
-    'Restore 50,000 hectares of degraded forest land by 2025',
-    'Engage 100 communities in sustainable forest management',
-    'Protect 25 critical watershed areas',
-    'Create 5,000 green jobs in forestry and ecotourism',
-    'Reduce carbon emissions by 100,000 tons annually'
+  
+    'Engage 10+ communities in sustainable forest management',
+    'Advocate for 5 critical watershed areas',
+    'Reduce carbon emissions'
   ];
 
   return (

@@ -116,7 +116,7 @@ export function ProjectsGrid() {
         >
           <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <h3 className="text-2xl font-bold mb-4 text-gray-900">
-              Want to See <span className="text-[#029346]">More Projects</span>?
+              Want to See <span className="text-[#351a05]">More Projects</span>?
             </h3>
             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
               Explore our complete project portfolio with detailed reports, impact metrics, and success stories.

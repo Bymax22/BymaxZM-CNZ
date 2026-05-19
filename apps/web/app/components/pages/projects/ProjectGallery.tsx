@@ -19,7 +19,7 @@ interface Project {
 }
 
 export function ProjectGallery({ project }: { project: Project }) {
-  const images = project.images ?? ['/images/projects/reforestation.jpg', '/images/projects/slide1.jpg'];
+  const images = project.images ?? ['https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053946/692938516_1446768550815747_5499726643162476941_n_nv4vge.jpg', 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053097/677790147_1429823699176899_1661133342896079994_n_xhjbav.jpg'];
 
   return (
     <section className="py-12 bg-gray-50">

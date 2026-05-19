@@ -14,35 +14,28 @@ import {
 const impactStats = [
   {
     icon: FaTree,
-    value: 50000,
+    value: 100,
     suffix: '+',
     label: 'Trees Planted',
     description: 'Across 10 provinces'
   },
   {
     icon: FaUserFriends,
-    value: 100,
+    value: 15,
     suffix: '+',
     label: 'Communities Reached',
     description: 'Active partnerships'
   },
   {
     icon: FaSchool,
-    value: 5000,
+    value: 150,
     suffix: '+',
-    label: 'Students Educated',
+    label: 'Children Educated',
     description: 'Environmental awareness'
   },
   {
-    icon: FaSun,
-    value: 15000,
-    suffix: '+',
-    label: 'Solar Lights Installed',
-    description: 'Clean energy access'
-  },
-  {
     icon: FaHandHoldingHeart,
-    value: 10000,
+    value: 1000,
     suffix: '+',
     label: 'Lives Impacted',
     description: 'Direct beneficiaries'
@@ -68,7 +61,7 @@ export function ProjectImpact() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Project <span className="text-[#029346]">Impact</span>
+            Project <span className="text-[#301809]">Impact</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Measurable results and tangible benefits from our conservation and development initiatives
@@ -113,24 +106,14 @@ export function ProjectImpact() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
+
               {
-                title: 'Community Reforestation',
-                location: 'Eastern Province',
-                impact: '20,000 trees planted by local communities, creating sustainable income through agroforestry',
-                image: '/images/stories/reforestation.jpg'
+                title: 'Climate Action',
+                location: 'Lusaka',
+                impact: '.......',
+                image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053944/689870554_1020652813653190_5398139666292164193_n_c8e1cx.jpg'
               },
-              {
-                title: 'Youth Education',
-                location: 'Lusaka Schools',
-                impact: 'Environmental clubs established in 25 schools, engaging 2,000+ students in conservation',
-                image: '/images/stories/education.jpg'
-              },
-              {
-                title: 'Clean Energy Access',
-                location: 'Rural Villages',
-                impact: 'Solar lights installed in 500 households, reducing kerosene use and improving safety',
-                image: '/images/stories/solar.jpg'
-              }
+
             ].map((story, index) => (
               <motion.div
                 key={index}
@@ -141,7 +124,7 @@ export function ProjectImpact() {
                 className="group"
               >
                 <div className="bg-gray-100 rounded-2xl h-48 mb-4 flex items-center justify-center">
-                  <span className="text-gray-400">Story Image</span>
+                  <span className="text-gray-400">Story</span>
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 mb-2">{story.title}</h4>
                 <div className="text-[#029346] font-semibold mb-3">{story.location}</div>

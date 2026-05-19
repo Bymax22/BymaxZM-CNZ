@@ -16,10 +16,10 @@ export default function ConservationPage() {
     icon: '🌳',
     color: 'from-[#029346] to-[#0C4726]',
     stats: {
-      treesPlanted: 50000,
+      treesPlanted: 50,
       areasProtected: 15,
-      communities: 75,
-      carbonReduced: 25000
+      communities: 15,
+      carbonReduced: 2
     }
   };
 

@@ -41,9 +41,9 @@ export function ProjectsHero() {
           className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12"
         >
           {[
-            { number: '200+', label: 'Active Projects', icon: FaTree },
-            { number: '10', label: 'Provinces', icon: FaUsers },
-            { number: '50K+', label: 'Beneficiaries', icon: FaHandHoldingHeart },
+            { number: '10+', label: 'Active Projects', icon: FaTree },
+            { number: '5', label: 'Provinces', icon: FaUsers },
+            { number: '500+', label: 'Beneficiaries', icon: FaHandHoldingHeart },
             { number: '85%', label: 'Success Rate', icon: FaSeedling },
           ].map((stat, index) => (
             <motion.div
