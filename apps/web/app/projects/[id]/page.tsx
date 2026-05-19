@@ -47,7 +47,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
               {project.category.charAt(0).toUpperCase() + project.category.slice(1)}
             </div>
             <h1 className="text-5xl font-bold mb-6">{project.title}</h1>
-            <p className="text-xl text-white/90 max-w-3xl">{project.description}</p>
+            <p className="text-xl text-white/90 max-w-3xl">{project.shortDescription}</p>
           </div>
         </div>
       </section>
@@ -72,9 +72,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             {/* Full Description */}
             <div className="mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">About This Project</h2>
-              <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                {project.description}
-              </p>
+              {project.description.split(/\n{2,}/).map((paragraph, index) => (
+                <p key={index} className="text-lg text-gray-700 leading-relaxed mb-6">
+                  {paragraph.trim()}
+                </p>
+              ))}
               <p className="text-gray-600 leading-relaxed">
                 This project is a critical component of our Strategic Plan 2023-2027: Nature Based Action 
                 for a Just and Prosperous Nation. Through collaborative efforts with communities, government, 

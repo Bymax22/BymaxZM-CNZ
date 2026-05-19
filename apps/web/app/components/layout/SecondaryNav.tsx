@@ -15,69 +15,62 @@ const socialLinks = [
   { href: 'tel:+260965638175', icon: FaPhone, label: 'Call', external: false },
 ];
 
+type MobileMenuItem = {
+  title: string;
+  href: string;
+  desc: string;
+};
+
+type MobileMenu = {
+  name: string;
+  items: MobileMenuItem[];
+};
+
 const thematicTabs = [
-  { label: 'Nature', icon: FaTree, href: '/our-stories/nature' },
-  { label: 'Children', icon: FaUsers, href: '/our-stories/children' },
-  { label: 'Mining', icon: FaTools, href: '/our-stories/mining' },
-  { label: 'Community Engagement', icon: FaHandshake, href: '/projects/community' },
+  { label: 'Our Projects', icon: FaTree, href: '/our-stories/nature' },
+  { label: 'Our Initiatives', icon: FaUsers, href: '/our-stories/children' },
+  { label: 'Our Stories', icon: FaTools, href: '/our-stories/mining' },
   { label: 'Our Stories', icon: null, href: '/our-stories' },
 ];
 
-
-
-const mobileMenus = [
+const mobileMenus: MobileMenu[] = [
   {
     name: 'Nature Conservation Program (NCP)',
     items: [
-      { title: 'Habitat Restoration', href: '/our-stories/nature', desc: 'Protecting ecosystems & species diversity' },
-      { title: 'Climate Resilience', href: '/our-stories/nature', desc: 'Building community capacity for climate action' },
-      { title: 'Resource Management', href: '/our-stories/nature', desc: 'Sustainable use of natural resources' },
-      { title: 'Eco-Tourism', href: '/our-stories/nature', desc: 'Green jobs & community development' },
+      { title: 'Program Overview', href: '/about/programs', desc: 'Learn about our nature conservation strategy' },
+      { title: 'Conservation Projects', href: '/projects/conservation', desc: 'Explore habitat and wildlife protection work' },
+      { title: 'Climate Action', href: '/projects/climate', desc: 'See how nature and climate work connect' },
     ],
   },
   {
     name: 'Child Rights & Development (CRDP)',
     items: [
-      { title: 'Child Participation', href: '/our-stories/children', desc: 'Strengthening child voice in decision-making' },
-      { title: 'School Clubs', href: '/our-stories/children', desc: 'Building leadership & climate awareness' },
-      { title: 'Rights Protection', href: '/our-stories/children', desc: 'Protection from abuse & exploitation' },
-      { title: 'Youth Advocacy', href: '/our-stories/children', desc: 'Child-led initiatives for justice & equality' },
+      { title: 'Program Overview', href: '/about/programs', desc: 'Discover our child rights and development efforts' },
+      { title: 'Education Projects', href: '/projects/education', desc: 'Read about child-focused education support' },
+      { title: 'Community Stories', href: '/our-stories/children', desc: 'See stories from children and families we support' },
     ],
   },
   {
     name: 'Sustainable Mining Program (SMP)',
     items: [
-      { title: 'Legal Compliance', href: '/our-stories/mining', desc: 'Adhering to environmental & labor frameworks' },
-      { title: 'Community Monitoring', href: '/our-stories/mining', desc: 'Accountability & transparency in mining' },
-      { title: 'Land Restoration', href: '/our-stories/mining', desc: 'Reclamation & tree planting projects' },
-      { title: 'Stakeholder Partnerships', href: '/our-stories/mining', desc: 'Networks for responsible extractives' },
+      { title: 'Program Overview', href: '/about/programs', desc: 'Understand our approach to sustainable mining' },
+      { title: 'Mining Stories', href: '/our-stories/mining', desc: 'Explore mining-related impact stories' },
+      { title: 'Climate Action', href: '/projects/climate', desc: 'See how mining and climate action overlap' },
     ],
   },
   {
     name: 'Organization Development (ODP)',
     items: [
-      { title: 'Institutional Capacity', href: '/projects', desc: 'Strengthening systems & governance' },
-      { title: 'Resource Mobilization', href: '/projects', desc: 'Social enterprises & financial sustainability' },
-      { title: 'Partnerships & Networks', href: '/projects', desc: 'Collaboration across sectors' },
-      { title: 'Operations & Compliance', href: '/projects', desc: 'Effective NGO management & scaling' },
+      { title: 'Program Overview', href: '/about/programs', desc: 'Learn how we strengthen communities and systems' },
+      { title: 'About CNZ', href: '/about', desc: 'Read about our organization and mission' },
+      { title: 'Impact Reports', href: '/reports', desc: 'Review our progress and transparency reports' },
     ],
   },
 ];
 
 export const SecondaryNav = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [isStoriesOpen, setIsStoriesOpen] = useState(false);
-  const [isProgramsOpen, setIsProgramsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPopupVisible(true), 10000);
@@ -86,13 +79,9 @@ export const SecondaryNav = () => {
 
   return (
     <>
-      <nav
-        className={`fixed top-16 left-0 w-full border-b z-40 md:hidden transition-colors duration-300 ${
-          isScrolled ? 'bg-[var(--primary-orange)] border-orange-300' : 'bg-[var(--primary-green)] border-[var(--secondary-green)]'
-        }`}
-      >
+      <nav className="fixed top-20 left-0 w-full border-b border-[var(--secondary-green)] z-40 md:hidden bg-[var(--primary-green)] transition-transform duration-300">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between gap-2 py-1">
+          <div className="flex items-center justify-between gap-2 py-2">
             <div className="flex items-center gap-2">
               {socialLinks.map((link) => (
                 <Link
@@ -100,79 +89,21 @@ export const SecondaryNav = () => {
                   href={link.href}
                   target={link.external ? '_blank' : undefined}
                   rel={link.external ? 'noreferrer noopener' : undefined}
-                  className="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
+                  className="w-9 h-9 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
                   aria-label={link.label}
                 >
-                  <link.icon className="w-3.5 h-3.5" />
+                  <link.icon className="w-4 h-4" />
                 </Link>
               ))}
             </div>
 
-            <div className="flex items-center justify-between flex-1">
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <button
-                    onClick={() => {
-                      setIsStoriesOpen(!isStoriesOpen);
-                      setIsProgramsOpen(false);
-                    }}
-                    className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20 transition"
-                    aria-expanded={isStoriesOpen}
-                    aria-label="Our Stories"
-                  >
-                    Our Stories
-                  </button>
-
-                  {isStoriesOpen && (
-                    <div className="absolute left-0 top-10 w-48 rounded-md bg-white border border-gray-200 mt-2 py-1">
-                      <nav className="flex flex-col">
-                        <Link href="/our-stories/nature" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nature</Link>
-                        <Link href="/our-stories/children" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Children</Link>
-                        <Link href="/our-stories/mining" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Mining</Link>
-                        <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community Engagement</Link>
-                        <Link href="/our-stories?scope=global" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Global</Link>
-                        <Link href="/our-stories?scope=regional" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Regional</Link>
-                        <Link href="/our-stories?scope=national" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nationwide</Link>
-                      </nav>
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative">
-                  <button
-                    onClick={() => {
-                      setIsProgramsOpen(!isProgramsOpen);
-                      setIsStoriesOpen(false);
-                    }}
-                    className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white hover:bg-white/20 transition"
-                    aria-expanded={isProgramsOpen}
-                    aria-label="Programs"
-                  >
-                    Programs
-                  </button>
-
-                  {isProgramsOpen && (
-                    <div className="absolute left-0 top-10 w-56 rounded-md bg-white border border-gray-200 mt-2 py-1">
-                      <nav className="flex flex-col">
-                        <Link href="/projects" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">All Programs</Link>
-                        <Link href="/projects/community" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community</Link>
-                        <Link href="/our-initiatives" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Initiatives</Link>
-                        <Link href="/our-stories" className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Story Library</Link>
-                      </nav>
-                    </div>
-                  )}
-                </div>
-
-              </div>
-
-              <button
-                className="w-7 h-7 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors flex-shrink-0"
-                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? <MdOutlineClose className="w-4 h-4" /> : <MdOutlineMenu className="w-4 h-4" />}
-              </button>
-            </div>
+            <button
+              className="h-12 w-12 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center"
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <MdOutlineClose className="w-6 h-6" /> : <MdOutlineMenu className="w-6 h-6" />}
+            </button>
           </div>
 
           {isMenuOpen && (
@@ -180,7 +111,7 @@ export const SecondaryNav = () => {
               <div className="space-y-5 max-h-[calc(100vh-280px)] overflow-y-auto">
                 {/* Thematic tabs at top of dropdown */}
                 <div>
-                  <div className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider border-b pb-3">Our Focus Areas</div>
+                  <div className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wider border-b pb-3">Menu</div>
                   <div className="grid grid-cols-2 gap-3">
                     {thematicTabs.map((tab) => (
                       <Link
@@ -254,11 +185,11 @@ export const SecondaryNav = () => {
                     About
                   </Link>
                   <Link
-                    href="/our-initiatives"
+                    href="/reports"
                     className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Initiatives
+                    Reports
                   </Link>
                   <Link
                     href="/news"
@@ -282,11 +213,11 @@ export const SecondaryNav = () => {
                     Contact
                   </Link>
                   <Link
-                    href="/privacy"
+                    href="/webnar"
                     className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Policies
+                    Webnar
                   </Link>
                   <Link
                     href="/get-involved"

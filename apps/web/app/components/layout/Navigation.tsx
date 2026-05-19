@@ -1,7 +1,7 @@
 // app/components/layout/Navigation.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,7 +11,16 @@ import { FiBell } from 'react-icons/fi';
 export const Navigation = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [secondaryHidden, setSecondaryHidden] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setSecondaryHidden(window.scrollY > 100);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navMenus = [
     {
@@ -152,34 +161,42 @@ export const Navigation = () => {
             </Link>
           </div>
 
-          <div className="md:hidden flex items-center gap-3">
+          <div className="md:hidden flex items-center gap-2">
+            <Link
+              href="/search"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
+              aria-label="Search"
+            >
+              <FaSearch className="w-6 h-6" />
+            </Link>
+
             <Link
               href="/auth/login"
               className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Sign in or sign up"
             >
-              <FaUserCircle className="w-7 h-7" />
+              <FaUserCircle className="w-6 h-6" />
             </Link>
 
             <button
-              className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-slate-700 ml-0.5"
+              className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Notifications"
             >
-              <FiBell className="w-7 h-7" />
+              <FiBell className="w-6 h-6" />
             </button>
           </div>
         </div>
       </header>
 
       {/* SECONDARY DESKTOP HEADER */}
-      <nav className="hidden md:block fixed top-20 left-0 w-full bg-slate-50/95 z-40 border-b border-slate-200 shadow-sm">
+      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 border-b border-[var(--secondary-green)] bg-[var(--primary-green)] text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-6 gap-4">
-          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-slate-600">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
             <Link
               href="https://facebook.com/carefornaturezambia"
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               aria-label="Facebook"
             >
               <FaFacebookF className="w-4 h-4" />
@@ -188,43 +205,43 @@ export const Navigation = () => {
               href="https://wa.me/260965638175"
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               aria-label="WhatsApp"
             >
               <FaWhatsapp className="w-4 h-4" />
             </Link>
             <Link
               href="mailto:info@carefornaturezambia.org"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               aria-label="Email"
             >
               <FaEnvelope className="w-4 h-4" />
             </Link>
             <Link
               href="tel:+260965638175"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
               aria-label="Call"
             >
               <FaPhone className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6 text-sm text-slate-700">
-            <Link href="/projects" className="transition-colors duration-200 hover:text-[#029346]">Programs</Link>
-            <Link href="/get-involved" className="transition-colors duration-200 hover:text-[#029346]">Get Involved</Link>
-            <Link href="/about" className="transition-colors duration-200 hover:text-[#029346]">About</Link>
-            <Link href="/news" className="transition-colors duration-200 hover:text-[#029346]">News</Link>
-            <Link href="/get-involved/careers" className="transition-colors duration-200 hover:text-[#029346]">Careers</Link>
-            <Link href="/contact" className="transition-colors duration-200 hover:text-[#029346]">Contact</Link>
-            <Link href="/about/reports" className="transition-colors duration-200 hover:text-[#029346]">Reports</Link>
-            <Link href="/webinar" className="transition-colors duration-200 hover:text-[#029346]">Webinar</Link>
-            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#029346]">Create Account</Link>
-            <Link href="/auth/login" className="transition-colors duration-200 hover:text-[#029346]">Login</Link>
+          <div className="flex flex-wrap items-center gap-6 text-sm text-white">
+            <Link href="/projects" className="transition-colors duration-200 hover:text-[#F0F9F4]">Programs</Link>
+            <Link href="/get-involved" className="transition-colors duration-200 hover:text-[#F0F9F4]">Get Involved</Link>
+            <Link href="/about" className="transition-colors duration-200 hover:text-[#F0F9F4]">About</Link>
+            <Link href="/news" className="transition-colors duration-200 hover:text-[#F0F9F4]">News</Link>
+            <Link href="/get-involved/careers" className="transition-colors duration-200 hover:text-[#F0F9F4]">Careers</Link>
+            <Link href="/contact" className="transition-colors duration-200 hover:text-[#F0F9F4]">Contact</Link>
+            <Link href="/about/reports" className="transition-colors duration-200 hover:text-[#F0F9F4]">Reports</Link>
+            <Link href="/webinar" className="transition-colors duration-200 hover:text-[#F0F9F4]">Webinar</Link>
+            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#F0F9F4]">Create Account</Link>
+            <Link href="/auth/login" className="transition-colors duration-200 hover:text-[#F0F9F4]">Login</Link>
           </div>
 
           <Link
             href="/portal/dashboard"
-            className="inline-flex items-center justify-center rounded-full bg-[#029346] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#027437]"
+            className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#029346] shadow-sm transition-colors duration-200 hover:bg-slate-100"
           >
             Go to Portal
           </Link>

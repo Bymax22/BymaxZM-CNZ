@@ -2,7 +2,73 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import type { StoryTopic } from '../components/sections/storyData';
 import { storyCategories, storyThemes, storyTopics } from '../components/sections/storyData';
+
+function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(12 + index * 4);
+  const [comments, setComments] = useState(4 + index * 2);
+  const [shares, setShares] = useState(8 + index * 3);
+
+  const toggleLike = () => {
+    setLiked((current) => {
+      setLikes((value) => value + (current ? -1 : 1));
+      return !current;
+    });
+  };
+
+  const handleShare = () => setShares((value) => value + 1);
+
+  return (
+    <article className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1">
+      <div className="p-6">
+        <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-[var(--primary-green)]">
+          <span>{story.category}</span>
+          <span className="text-slate-400">•</span>
+          <span>{story.theme}</span>
+        </div>
+        <h2 className="mt-4 text-xl font-semibold text-slate-900">{story.title}</h2>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">{story.summary}</p>
+        <div className="mt-6 rounded-3xl border border-[var(--primary-green)] bg-[var(--primary-green)]/5 px-5 py-3 text-sm font-semibold text-[var(--primary-green)]">
+          {story.highlight}
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          <button
+            type="button"
+            onClick={toggleLike}
+            className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 transition ${
+              liked ? 'border-[#029346] bg-[#029346] text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-[#029346] hover:text-[#029346]'
+            }`}
+          >
+            ❤ {likes}
+          </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 transition hover:border-[#029346] hover:text-[#029346]"
+          >
+            💬 {comments}
+          </button>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 transition hover:border-[#029346] hover:text-[#029346]"
+          >
+            ↗ {shares}
+          </button>
+        </div>
+
+        <Link
+          href={`/our-stories/${story.id}`}
+          className="mt-6 inline-flex items-center justify-center rounded-full border border-[var(--primary-green)] bg-[var(--primary-green)]/10 px-5 py-3 text-sm font-semibold text-[var(--primary-green)] transition hover:bg-[var(--primary-green)]/15"
+        >
+          See full story
+        </Link>
+      </div>
+    </article>
+  );
+}
 
 export default function OurStoriesPage() {
   const [activeCategory, setActiveCategory] = useState<(typeof storyCategories)[number]>('All');
@@ -92,7 +158,7 @@ export default function OurStoriesPage() {
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
           <p className="text-sm text-slate-600">
             Showing <span className="font-semibold text-slate-900">{filteredStories.length}</span> stories for{' '}
-            <span className="font-semibold text-slate-900">{activeCategory}</span> &bull; <span className="font-semibold text-slate-900">{activeTheme}</span>
+            <span className="font-semibold text-slate-900">{activeCategory}</span> • <span className="font-semibold text-slate-900">{activeTheme}</span>
           </p>
           <button
             type="button"
@@ -112,27 +178,8 @@ export default function OurStoriesPage() {
           </div>
         ) : (
           <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {filteredStories.map((story) => (
-              <article key={story.id} className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1">
-                <div className="p-6">
-                  <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-[var(--primary-green)]">
-                    <span>{story.category}</span>
-                    <span className="text-slate-400">•</span>
-                    <span>{story.theme}</span>
-                  </div>
-                  <h2 className="mt-4 text-xl font-semibold text-slate-900">{story.title}</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{story.summary}</p>
-                  <div className="mt-6 rounded-3xl border border-[var(--primary-green)] bg-[var(--primary-green)]/5 px-5 py-3 text-sm font-semibold text-[var(--primary-green)]">
-                    {story.highlight}
-                  </div>
-                  <Link
-                    href={`/our-stories/${story.id}`}
-                    className="mt-6 inline-flex items-center justify-center rounded-full border border-[var(--primary-green)] bg-[var(--primary-green)]/10 px-5 py-3 text-sm font-semibold text-[var(--primary-green)] transition hover:bg-[var(--primary-green)]/15"
-                  >
-                    See full story
-                  </Link>
-                </div>
-              </article>
+            {filteredStories.map((story, index) => (
+              <StoryCard key={story.id} story={story} index={index} />
             ))}
           </div>
         )}

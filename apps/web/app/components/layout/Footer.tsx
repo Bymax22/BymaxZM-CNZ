@@ -55,9 +55,9 @@ export const Footer = () => {
   return (
     <footer className="bg-[var(--secondary-brown)] text-gray-100">
       {/* Main Footer */}
-      <div className="container mx-auto px-4 py-12 md:py-16">
+      <div className="container mx-auto px-4 py-14 md:py-16">
         {/* Top Section with Logo and Newsletter */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 pb-8 border-b border-gray-700">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-12 pb-10 border-b border-[#7c4520]">
           <div>
             <div className="mb-4">
               <Image
@@ -65,39 +65,38 @@ export const Footer = () => {
                 alt="Care for Nature Zambia Logo"
                 width={200}
                 height={60}
-                className="h-8 md:h-12 w-auto"
+                className="h-10 md:h-12 w-auto"
               />
             </div>
-            <p className="text-gray-400 text-sm max-w-md leading-relaxed">
-              We're humanity, Fauna and Flora flourish in harmony.
-              Care for Nature Zambia.
+            <p className="text-gray-200 text-sm max-w-md leading-relaxed">
+              Care for Nature Zambia protects Zambia’s environment while empowering communities through conservation, climate education and child-led advocacy.
             </p>
-            <div className="flex space-x-4 mt-6">
+            <div className="flex flex-wrap gap-3 mt-6">
               {socialLinks.map((social, index) => (
                 <Link
                   key={index}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 bg-gray-700 hover:bg-[#029346] rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                  className="w-10 h-10 bg-[#7c4520] hover:bg-[#029346] rounded-full flex items-center justify-center transition-all duration-300"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-4 h-4 text-gray-300 hover:text-white transition-colors" />
+                  <social.icon className="w-4 h-4 text-gray-200 hover:text-white transition-colors" />
                 </Link>
               ))}
             </div>
           </div>
 
-          <div className="lg:pl-8">
-            <h4 className="text-white font-semibold mb-4">Stay Updated</h4>
-            <p className="text-gray-400 text-sm mb-4">
-              Subscribe to our newsletter for updates on our work and ways to get involved.
+          <div className="lg:col-span-1">
+            <h4 className="text-white font-semibold mb-4 uppercase tracking-[0.12em] text-sm">Stay Informed</h4>
+            <p className="text-gray-300 text-sm mb-4">
+              Subscribe for updates on our projects, community programs and climate advocacy work.
             </p>
             <form className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
-                placeholder="Your email address"
-                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 bg-[#7c4520] border border-[#6b4a2b] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
                 required
               />
               <button
@@ -108,19 +107,41 @@ export const Footer = () => {
               </button>
             </form>
           </div>
+
+          <div className="lg:col-span-1">
+            <h4 className="text-white font-semibold mb-4 uppercase tracking-[0.12em] text-sm">Contact</h4>
+            <div className="space-y-4 text-sm text-gray-300">
+              <div>
+                <p className="text-gray-100 font-medium">Headquarters</p>
+                <p>Mansa, Luapula Province, Zambia</p>
+              </div>
+              <div>
+                <p className="text-gray-100 font-medium">Email</p>
+                <a href="mailto:info@carefornaturezambia.org" className="hover:text-white transition-colors">
+                  info@carefornaturezambia.org
+                </a>
+              </div>
+              <div>
+                <p className="text-gray-100 font-medium">Phone</p>
+                <a href="tel:+260965638175" className="hover:text-white transition-colors">
+                  +260 965 638 175
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Links Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="text-white font-semibold mb-4">{category}</h4>
+              <h4 className="text-white font-semibold mb-4 uppercase tracking-[0.08em] text-sm">{category}</h4>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-gray-400 hover:text-[#F79021] text-sm transition-colors"
+                      className="text-gray-300 hover:text-white text-sm transition-colors"
                     >
                       {link.name}
                     </Link>
@@ -132,12 +153,12 @@ export const Footer = () => {
         </div>
 
         {/* Contact Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-gray-700">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-[#7c4520]">
           <div className="flex items-start space-x-3">
             <FaMapMarkerAlt className="text-[#F79021] mt-1 flex-shrink-0" />
             <div>
               <p className="text-white text-sm font-medium">Headquarters</p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-300 text-sm">
                 Mansa, Luapula Province, Zambia
               </p>
             </div>
@@ -148,7 +169,7 @@ export const Footer = () => {
               <p className="text-white text-sm font-medium">Email</p>
               <a
                 href="mailto:info@carefornaturezambia.org"
-                className="text-gray-400 text-sm hover:text-[#F79021] transition-colors"
+                className="text-gray-300 text-sm hover:text-white transition-colors"
               >
                 info@carefornaturezambia.org
               </a>
@@ -160,7 +181,7 @@ export const Footer = () => {
               <p className="text-white text-sm font-medium">Phone</p>
               <a
                 href="tel:+260965638175"
-                className="text-gray-400 text-sm hover:text-[#F79021] transition-colors"
+                className="text-gray-300 text-sm hover:text-white transition-colors"
               >
                 +260 965 638 175
               </a>
@@ -170,26 +191,25 @@ export const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-gray-700">
+      <div className="border-t border-[#7c4520]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-xs text-center md:text-left">
+            <p className="text-gray-300 text-xs text-center md:text-left">
               © {currentYear} Care for Nature Zambia. All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 text-xs">
-              <Link href="/privacy" className="text-gray-400 hover:text-[#F79021] transition-colors">
+            <div className="flex flex-wrap justify-center gap-4 text-xs text-gray-300">
+              <Link href="/privacy" className="hover:text-white transition-colors">
                 Privacy Policy
               </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/terms" className="text-gray-400 hover:text-[#F79021] transition-colors">
+              <span className="text-gray-500">|</span>
+              <Link href="/terms" className="hover:text-white transition-colors">
                 Terms of Use
               </Link>
-              <span className="text-gray-600">|</span>
-              <Link href="/contact" className="text-gray-400 hover:text-[#F79021] transition-colors">
+              <span className="text-gray-500">|</span>
+              <Link href="/contact" className="hover:text-white transition-colors">
                 Support
               </Link>
             </div>
-            
           </div>
         </div>
       </div>
