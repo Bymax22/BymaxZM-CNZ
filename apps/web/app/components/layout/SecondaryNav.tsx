@@ -4,13 +4,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
-import { FaFacebookF, FaEnvelope } from 'react-icons/fa';
+import { FaFacebookF, FaEnvelope, FaWhatsapp, FaPhone } from 'react-icons/fa';
 import { FaTree, FaUsers, FaTools, FaHandshake } from 'react-icons/fa';
 import React from 'react';
 
 const socialLinks = [
   { href: 'https://facebook.com/carefornaturezambia', icon: FaFacebookF, label: 'Facebook', external: true },
+  { href: 'https://wa.me/260965638175', icon: FaWhatsapp, label: 'WhatsApp', external: true },
   { href: 'mailto:info@carefornaturezambia.org', icon: FaEnvelope, label: 'Email', external: false },
+  { href: 'tel:+260965638175', icon: FaPhone, label: 'Call', external: false },
 ];
 
 const thematicTabs = [
