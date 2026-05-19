@@ -17,6 +17,19 @@ export default function TeamPage() {
 
   return (
     <main className="pt-24 pb-16">
+      {/* Back Navigation */}
+      <div className="max-w-6xl mx-auto px-4 pt-4 pb-4">
+        <Link
+          href="/about"
+          className="inline-flex items-center gap-2 text-[#029346] hover:text-[#0C4726] font-semibold transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to About Us
+        </Link>
+      </div>
+
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#029346] to-[#0C4726] text-white py-16">
         <div className="max-w-6xl mx-auto px-4 text-center">
@@ -218,6 +231,25 @@ export default function TeamPage() {
               </ul>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Related Pages */}
+      <section className="max-w-6xl mx-auto px-4 py-20">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Pages</h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { title: 'Governance', href: '/about/governance', icon: '⚖️' },
+            { title: 'Our Programs', href: '/about/programs', icon: '🌱' },
+            { title: 'Our Story', href: '/about/story', icon: '📖' },
+          ].map((page) => (
+            <Link key={page.href} href={page.href}>
+              <div className="bg-gradient-to-br from-[#F0F9F4] to-white rounded-xl p-8 text-center border border-gray-100 hover:border-[#029346] hover:shadow-lg transition-all cursor-pointer">
+                <div className="text-5xl mb-4">{page.icon}</div>
+                <h3 className="text-xl font-bold text-gray-900 hover:text-[#029346] transition-colors">{page.title}</h3>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -69,30 +69,52 @@ export const SecondaryNav = () => {
 
   return (
     <>
-      <nav className={`fixed top-16 md:top-20 left-0 w-full border-b border-[var(--secondary-green)] z-40 md:hidden bg-[var(--primary-green)] transition-transform duration-300 ${isScrolling ? '-translate-y-full' : 'translate-y-0'}`}>
+      {/* Animated gradient background styles */}
+      <style>{`
+        @keyframes gradientShift {
+          0% {
+            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+          33% {
+            background: linear-gradient(45deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+          66% {
+            background: linear-gradient(225deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+          100% {
+            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+        }
+        .animated-gradient {
+          animation: gradientShift 8s ease infinite;
+          background-size: 200% 200%;
+        }
+      `}</style>
+
+      <nav className={`fixed top-16 md:top-20 left-0 w-full border-b border-white/20 z-40 md:hidden animated-gradient transition-transform duration-300 ${isScrolling ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between gap-2 py-1 h-8">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:gap-2">
               {socialLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
                   target={link.external ? '_blank' : undefined}
                   rel={link.external ? 'noreferrer noopener' : undefined}
-                  className="w-9 h-9 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
+                  className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-white/10 text-white flex items-center justify-center transition-colors hover:bg-white/20"
                   aria-label={link.label}
                 >
-                  <link.icon className="w-4 h-4" />
+                  <link.icon className="w-3 h-3 md:w-4 md:h-4" />
                 </Link>
               ))}
             </div>
 
             <button
-              className="h-10 w-10 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center"
+              className="h-8 w-8 md:h-10 md:w-10 rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-colors flex items-center justify-center flex-shrink-0"
               aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
-              {isMenuOpen ? <MdOutlineClose className="w-6 h-6" /> : <MdOutlineMenu className="w-6 h-6" />}
+              {isMenuOpen ? <MdOutlineClose className="w-5 h-5 md:w-6 md:h-6" /> : <MdOutlineMenu className="w-5 h-5 md:w-6 md:h-6" />}
             </button>
           </div>
 

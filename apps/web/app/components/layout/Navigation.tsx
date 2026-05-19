@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaSearch, FaFacebookF, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
-import { FiBell, FiLogIn } from 'react-icons/fi';
+import { FiBell, FiUser } from 'react-icons/fi';
 
 export const Navigation = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,6 +73,27 @@ export const Navigation = () => {
 
   return (
     <>
+      {/* Animated gradient background styles */}
+      <style>{`
+        @keyframes gradientShift {
+          0% {
+            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+          33% {
+            background: linear-gradient(45deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+          66% {
+            background: linear-gradient(225deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+          100% {
+            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
+          }
+        }
+        .animated-gradient {
+          animation: gradientShift 8s ease infinite;
+          background-size: 200% 200%;
+        }
+      `}</style>
       {/* PRIMARY HEADER */}
       <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-xl z-50 border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-16 md:h-20 px-4 md:px-6 gap-8">
@@ -142,15 +163,15 @@ export const Navigation = () => {
               className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
               aria-label="Login or sign up"
             >
-              <FiLogIn className="w-6 h-6" />
+              <FiUser className="w-6 h-6" />
             </Link>
 
             <button
               type="button"
-              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346] md:h-12 md:w-12"
               aria-label="Notifications"
             >
-              <FiBell className="w-6 h-6" />
+              <FiBell className="w-5 h-5 md:w-6 md:h-6" />
             </button>
 
             <Link
@@ -164,24 +185,24 @@ export const Navigation = () => {
           <div className="md:hidden flex items-center gap-2">
             <Link
               href="/auth/login"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Sign in or sign up"
             >
-              <FiLogIn className="w-6 h-6" />
+              <FiUser className="w-5 h-5" />
             </Link>
 
             <button
-              className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
+              className="h-10 w-10 flex items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Notifications"
             >
-              <FiBell className="w-6 h-6" />
+              <FiBell className="w-5 h-5" />
             </button>
           </div>
         </div>
       </header>
 
       {/* SECONDARY DESKTOP HEADER */}
-      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 border-b border-[var(--secondary-green)] bg-[var(--primary-green)] text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
+      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 border-b border-white/20 animated-gradient text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-6 gap-4">
           <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
             <Link
