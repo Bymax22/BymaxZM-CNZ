@@ -1,13 +1,16 @@
 import Link from 'next/link';
 
 interface SearchPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     query?: string | string[];
-  };
+  }>;
 }
 
-export default function SearchPage({ searchParams }: SearchPageProps) {
-  const query = Array.isArray(searchParams?.query) ? searchParams.query.join(' ') : searchParams?.query ?? '';
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const query = Array.isArray(resolvedSearchParams?.query)
+    ? resolvedSearchParams.query.join(' ')
+    : resolvedSearchParams?.query ?? '';
 
   return (
     <section className="max-w-7xl mx-auto px-6 py-24">
