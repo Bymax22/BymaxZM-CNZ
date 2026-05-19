@@ -41,6 +41,7 @@ export const SecondaryNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPopupVisible(true), 10000);
@@ -52,6 +53,8 @@ export const SecondaryNav = () => {
 
     const handleScroll = () => {
       setIsScrolling(true);
+      setHasScrolled(window.scrollY > 48);
+
       if (scrollTimeout) {
         window.clearTimeout(scrollTimeout);
       }
@@ -59,6 +62,8 @@ export const SecondaryNav = () => {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
       if (scrollTimeout) {
@@ -69,30 +74,16 @@ export const SecondaryNav = () => {
 
   return (
     <>
-      {/* Animated gradient background styles */}
-      <style>{`
-        @keyframes gradientShift {
-          0% {
-            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-          33% {
-            background: linear-gradient(45deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-          66% {
-            background: linear-gradient(225deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-          100% {
-            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-        }
-        .animated-gradient {
-          animation: gradientShift 8s ease infinite;
-          background-size: 200% 200%;
-        }
-      `}</style>
-
-      <nav className={`fixed top-16 md:top-20 left-0 w-full border-b border-white/20 z-40 md:hidden animated-gradient transition-transform duration-300 ${isScrolling ? '-translate-y-full' : 'translate-y-0'}`}>
-        <div className="max-w-7xl mx-auto px-4">
+      <nav
+        className={`fixed top-16 md:top-20 left-0 w-full z-40 md:hidden transform transition duration-500 ease-out ${isScrolling ? '-translate-y-full' : 'translate-y-0'}`}
+      >
+        <div
+          className={`mx-auto max-w-7xl px-4 py-1 border-b transition-colors duration-500 ease-out backdrop-blur-xl ${
+            hasScrolled
+              ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900'
+              : 'bg-slate-950/15 border-white/15 text-white'
+          }`}
+        >
           <div className="flex items-center justify-between gap-2 py-1 h-8">
             <div className="flex items-center gap-1 md:gap-2">
               {socialLinks.map((link) => (

@@ -1,65 +1,104 @@
-'use client';
+﻿'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { FaLeaf, FaUsers, FaHeart, FaGlobeAfrica } from 'react-icons/fa';
+import { FaGlobeAfrica, FaLeaf, FaUsers, FaHeart } from 'react-icons/fa';
+
+const heroStats = [
+  { icon: FaGlobeAfrica, value: '15+', label: 'Years of Service' },
+  { icon: FaLeaf, value: '50+', label: 'Communities Reached' },
+  { icon: FaUsers, value: '5,000+', label: 'Students Educated' },
+  { icon: FaHeart, value: '10', label: 'Provinces Supported' },
+];
 
 export function AboutHero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gray-50">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(2,147,70,0.06),transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(15,118,110,0.08),transparent_28%)] pointer-events-none" />
+    <section className="relative overflow-hidden bg-slate-950 text-white">
+      <div className="absolute inset-0">
+        <Image
+          src="/hero/hero-bg.jpg"
+          alt="Care for Nature Zambia hero image"
+          fill
+          className="object-cover object-center opacity-80"
+        />
+        <div className="absolute inset-0 bg-slate-950/75" />
+      </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-12"
-        >
-          <div className="mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center rounded-3xl bg-[#029346] text-white shadow-lg">
-            <FaGlobeAfrica className="w-10 h-10" />
-          </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 py-24 lg:py-32">
+        <div className="grid gap-12 xl:grid-cols-[1.4fr_1fr] items-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <p className="text-sm tracking-[0.32em] text-emerald-300 uppercase mb-4">
+              Care for Nature Zambia
+            </p>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-tight">
+              Environmental conservation, community leadership, and child-centred action for Zambia.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg text-slate-200 leading-relaxed">
+              We support communities through sustainable land management, youth empowerment, safe mining reform, and public accountability.
+            </p>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            About Care for Nature Zambia
-          </h1>
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+              {heroStats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + index * 0.05 }}
+                  className="flex items-center gap-4 rounded-3xl border border-slate-800 bg-slate-900/90 p-5"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600 text-white">
+                    <stat.icon className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <div className="text-sm text-slate-300">{stat.label}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-          <p className="text-lg sm:text-xl text-gray-700 mb-5 max-w-3xl mx-auto leading-relaxed">
-            We are a Zambian non-governmental organization supporting environmental conservation, children&apos;s rights, strong governance, and sustainable development across rural and peri-urban communities.
-          </p>
-
-          <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Our work brings together conservation, youth leadership, community accountability and climate justice to deliver long-term results for people and nature.
-          </p>
-        </motion.div>
-
-        {/* Quick Impact Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
-        >
-          {[
-            { number: '15+', label: 'Years of Service', icon: FaHeart },
-            { number: '50K+', label: 'Trees Planted', icon: FaLeaf },
-            { number: '100+', label: 'Communities', icon: FaUsers },
-            { number: '10', label: 'Provinces', icon: FaGlobeAfrica },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 + index * 0.1 }}
-              className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm"
-            >
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#029346] text-white">
-                <stat.icon className="w-6 h-6" />
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-6"
+          >
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/90">
+              <div className="relative h-80">
+                <Image
+                  src="/tree-planting.jpg"
+                  alt="Community tree planting"
+                  fill
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-slate-950/35 p-6 flex flex-col justify-end">
+                  <p className="text-sm uppercase tracking-[0.24em] text-slate-200">Community Action</p>
+                  <h2 className="mt-3 text-2xl font-semibold text-white">Tree planting and local training</h2>
+                </div>
               </div>
-              <div className="text-3xl font-bold text-gray-900 mb-1">{stat.number}</div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
+            </div>
+
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/90">
+              <div className="relative h-60">
+                <Image
+                  src="/children-program.jpg"
+                  alt="Children learning outdoors"
+                  fill
+                  className="object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-slate-950/35 p-6 flex flex-col justify-end">
+                  <p className="text-sm uppercase tracking-[0.24em] text-slate-200">Youth Leadership</p>
+                  <h2 className="mt-3 text-xl font-semibold text-white">Children leading conservation projects</h2>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
