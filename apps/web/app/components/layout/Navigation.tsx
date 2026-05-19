@@ -38,9 +38,9 @@ export const Navigation = () => {
       name: 'Our Initiatives',
       href: '/our-initiatives',
       items: [
-        { title: 'Initiatives Overview', href: '/our-initiatives' },
-        { title: 'Programs', href: '/projects' },
-        { title: 'Impact Areas', href: '/our-stories' },
+        { title: 'ZCCC', href: '/our-initiatives' },
+        { title: 'Zero Children in Mining', href: '/our-initiatives' },
+        { title: 'Luapula Alternative Mining Indaba', href: '/our-initiatives' },
       ],
     },
     {
@@ -65,11 +65,11 @@ export const Navigation = () => {
   return (
     <>
       {/* PRIMARY HEADER */}
-      <header className="fixed top-0 left-0 w-full bg-white z-50 border-b">
-        <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-6 gap-6">
+      <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-xl z-50 border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-20 px-6 gap-8">
 
           {/* LOGO */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/Care for Nature logo d-site-01.png"
               alt="Care for Nature Zambia"
@@ -79,20 +79,20 @@ export const Navigation = () => {
             />
           </Link>
 
-          <div className="hidden md:flex flex-1 items-center gap-6">
-            <form onSubmit={handleSearch} className="flex items-center gap-2 w-full max-w-xl rounded-full border border-gray-200 bg-gray-50 px-3 py-2 shadow-sm focus-within:ring-2 focus-within:ring-[#029346]">
-              <FaSearch className="w-4 h-4 text-gray-500" />
+          <div className="hidden md:flex flex-1 items-center gap-8">
+            <form onSubmit={handleSearch} className="flex items-center gap-3 w-full max-w-2xl rounded-full border border-slate-200 bg-slate-50 px-4 py-2 shadow-sm transition-shadow duration-200 hover:shadow-md focus-within:ring-2 focus-within:ring-[#029346]/30">
+              <FaSearch className="w-4 h-4 text-slate-500" />
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Search..."
+                placeholder="Search projects, stories, initiatives..."
                 aria-label="Search"
-                className="w-full bg-transparent text-sm text-gray-700 placeholder:text-gray-400 outline-none"
+                className="w-full bg-transparent text-sm text-slate-700 placeholder:text-slate-400 outline-none"
               />
             </form>
 
-            <nav className="flex items-center gap-6 text-sm font-semibold text-gray-700">
+            <nav className="flex items-center gap-8 text-sm font-semibold text-slate-700">
               {navMenus.map((menu) => (
                 <div
                   key={menu.name}
@@ -102,19 +102,19 @@ export const Navigation = () => {
                 >
                   <Link
                     href={menu.href}
-                    className="hover:text-[#029346] transition-colors"
+                    className="transition-colors duration-200 hover:text-[#029346]"
                   >
                     {menu.name}
                   </Link>
 
                   {activeMenu === menu.name && (
-                    <div className="absolute left-0 top-10 z-50 w-56 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl">
+                    <div className="absolute left-0 top-12 z-50 w-64 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_25px_70px_-30px_rgba(15,23,42,0.35)]">
                       <div className="space-y-2">
                         {menu.items.map((item) => (
                           <Link
                             key={item.title}
                             href={item.href}
-                            className="block rounded-xl px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-[#029346] transition-colors"
+                            className="block rounded-2xl px-3 py-2 text-sm text-slate-700 transition-colors hover:bg-slate-50 hover:text-[#029346]"
                           >
                             {item.title}
                           </Link>
@@ -130,7 +130,7 @@ export const Navigation = () => {
           <div className="hidden md:flex items-center gap-3">
             <Link
               href="/auth/login"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-white border border-gray-200 text-gray-700 hover:border-[#029346] hover:text-[#029346] transition-colors"
+              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
               aria-label="Login or sign up"
             >
               <FaUserCircle className="w-6 h-6" />
@@ -138,7 +138,7 @@ export const Navigation = () => {
 
             <button
               type="button"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-white border border-gray-200 text-gray-700 hover:border-[#029346] hover:text-[#029346] transition-colors"
+              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
               aria-label="Notifications"
             >
               <FiBell className="w-6 h-6" />
@@ -146,7 +146,7 @@ export const Navigation = () => {
 
             <Link
               href="/get-involved/donate"
-              className="inline-flex items-center justify-center rounded-full bg-[#029346] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#027437] transition-colors"
+              className="inline-flex items-center justify-center rounded-full bg-[#029346] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#027437]"
             >
               Donate
             </Link>
@@ -155,14 +155,14 @@ export const Navigation = () => {
           <div className="md:hidden flex items-center gap-3">
             <Link
               href="/auth/login"
-              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Sign in or sign up"
             >
               <FaUserCircle className="w-7 h-7" />
             </Link>
 
             <button
-              className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-gray-700 ml-0.5"
+              className="h-12 w-12 flex items-center justify-center rounded-full bg-white/10 text-slate-700 ml-0.5"
               aria-label="Notifications"
             >
               <FiBell className="w-7 h-7" />
@@ -172,14 +172,14 @@ export const Navigation = () => {
       </header>
 
       {/* SECONDARY DESKTOP HEADER */}
-      <nav className="hidden md:block fixed top-16 left-0 w-full bg-white z-40 border-b">
+      <nav className="hidden md:block fixed top-20 left-0 w-full bg-slate-50/95 z-40 border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-6 gap-4">
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-slate-600">
             <Link
               href="https://facebook.com/carefornaturezambia"
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label="Facebook"
             >
               <FaFacebookF className="w-4 h-4" />
@@ -188,41 +188,43 @@ export const Navigation = () => {
               href="https://wa.me/260965638175"
               target="_blank"
               rel="noreferrer noopener"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label="WhatsApp"
             >
               <FaWhatsapp className="w-4 h-4" />
             </Link>
             <Link
               href="mailto:info@carefornaturezambia.org"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label="Email"
             >
               <FaEnvelope className="w-4 h-4" />
             </Link>
             <Link
               href="tel:+260965638175"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-600 hover:bg-slate-100 transition-colors"
               aria-label="Call"
             >
               <FaPhone className="w-4 h-4" />
             </Link>
+          </div>
 
-            <Link href="/projects" className="hover:text-[#029346] transition-colors">Programs</Link>
-            <Link href="/get-involved" className="hover:text-[#029346] transition-colors">Get Involved</Link>
-            <Link href="/about" className="hover:text-[#029346] transition-colors">About</Link>
-            <Link href="/news" className="hover:text-[#029346] transition-colors">News</Link>
-            <Link href="/get-involved/careers" className="hover:text-[#029346] transition-colors">Careers</Link>
-            <Link href="/contact" className="hover:text-[#029346] transition-colors">Contact</Link>
-            <Link href="/about/reports" className="hover:text-[#029346] transition-colors">Reports</Link>
-            <Link href="/webinar" className="hover:text-[#029346] transition-colors">Webnar</Link>
-            <Link href="/auth/register" className="hover:text-[#029346] transition-colors">Create Account</Link>
-            <Link href="/auth/login" className="hover:text-[#029346] transition-colors">Login</Link>
+          <div className="flex flex-wrap items-center gap-6 text-sm text-slate-700">
+            <Link href="/projects" className="transition-colors duration-200 hover:text-[#029346]">Programs</Link>
+            <Link href="/get-involved" className="transition-colors duration-200 hover:text-[#029346]">Get Involved</Link>
+            <Link href="/about" className="transition-colors duration-200 hover:text-[#029346]">About</Link>
+            <Link href="/news" className="transition-colors duration-200 hover:text-[#029346]">News</Link>
+            <Link href="/get-involved/careers" className="transition-colors duration-200 hover:text-[#029346]">Careers</Link>
+            <Link href="/contact" className="transition-colors duration-200 hover:text-[#029346]">Contact</Link>
+            <Link href="/about/reports" className="transition-colors duration-200 hover:text-[#029346]">Reports</Link>
+            <Link href="/webinar" className="transition-colors duration-200 hover:text-[#029346]">Webinar</Link>
+            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#029346]">Create Account</Link>
+            <Link href="/auth/login" className="transition-colors duration-200 hover:text-[#029346]">Login</Link>
           </div>
 
           <Link
             href="/portal/dashboard"
-            className="inline-flex items-center justify-center rounded-full bg-[#029346] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#027437] transition-colors"
+            className="inline-flex items-center justify-center rounded-full bg-[#029346] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#027437]"
           >
             Go to Portal
           </Link>

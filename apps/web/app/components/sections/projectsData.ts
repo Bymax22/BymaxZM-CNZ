@@ -33,11 +33,133 @@ export const projects: Project[] = [
   },
   {
     id: 'crdp-zambia',
-    name: 'Child Rights & Development Program',
+    name: 'Zambia Children’s Climate Council',
     category: 'education',
-    title: 'Empowering the Next Generation',
-    shortDescription: 'Promoting children\'s rights and environmental leadership',
-    description: 'We empower children and youth to become environmental leaders and advocates for their rights. Through education, mentorship and participation in decision-making, we ensure children have a voice in matters that affect them, particularly environmental policy and climate action.',
+    title: 'Zambia Children’s Climate Council (ZCCC)',
+    shortDescription: 'Detailed overview of the Zambia Children’s Climate Council and its child-led climate governance model',
+    description: `1 | Page
+
+
+About the Children’s Climate Council
+The Zambia Children’s Climate Council (ZCCC) which was established in June 2024
+and endorsed by the Ministry of Green Economy and Environment in July 2025 is an
+advisory body that empowers children to actively participate in climate policy and
+action at local, national and global levels. The ZCCC is designed to engage children in
+climate decision making, ensuring their voices, ideas and perspectives are included in
+shaping policies and initiatives that address climate change. The council also provides
+a structured way for children to influence climate action, advocate for sustainability
+and contribute to community resilience. The council is critical in complementing
+governments efforts to address the needs of children and demonstrate the importance
+of strong partnerships in climate change implementation.
+Legal and Policy Framework
+Like the Youth Climate Councils, the children’s climate council draws its legal standing
+from the following legal and policy frameworks
+1. UNFCCC Paris Agreement Article 12 of the– which mandates that parties
+cooperate to enhance climate change education, training, public awareness,
+public participation and public access to information. Key aspects of article 12
+include the Action for Climate Empowerment (ACE) which aims to empower all
+members of society to engage in climate action.
+2. United Nations Convention on the Rights of the Child Article 12, together with
+the African Charter on the Rights and Welfare of the Child which calls for equal
+participation of children in leadership and decision-making processes at all
+levels
+3. The Child Participation Framework of Zambia which further places emphasis
+on children expressing their views freely on all matters that affect them with
+their opinions given due weight according to their age and maturity.
+
+How the Council Operates
+The Zambia Children’s Climate Council comprises of a committee of Civil Society
+Organizations that provide technical support to the committee of children. Through
+Child rights, climate change and environmental focused organizations, children from
+across the country are affiliated to the Council through nomination by the
+participating CSO. One of the guiding principles of the CSO Technical Committee of
+the ZCCC is to ensure that the children’s climate council is fully led and managed by
+children. The council strongly encourages participation of children everywhere
+especially those in hard-to-reach places, including children with disabilities.
+
+Purpose and Activities
+The Zambia Children’s Climate Councils aims to:
+• Advise policymakers on climate strategies and resilience measures
+• Foster child leadership in climate action
+• Provide education and resources for children to engage effectively in
+climate change and environmental programs
+• Encourage intergenerational collaboration to ensure sustainable
+climate solutions
+
+Activities of the council
+Some of the activities of the ZCCC include:
+• Capacity building trainings and workshops
+• Policy consultations
+• Climate Change Engagements
+• Participation in international climate change conferences (COP)
+• Reviewing, reporting and monitoring implementation of reports with focus on
+climate change and environment
+
+Benefits of belonging to the council
+Participation in the Zambia Children’s Climate Council allows children to:
+• Influence climate policy and local decision-making
+• Gain leadership and advocacy experience
+• Connect with peers locally, Regionally and Globally
+• Contribute to meaningful Climate Action that addresses both environment and
+social justice issues
+
+Composition of the Technical Committee to the Children’s Climate Council
+The Technical Committee comprises of organizations working with children and on
+issues of climate change and environment. The role of the Technical Committee is to
+support the implementation of the Children’s Climate Council by developing child-led
+inclusive solutions to climate change and environmental challenges, both financially
+and through capacity building. The technical committee to the ZCCC comprises of:
+1. Chairing Organization
+2. Secretariat
+3. Treasurer
+4. Committee Members
+
+Composition of the ZCCC Committee
+The Children’s Climate Council Committee shall comprise of ten members namely:
+1. The President
+2. Vice President
+3. The Secretary
+4. Vice Secretary
+5. The Treasurer
+6. Trustee
+7. Trustee
+8. Trustee
+9. Trustee
+10. Trustee
+
+Current Technical Committee Members
+The Children’s Climate Council organizing committee comprises of the following
+organizations:
+1. Care for Nature Zambia
+2. Caritas Zambia
+3. Centre for Environment Justice
+4. Civil Society for Poverty reduction
+5. Environment Africa
+6. Family Development Initiative
+7. Keeper Zambia Foundation
+8. Media Network on Child Rights and Development
+9. Save the Children-Petauke
+10. Zambia Climate Change Network
+11. Zango Foundation
+
+Quote
+Children have a right to a clean, healthy and sustainable environment. Children need a clean
+environment in order to enjoy all of their human rights. Children should have access to clean
+air and water, safe climates, healthy ecosystems and biodiversity, healthy food and non
+polluted environments. General Comment No. 26, United Nations Committee on the Rights of
+the Child, CRC/C/GC/26, 22 August 2023ZCCC
+
+Advocacy Focus for the Council
+• Advocate for inclusive participation of children in climate policy by having child
+representatives on the National Technical Committee on Climate Change
+• Advocate for children to be put first in National Sustainability Plans, NAP, NDC
+and Budgets
+• Support and empower children to review, monitor and develop reports to be
+submitted to various mandate holders
+• Protect children from climate change and environmental impacts in line with
+General Comment 26
+• Promote Child participation in climate policy and decision making in line with
+Article 12 of the UNCRC`,
     location: 'Mansa, Samfya, Mwense & National Networks',
     status: 'ongoing',
     impact: [
