@@ -1,7 +1,7 @@
 ﻿import Image from 'next/image';
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { FaLeaf, FaChild, FaIndustry, FaChartLine, FaBalanceScale, FaSearch } from 'react-icons/fa';
+import { FaLeaf, FaChild, FaIndustry, FaChartLine, FaBalanceScale, FaSearch, FaUsers } from 'react-icons/fa';
 
 export const metadata: Metadata = {
   title: 'Impact Reports - Care for Nature Zambia',
