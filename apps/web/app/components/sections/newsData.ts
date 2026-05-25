@@ -91,7 +91,7 @@ export const news: NewsItem[] = [
     image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779063214/699962679_1456513743174561_6442142294815966973_n_dhmrzs.jpg',
     category: 'Education',
     date: '2024-01-08',
-    author: 'Grace Banda',
+    author: 'Bridget Ndebe',
     readTime: '5 min',
     icon: FaRegNewspaper,
     color: 'from-[#029346] to-[#0C4726]',

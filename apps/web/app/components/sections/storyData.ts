@@ -142,17 +142,20 @@ export const storyTopics: StoryTopic[] = [
     id: 'luapula-alternative-mining-indaba',
     category: 'Regional',
     theme: 'Mining',
-    title: 'Luapula Alternative Mining Indaba',
+    title: 'Alternative Mining Indaba',
     description:
-      'Provincial dialogue on mining at the Luapula Alternative Mining Indaba (LUAMI).',
+      'Untold Stories of Women from Manganese host Communities.',
     summary:
-      'Regional dialogue is helping communities shape better mining practice and stronger local oversight.',
-    highlight: 'Community-centered mining conversations in Luapula province',
-    mediaType: 'video',
-    media: '/videos/luapula-indaba.mp4',
+      'Meet 34 year old Liness, a mother of 4 from Mwale Village who is in Cape town, South Africa attending the Alternative Mining Indaba. Liness is among many women negative affected by Manganese mining. An unknown company that was conducting exploration in the area has left trenches around their village destroying their crops, reducing farm land and polluting the Chofoshi stream where they draw water for basic use.',
+    highlight: 'AMI',
+    mediaType: 'image',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779727626/484405851_1060700349422571_6461318569406411229_n_ezlgok.jpg',
     content: [
-      'This story covers the Luapula Alternative Mining Indaba, where provincial leaders, activists, and residents discussed mining impacts and alternatives.',
-      'Participants explored local strategies for environmental protection, land rights, and sustainable livelihoods beyond extractive activity.',
+      'Meet 34 year old Liness, a mother of 4 from Mwale Village who is in Cape town, South Africa attending the Alternative Mining Indaba. Liness is among many women negative affected by Manganese mining. An unknown company that was conducting exploration in the area has left trenches around their village destroying their crops, reducing farm land and polluting the Chofoshi stream where they draw water for basic use.',
+      'Liness was living Mwale Village for the first time and we were happy to see her smiling as we arrived in Lusaka on Friday 2nd February because she had been sick all through the 12 hour journey from Mansa to Lusaka.',
+      'After a restful night she handled the flight well and also enjoyed the boat cruise on the Atlantic Ocean.',
+      'oday Liness will be giving a solidarity statement at the AMI and we are extremely excited for her to have this platform of advocacy. She has also learnt what other women around Africa are experiencing and after one session, she said she wants to go back to school so she interpret English for her self. ',
+      'Many thanks to Southern Africa Trust for supporting the Women’s Land Rights and Climate Justice Project.',
     ],
   },
   {
@@ -165,62 +168,48 @@ export const storyTopics: StoryTopic[] = [
     summary:
       'Regional partnerships at AMI are strengthening the movement for responsible mining across southern Africa.',
     highlight: 'Cross-border collaboration on mining accountability and community protections',
-    mediaType: 'video',
-    media: '/videos/ami-cape-town.mp4',
+    mediaType: 'image',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779727627/484946287_1060700342755905_5628316666382113607_n_ehpd5d.jpg',
     content: [
       'At AMI, delegates shared lessons from mining communities and discussed practical tools for transparency, justice, and environmental care.',
       'The event showcased the power of regional solidarity in shaping mining policy and defending community rights.',
     ],
   },
   {
-    id: 'mining-pollution',
+    id: 'cop28',
     category: 'Global',
-    theme: 'Nature',
-    title: 'Addressing mining pollution',
+    theme: 'Advocacy',
+    title: 'Care for Nature Zambia has been advocating for child participation in climate change processes and decision making at all levels. ',
     description:
-      'Visual stories about pollution issues in the mining sector and our response.',
+      'Care for Nature Zambia has been advocating for child participation in climate change processes and decision making at all levels. ',
     summary:
       'Pollution stories reveal the urgent need for nature-based solutions and responsible mining management.',
-    highlight: 'Protecting ecosystems from mining pollution through local action',
+    highlight: 'This year we were extremely excited that 2 children 1 from Luapula Province and the other from Southern Province were part of the Zambian delegation that attended the United Nations Conference of Parties on Climate Change with support from Save the Children Zambia.',
     mediaType: 'image',
-    media: '/images/topics/mining-pollution.jpg',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779728254/484907373_1059382549554351_264895252848447067_n_cyidfh.jpg',
     content: [
-      'This story documents pollution impacts from mining and the efforts to restore water, soil, and wildlife habitat.',
-      'It also highlights the work of community monitors and environmental teams to hold industry accountable and restore damaged landscapes.',
+      '06.12.2023',
+      'Care for Nature Zambia has been advocating for child participation in climate change processes and decision making at all levels. This year we were extremely excited that 2 children 1 from Luapula Province and the other from Southern Province were part of the Zambian delegation that attended the United Nations Conference of Parties on Climate Change with support from Save the Children Zambia.',
+      'On arrival, the children had a feel of the highly participated Conference with over 100, 000 delegates said to have registered for this significant event where World leaders negotiate and make decisions on matters relating to climate change.',
+      'Join us here as we share the experiences and achievements we recorded at COP 28.',
     ],
   },
+
   {
-    id: 'community-capacity-building',
-    category: 'Other',
-    theme: 'Community',
-    title: 'Community capacity building',
-    description:
-      'Projects that strengthen community skills, governance and environmental resilience.',
-    summary:
-      'Capacity building is empowering communities to lead conservation and climate resilience efforts.',
-    highlight: 'Stronger communities through training, governance, and local leadership',
-    mediaType: 'image',
-    media: '/images/topics/community-capacity-building.jpg',
-    content: [
-      'This story explains how training programs, governance support, and mentorship are helping communities manage natural resources more effectively.',
-      'Local leaders are using those skills to protect forests, manage water, and sustain livelihoods in a changing climate.',
-    ],
-  },
-  {
-    id: 'year-2024-highlights',
+    id: 'year-2023-highlights',
     category: 'Other',
     theme: 'Advocacy',
-    title: '2024 highlights',
+    title: 'Swedish ambassador to Zambia during the Mine visit to AMIZO Mine',
     description:
-      'Milestones from 2024 across national, regional and global engagements.',
+      'Swedish ambassador to Zambia during the Mine visit to AMIZO Mine.',
     summary:
       'A year of milestones across conservation, community advocacy, and regional partnership.',
-    highlight: 'Celebrating impact, innovation, and collaboration from 2024',
+    highlight: '27.07.2023',
     mediaType: 'image',
-    media: '/images/topics/2024-highlights.jpg',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779728664/481203668_1049816653844274_6869822423782969566_n_crtku6.jpg',
     content: [
-      'Our 2024 highlights include conservation wins, policy successes, and strengthened regional networks improving community outcomes.',
-      'The story brings together achievements from national campaigns, regional dialogues, and global partnerships.',
+      'Care for Nature Zambia Programs Manager Mrs Bridget Ndebe Tembo with His Excellency Johan Hallenborg, the Swedish ambassador to Zambia during the Mine visit to AMIZO Mine Save the Children Zambia Swedish Embassy.',
+      
     ],
   },
 ];

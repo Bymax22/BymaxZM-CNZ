@@ -15,7 +15,7 @@ export default function StorySection() {
       : storyTopics.filter((topic) => topic.category === activeCategory);
 
   return (
-    <section className="relative bg-[var(--primary-green)] text-white overflow-hidden py-20">
+    <section className="relative bg-[#4e2507] text-white overflow-hidden py-20">
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute top-16 left-16 w-36 h-36 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute bottom-16 right-16 w-56 h-56 rounded-full bg-black/10 blur-3xl" />
@@ -59,7 +59,7 @@ export default function StorySection() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -24, scale: 0.98 }}
                 transition={{ duration: 0.45, ease: 'easeOut' }}
-                className="group overflow-hidden rounded-[32px] border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl"
+                  className="group overflow-hidden border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl"
               >
                 <div className="relative aspect-[16/10] bg-black/10">
                   {topic.mediaType === 'video' ? (
