@@ -82,13 +82,13 @@ const projects: Project[] = [
 
 const accentStyles = {
   green: {
-    glow: 'shadow-[0_10px_40px_rgba(2,147,70,0.15)]',
+    glow: 'shadow-[0_10px_40px_rgba(15,23,42,0.06)]',
     overlay: 'bg-gradient-to-t from-[var(--primary-green)]/40 to-transparent',
     text: 'text-[var(--primary-green)]',
     hover: 'hover:bg-[var(--primary-green)]',
   },
   orange: {
-    glow: 'shadow-[0_10px_40px_rgba(247,144,33,0.2)]',
+    glow: 'shadow-[0_10px_40px_rgba(15,23,42,0.06)]',
     overlay: 'bg-gradient-to-t from-[#F79021]/40 to-transparent',
     text: 'text-[#F79021]',
     hover: 'hover:bg-[#F79021]',
@@ -101,22 +101,21 @@ export function FeaturedProjects() {
   );
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
+  // Automatic slideshow for all project cards (runs continuously)
   useEffect(() => {
-    if (hoveredCard === null) return;
-
-    const project = projects.find((projectItem) => projectItem.id === hoveredCard);
-    if (!project) return;
-
     const intervalId = window.setInterval(() => {
       setActiveImageIndex((prev) => {
-        const currentIndex = prev[hoveredCard] ?? 0;
-        const nextIndex = (currentIndex + 1) % project.images.length;
-        return { ...prev, [hoveredCard]: nextIndex };
+        const next: Record<number, number> = { ...prev };
+        projects.forEach((p) => {
+          const current = prev[p.id] ?? 0;
+          next[p.id] = (current + 1) % p.images.length;
+        });
+        return next;
       });
-    }, 2200);
+    }, 1600); // slightly faster cycling
 
     return () => window.clearInterval(intervalId);
-  }, [hoveredCard]);
+  }, []);
 
   return (
     <section className="relative py-24 overflow-hidden">
