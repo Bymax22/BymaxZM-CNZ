@@ -119,10 +119,10 @@ export const storyTopics: StoryTopic[] = [
   },
 
   {
-    id: 'national-mining-dialogue',
+    id: 'children-capacity-building',
     category: 'National',
     theme: 'Policy',
-    title: 'National Mining Dialogue',
+    title: 'CSO and Children’s Capacity Building Training',
     description:
       'CSO and Children’s Capacity Building Training on Reporting and Monitoring Government’s commitments towards protecting children from climate change and environmental impacts.',
     summary:

@@ -56,7 +56,7 @@ export const initiatives: Initiative[] = [
       'Policy engagement and advocacy events',
       'Stronger community ownership of mining reforms',
     ],
-    image: '/images/topics/national-mining-dialogue.jpg',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779723117/536284483_1185707510255187_8154881700930956562_n_qv3kro.jpg',
     status: 'Ongoing',
   },
   {

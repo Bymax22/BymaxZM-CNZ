@@ -1,7 +1,7 @@
 export type Project = {
   id: string;
   name: string;
-  category: 'conservation' | 'climate' | 'education' | 'mining' | 'livelihoods';
+  category: 'conservation' | 'climate' | 'education' | 'mining' | 'livelihoods' | 'rights';
   title: string;
   shortDescription: string;
   description: string;
@@ -34,7 +34,7 @@ export const projects: Project[] = [
   {
     id: 'crdp-zambia',
     name: 'Zambia Children’s Climate Council',
-    category: 'education',
+    category: 'climate',
     title: 'Zambia Children’s Climate Council (ZCCC)',
     shortDescription: 'Child-led climate governance and advocacy for Zambia’s young climate leaders',
     description: 'The Zambia Children’s Climate Council (ZCCC) is a child-led advisory body established in 2024 and endorsed by the Ministry of Green Economy and Environment. It empowers children to participate in climate policy, influence national and local climate action, and advocate for inclusive, sustainable solutions across Zambia.',
@@ -68,57 +68,54 @@ export const projects: Project[] = [
     sdgs: [8, 11, 16, 17],
   },
   {
-    id: 'green-livelihoods',
-    name: 'Green Livelihoods Initiative',
-    category: 'livelihoods',
-    title: 'Sustainable Income for Communities',
-    shortDescription: 'Creating sustainable alternative livelihoods',
-    description: 'We support communities in developing sustainable livelihoods that don\'t depend on destructive resource extraction. Through cooperative formation, skills training and market linkages, we enable families to earn income while protecting the environment.',
+    id: 'mining-indaba',
+    name: 'Alternative Luapula Mining Indaba - 2025 ',
+    category: 'mining',
+    title: '7 years of Mining dialogue ',
+    shortDescription: 'The 7th Luapula Alternative Mining Indaba -  LUAMI',
+    description: 'The 7th Luapula Alternative Mining Indaba - LUAMI  was officially opened by Luapula Province Permanent Secretary and in attendance where His Worship the Mayor of Mansa, His Royal Highnesses Chief Mibenge, Chief Mabumba, Chief Chimese and representative of Chief Chisunka. Other participants included CSO, Reseaechers, the Church, community members, children and the media. More details coming soon. Many thanks to The Government and Luapula Chiefs council for continued support, Centre for Environment Justice Civil Society for Poverty Reduction-CSPR Amizo Power Engineering, Mansa District Land Alliance for making the event possible.',
     location: 'Mansa & Samfya Districts',
     status: 'ongoing',
     impact: [
-      '800+ households in cooperatives',
-      'Indigenous seeds & crafts programs',
-      'Agricultural enterprises established',
-      'Women economic empowerment',
+      '....',
+      '....',
+      '....',
+      '....',
     ],
-    image: '/images/projects/livelihoods.jpg',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779723117/536284483_1185707510255187_8154881700930956562_n_qv3kro.jpg',
     sdgs: [1, 2, 5, 12],
   },
   {
-    id: 'climate-resilience',
-    name: 'Climate Resilience Project',
-    category: 'climate',
-    title: 'Building Climate-Smart Communities',
-    shortDescription: 'Helping communities adapt to climate change',
-    description: 'As climate impacts intensify in Zambia, we work with communities to develop adaptation strategies and climate-smart agriculture. We also conduct research on environmental trends to inform policy and community decision-making.',
+    id: 'women-land-rights',
+    name: 'WOMEN’S LAND RIGHTS',
+    category: 'rights',
+    title: 'WOMEN’S LAND RIGHTS AND CLIMATE JUSTICE',
+    shortDescription: 'Care for Nature Zambia has received financial support from Southern Africa Trust to implement a community-based project aimed at building the capacity of women in the manganese mining communities of Mansa District to defend their rights to land for resilient livelihoods and climate justice. ',
+    description: 
+    'This project has come at a time when increased demand for manganese has seen rise in unregulated mines which exploiting local people due to their vulnerability and persistent poverty in Luapula Province.',
     location: 'Nationwide Focus',
     status: 'ongoing',
     impact: [
-      'Climate action plans developed',
-      'Community adaptation strategies',
-      'Weather monitoring networks',
-      'Climate change research completed',
+      'Improved understanding and implementation of legal and policy frameworks on mining, environment, labor, land and human rights among women in the manganese mining communities',
+      'Improved participation of women in policy and decision-making processes and direct policy engagement through traditional and civic structures such as village committees, DDCC, PDCC and participation in mining platforms at provincial, national and regional level.',
     ],
-    image: '/images/projects/climate.jpg',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779725638/482250613_1058339666325306_2005527676673850582_n_wxcov2.jpg',
     sdgs: [13],
   },
   {
-    id: 'hotspring-restoration',
-    name: 'Chamalawa Hot Spring Conservation',
-    category: 'conservation',
-    title: 'Protecting Natural Heritage',
-    shortDescription: 'Conserving Zambia\'s unique wetland ecosystem',
-    description: 'Through our partnership with the National Heritage Conservation Commission, we protect and restore the Chamalawa Hot Spring and its associated wetland. This unique ecosystem provides habitat for rare species and cultural significance for local communities.',
-    location: 'Chamalawa, Zambia',
+    id: 'child-participation-cop28',
+    name: 'UAE - COP 28',
+    category: 'rights',
+    title: 'Child Participation  in the United Nations Conference of Parties COP28',
+    shortDescription: 'The 28th United Nations Conference of Parties which will be held in the United Arabs Emirates from 30th to 12th December 2023 will be a milestone moment as stakeholders will do an assessment and record progress on the Paris Agreement which was enacted in 2015.',
+    description: 'This historical moment calls for inclusive participation of all stakeholder that are affected by climate change and those working to influence decision making and leadership roles in mitigating and adapting to climate change.',
+    location: 'UAE',
     status: 'ongoing',
     impact: [
-      'Wetland restoration ongoing',
-      'Species monitoring program',
-      'Community stewardship established',
-      'Eco-tourism development',
+      'Children fully integrated into the global climate policy making and dialogues.”',
+      
     ],
-    image: '/images/projects/hotspring.jpg',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779726699/410798998_750008060491803_5601703772940240462_n_q1t08s.jpg',
     sdgs: [14, 15],
   },
 ];
@@ -127,7 +124,7 @@ export const projectCategories = [
   { id: 'conservation', label: 'Conservation', color: 'green' },
   { id: 'climate', label: 'Climate Action', color: 'blue' },
   { id: 'education', label: 'Education', color: 'purple' },
-  { id: 'mining', label: 'Mining', color: 'orange' },
+  { id: 'mining, rights', label: 'Mining | Rights', color: 'orange' },
   { id: 'livelihoods', label: 'Livelihoods', color: 'yellow' },
 ];
 
