@@ -78,7 +78,7 @@ export const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-[#7c4520] hover:bg-[#029346] rounded-full flex items-center justify-center transition-all duration-300"
+                  className="w-10 h-10 bg-[#029346] hover:bg-[#7c4520] rounded-full flex items-center justify-center transition-all duration-300"
                   aria-label={social.label}
                 >
                   <social.icon className="w-4 h-4 text-gray-200 hover:text-white transition-colors" />
@@ -96,7 +96,7 @@ export const Footer = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-[#7c4520] border border-[#6b4a2b] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
+                className="flex-1 px-4 py-3 bg-[#220f03] border border-[#6b4a2b] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
                 required
               />
               <button
