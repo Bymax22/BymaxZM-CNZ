@@ -65,18 +65,21 @@ const annualReports = [
     year: '2024',
     title: 'Annual Report 2024',
     summary: 'A year of growth, partnerships, and measurable conservation results.',
+    fileUrl: '/reports/annual-report-2024.pdf',
     highlights: ['Expanded programs to five new districts', 'Engaged 15,000+ people', 'Protected 2,500 hectares of land', 'Trained 500 youth leaders'],
   },
   {
     year: '2023',
     title: 'Annual Report 2023',
     summary: 'Strengthening systems and building resilient community conservation initiatives.',
+    fileUrl: '/reports/annual-report-2023.pdf',
     highlights: ['Launched our 2023-2027 strategic plan', 'Delivered 25+ community projects', 'Reached 12,000 beneficiaries', 'Created eight new conservation zones'],
   },
   {
     year: '2022',
     title: 'Annual Report 2022',
     summary: 'Recovery and renewed partnerships after pandemic disruption.',
+    fileUrl: '/reports/annual-report-2022.pdf',
     highlights: ['Rebuilt community networks', 'Secured strategic partnerships', 'Expanded mining accountability work', 'Enhanced digital engagement'],
   },
 ];
@@ -187,33 +190,39 @@ export default function ReportsPage() {
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Annual Reports</h2>
           <p className="text-gray-600 text-lg max-w-3xl mx-auto">Download the full detail behind our performance and strategic priorities.</p>
         </div>
-        <div className="space-y-8">
+        <div className="grid gap-8 md:grid-cols-2">
           {annualReports.map((report) => (
-            <article key={report.year} className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-              <div className="grid gap-6 lg:grid-cols-[1fr_240px] items-center">
-                <div className="p-8">
-                  <div className="inline-flex items-center rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white mb-4">{report.year}</div>
-                  <h3 className="text-3xl font-semibold text-gray-900 mb-4">{report.title}</h3>
-                  <p className="text-gray-600 mb-6">{report.summary}</p>
-                  <div className="space-y-3 mb-6">
-                    {report.highlights.map((highlight) => (
-                      <div key={highlight} className="flex gap-3 text-gray-700">
-                        <span className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-700" />
-                        <span>{highlight}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button className="inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-6 py-3 text-white font-semibold hover:bg-emerald-800 transition">
-                    Download Full Report
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v16h16" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v12m0 0l4-4m-4 4l-4-4" />
-                    </svg>
-                  </button>
+            <article key={report.year} className="rounded-3xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col lg:flex-row">
+              <div className="p-8 flex-1">
+                <div className="inline-flex items-center rounded-full bg-emerald-700 px-4 py-2 text-sm font-semibold text-white mb-4">{report.year}</div>
+                <h3 className="text-2xl lg:text-3xl font-semibold text-gray-900 mb-4">{report.title}</h3>
+                <p className="text-gray-600 mb-4">{report.summary}</p>
+                <ul className="space-y-2 mb-6">
+                  {report.highlights.map((highlight) => (
+                    <li key={highlight} className="flex gap-3 text-gray-700 items-start">
+                      <span className="mt-1 h-2.5 w-2.5 rounded-full bg-emerald-700 flex-shrink-0" />
+                      <span>{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="flex items-center gap-3">
+                  {report.fileUrl ? (
+                    <>
+                      <a href={report.fileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-2xl bg-emerald-700 px-4 py-2 text-white font-semibold hover:bg-emerald-800 transition">
+                        View
+                      </a>
+                      <a href={report.fileUrl} download className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold hover:bg-slate-50 transition">
+                        Download
+                      </a>
+                    </>
+                  ) : (
+                    <span className="text-sm text-gray-500">Report file not uploaded yet</span>
+                  )}
                 </div>
-                <div className="h-72 bg-slate-100">
-                  <Image src="/children-program.jpg" alt="Annual report" fill className="object-cover object-center" />
-                </div>
+              </div>
+              <div className="h-48 lg:h-auto lg:w-[320px] bg-slate-100 relative">
+                <Image src="/children-program.jpg" alt="Annual report" fill className="object-cover object-center" />
               </div>
             </article>
           ))}
