@@ -78,11 +78,7 @@ export const SecondaryNav = () => {
         className={`fixed top-16 md:top-20 left-0 w-full z-40 md:hidden transform transition duration-500 ease-out ${isScrolling ? '-translate-y-full' : 'translate-y-0'}`}
       >
         <div
-          className={`mx-auto max-w-7xl px-4 py-1 border-b transition-colors duration-500 ease-out backdrop-blur-xl ${
-            hasScrolled
-              ? 'bg-white/95 border-slate-200 shadow-xl text-slate-900'
-              : 'bg-slate-950/15 border-white/15 text-white'
-          }`}
+          className="mx-auto max-w-7xl px-4 py-1 border-b border-[#029346]/70 bg-[#029346]/95 transition-colors duration-500 ease-out backdrop-blur-xl text-white shadow-xl"
         >
           <div className="flex items-center justify-between gap-2 py-1 h-8">
             <div className="flex items-center gap-1 md:gap-2">

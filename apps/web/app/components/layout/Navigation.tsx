@@ -73,27 +73,6 @@ export const Navigation = () => {
 
   return (
     <>
-      {/* Animated gradient background styles */}
-      <style>{`
-        @keyframes gradientShift {
-          0% {
-            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-          33% {
-            background: linear-gradient(45deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-          66% {
-            background: linear-gradient(225deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-          100% {
-            background: linear-gradient(135deg, #029346 0%, #F79021 50%, #8B4513 100%);
-          }
-        }
-        .animated-gradient {
-          animation: gradientShift 8s ease infinite;
-          background-size: 200% 200%;
-        }
-      `}</style>
       {/* PRIMARY HEADER */}
       <header className="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-xl z-50 border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between h-16 md:h-20 px-4 md:px-6 gap-8">
@@ -202,7 +181,7 @@ export const Navigation = () => {
       </header>
 
       {/* SECONDARY DESKTOP HEADER */}
-      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 border-b border-white/20 animated-gradient text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
+      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 bg-[#029346] text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-6 gap-4">
           <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
             <Link
