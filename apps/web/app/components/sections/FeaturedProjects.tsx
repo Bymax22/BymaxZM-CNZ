@@ -158,6 +158,9 @@ export function FeaturedProjects() {
                 whileHover={{ y: -10 }}
                 onMouseEnter={() => setHoveredCard(project.id)}
                 onMouseLeave={() => setHoveredCard(null)}
+                onTouchStart={() => setHoveredCard(project.id)}
+                onTouchEnd={() => setHoveredCard(null)}
+                onTouchCancel={() => setHoveredCard(null)}
                 className={`group relative overflow-hidden bg-white ${accentStyles[project.accent].glow} transition-all duration-500`}
               >
 
