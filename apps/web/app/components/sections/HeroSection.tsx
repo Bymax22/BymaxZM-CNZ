@@ -165,16 +165,21 @@ export const HeroSection = () => {
       if (currentProject.images.length > 4) {
         setBatchIndex(1);
         setDisplayImages(getProjectBatch(currentProject, 1));
-      } else {
-        setProjectIndex((prev) => (prev + 1) % projectGallery.length);
       }
       return;
     }
 
-    if (shuffleStage === 3) {
-      setProjectIndex((prev) => (prev + 1) % projectGallery.length);
-    }
+    // We no longer advance the project here; project rotation is handled
+    // by a dedicated interval so all projects rotate deterministically.
   }, [shuffleStage, projectIndex]);
+
+  useEffect(() => {
+    const projectRotate = setInterval(() => {
+      setProjectIndex((prev) => (prev + 1) % projectGallery.length);
+    }, 18000);
+
+    return () => clearInterval(projectRotate);
+  }, []);
 
   return (
     <section className="relative w-full min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-4rem)] overflow-hidden">
@@ -202,7 +207,7 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-black/50" />
 
       {/* GRADIENT BLEND INTO STORY SECTION */}
-      <div className="absolute bottom-0 left-0 w-full h-72 bg-gradient-to-b from-transparent via-black/30 to-[var(--primary-green)] z-10" />
+      <div className="absolute bottom-0 left-0 w-full h-72 bg-gradient-to-b from-transparent via-black/30 to-[#4e2507] z-10" />
 
       {/* CONTENT */}
       <div className="relative z-20 h-full flex flex-col md:flex-row items-center md:items-stretch pt-24 md:pt-28">

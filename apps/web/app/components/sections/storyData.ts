@@ -45,7 +45,7 @@ export const storyTopics: StoryTopic[] = [
     theme: 'Pollution',
     title: 'The Mwense Mine pollution and the damage it has caused to biodiversity and people’s livelihoods!',
     description:
-      'Over a month and some weeks since the Mine accident occurred in Mwense District when a tailings dam owned by EZED Mining collapsed releasing toxic substances into Mwense Stream which killed off fish, destroyed crops and left hundreds of community members with no access to safe and clean water.',
+      'Over a month and some weeks since the Mine accident occurred in Mwense District when a tailings dam owned...',
     summary:
       'The Mwense Mine pollution and the damage it has caused to biodiversity and people’s livelihoods!',
     highlight: 'Mine pollution in Mwense.',
@@ -106,7 +106,7 @@ export const storyTopics: StoryTopic[] = [
     theme: 'Mining',
     title: 'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department',
     description:
-      'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department for negligence which has led to loss of biodiversity and violation of human rights!',
+      'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department...',
     summary:
       'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department for negligence which has led to loss of biodiversity and violation of human rights!',
     highlight: 'Environmental crime',
@@ -126,7 +126,7 @@ export const storyTopics: StoryTopic[] = [
     description:
       'CSO and Children’s Capacity Building Training on Reporting and Monitoring Government’s commitments towards protecting children from climate change and environmental impacts.',
     summary:
-      'Care for Nature Zambia under the CSO strengthening program supported by Save the Children Zambia with funding from the Swedish International Development Cooperation Agency Sida conducted a two day training for Civil Society Organizations and members of the Zambia Children’s Climate Council on monitoring and reporting on the the commitments that government has made towards protecting children from climate change and environmental impacts. During the training, FIAN Zambia made a presentation on UN reporting mechanisms and shared experiences and examples of some of the reports that they have presented as an institution and as a coalition of CSOs.',
+      'Care for Nature Zambia under the CSO strengthening program supported by Save the Children Zambia with funding from the Swedish International Development Cooperation Agency Sida conducted...',
     highlight: 'A platform for inclusive mining dialogue and shared commitments',
     mediaType: 'image',
     media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779720008/704914375_1465714018921200_6313954475734854321_n_lau5os.jpg',
