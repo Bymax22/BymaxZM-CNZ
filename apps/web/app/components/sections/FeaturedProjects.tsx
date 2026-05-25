@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaTree, FaGraduationCap, FaHandsHelping, FaUsers } from 'react-icons/fa';
 
 type Accent = 'green' | 'orange';
@@ -101,21 +101,22 @@ export function FeaturedProjects() {
   );
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
-  // Automatic slideshow for all project cards (runs continuously)
+  // Per-card slideshow that runs only while hovered/touched
   useEffect(() => {
+    if (hoveredCard === null) return;
+
+    const project = projects.find((p) => p.id === hoveredCard);
+    if (!project) return;
+
     const intervalId = window.setInterval(() => {
-      setActiveImageIndex((prev) => {
-        const next: Record<number, number> = { ...prev };
-        projects.forEach((p) => {
-          const current = prev[p.id] ?? 0;
-          next[p.id] = (current + 1) % p.images.length;
-        });
-        return next;
-      });
-    }, 1600); // slightly faster cycling
+      setActiveImageIndex((prev) => ({
+        ...prev,
+        [hoveredCard]: ((prev[hoveredCard] ?? 0) + 1) % project.images.length,
+      }));
+    }, 1000); // faster while hovered
 
     return () => window.clearInterval(intervalId);
-  }, []);
+  }, [hoveredCard]);
 
   return (
     <section className="relative py-24 overflow-hidden">
@@ -173,10 +174,17 @@ export function FeaturedProjects() {
 
                 {/* IMAGE */}
                 <div className="relative h-64 overflow-hidden">
-                  <div
-                    className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${currentImage})` }}
-                  />
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentImage}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6 }}
+                      className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                      style={{ backgroundImage: `url(${currentImage})` }}
+                    />
+                  </AnimatePresence>
 
                   {/* OVERLAY */}
                   <div className={`absolute inset-0 ${accentStyles[project.accent].overlay}`} />
