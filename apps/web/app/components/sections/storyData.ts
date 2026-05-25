@@ -1,7 +1,7 @@
 export type StoryTopic = {
   id: string;
   category: 'National' | 'Regional' | 'Global' | 'Other';
-  theme: 'Nature' | 'Children' | 'Mining' | 'Policy' | 'Community' | 'Advocacy';
+  theme: 'Nature' | 'Children' | 'Mining' | 'Policy' | 'Community' | 'Advocacy' | 'Pollution';
   title: string;
   description: string;
   summary: string;
@@ -13,7 +13,7 @@ export type StoryTopic = {
 
 export const storyCategories = ['All', 'National', 'Regional', 'Global', 'Other'] as const;
 
-export const storyThemes = ['All', 'Nature', 'Children', 'Mining', 'Policy', 'Community', 'Advocacy'] as const;
+export const storyThemes = ['All', 'Nature', 'Children', 'Mining', 'Policy', 'Community', 'Advocacy', 'Pollution' ] as const;
 
 export const storyTopics: StoryTopic[] = [
   {
@@ -40,20 +40,47 @@ export const storyTopics: StoryTopic[] = [
     ],
   },
   {
+    id: 'polution',
+    category: 'National',
+    theme: 'Pollution',
+    title: 'The Mwense Mine pollution and the damage it has caused to biodiversity and people’s livelihoods!',
+    description:
+      'Over a month and some weeks since the Mine accident occurred in Mwense District when a tailings dam owned by EZED Mining collapsed releasing toxic substances into Mwense Stream which killed off fish, destroyed crops and left hundreds of community members with no access to safe and clean water.',
+    summary:
+      'The Mwense Mine pollution and the damage it has caused to biodiversity and people’s livelihoods!',
+    highlight: 'Mine pollution in Mwense.',
+    mediaType: 'image',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779721557/611132077_1317075760451694_7312051361315355744_n_rcakzs.jpg',
+    content: [
+      'It’s been a month and some weeks since the Mine accident occurred in Mwense District when a tailings dam owned by EZED Mining collapsed releasing toxic substances into Mwense Stream which killed off fish, destroyed crops and left hundreds of community members with no access to safe and clean water.',
+      'Care for Nature Zambia visited some of the pollution victims to hear how they have been affected and the findings were both sad and disturbing. Firstly a walk down Mwense Stream should evidence of the Stream still being polluted and people that we spoke to confirmed that they have been cautioned against consuming nor getting I to contact with the water from the Stream. Thus means that they are now depending on water which is delivered to them, which unfortunately is not sufficient to meet their basic water needs. ',
+      'Women bemoned how those coming from labor with new born babies where having challenges of Sanitation and hygiene due to inadequate supply of water! And sadly there has been no discussion for compensation despite the polluter having asked for a record of those affected.',
+      'A walk through the village lead us to the back side of the area where the tailings dam collapsed. From Kote village, we were able to see the polluted slurry in the tailings that collapsed. To the communities concern, there is a huge furrow being dug to divert water from the hill, which causes flooding when it reaches its peak to a point where they don’t know where the water will drain to. The village households are not the only infrastructure affected, among the most impacted by the effects of mining is Chebele School!',
+      'The honest truth is that this copper Mine sits at a very sensitive ecological area, less than 100 if not 50 meters away from Mwense Stream headwaters. The accident which occurred on 25th November was not the first nor second, according to community members this was the 3rd time that the tailings had collapsed in the year 2025. ',
+      'The rights of community members have been violated! Copper has been extracted and taken away, there is no sign of corporate social responsibility! The People’s livelihoods have been dependent on fish and agriculture, which the Mine too has taken away! It’s time for affected people of Mwense District to get justice! The polluter must pay and the Mine should close!',
+      'In solidarity ✊️ #carefornature',
+
+    ],
+  },
+
+  {
     id: 'advocacy-work',
     category: 'National',
     theme: 'Policy',
-    title: 'Advocacy work',
+    title: 'Supporting effective management of Child and Youth led clubs in Samfya District',
     description:
-      'Video coverage highlighting our policy advocacy and mining accountability efforts.',
+      'Supporting effective management of Child and Youth led clubs in Samfya District.',
     summary:
-      'Policy advocacy is sharpening the voice of vulnerable communities and pushing for stronger mining safeguards.',
-    highlight: 'Policy meetings and public advocacy driving accountability in extractive sectors',
-    mediaType: 'video',
-    media: '/videos/advocacy-work.mp4',
+      'As we prepare to kick start our three year Civil Society and Children’s Climate Action Project on the Copperbelt with support from Save the Children Zambia under the SIDA Civil Society Strengthening Program, we brought together children from 8 Child Rights Clubs from Samfya District including Government officers, traditional leaders, civic leaders and teachers to train them on how to effectively manage child and youth led clubs.',
+    highlight: 'Executive Director Nsama Kearns thanked the people of Samfya for the support towards the children and ensured stakeholders of continued support towards the child and youth led program. ',
+    mediaType: 'image',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779720408/651746913_1388376536654949_2206623137915631918_n_kvdcdo.jpg',
     content: [
-      'This story follows our advocacy work with government officials, community coalitions, and civil society partners to promote responsible mining practices.',
-      'From hearings to media outreach, the campaign amplified community priorities and built momentum for meaningful regulatory change.',
+      'As we prepare to kick start our three year Civil Society and Children’s Climate Action Project on the Copperbelt with support from Save the Children Zambia under the SIDA Civil Society Strengthening Program, we brought together children from 8 Child Rights Clubs from Samfya District including Government officers, traditional leaders, civic leaders and teachers to train them on how to effectively manage child and youth led clubs.',
+      'The training was conducted to ensure that children continue to participate in climate change and environmental policy and decision making processes at all levels even as the organization moves to implementing programs at National and Regional level. Children from the child rights club have already joined efforts to establish and register a club called "Save Nature for Young People" under the Local Authority. The training focused on topics relating to legal and policy frameworks on child participation in Zambia, Child protection and safeguarding, Club Management, Networking and Partnerships and Project sustainability.',
+      'During the plenary session, Lupili Ward Councilor expressed happiness on the leadership principles that children from the rights clubs have exhibited, pledging his full support to continue working with children and youths to ensure that they continue to inspire others and bring pride to Samfya. Village headman Mwanayama equally pledged to continue supporting the children through their club, stating that his village is now a champion for Children’s rights as they have a representative for children in their village committee.',
+      'Care for Nature Zambia envisions a world where children are considered as equal partners in development and are given opportunities to be heard on issues that affect them. Executive Director Nsama Kearns thanked the people of Samfya for the support towards the children and ensured stakeholders of continued support towards the child and youth led program. ',
+    
     ],
   },
   {
@@ -73,21 +100,42 @@ export const storyTopics: StoryTopic[] = [
       'It highlights training programs, advocacy campaigns, and community networks that are creating safer, more equitable local economies.',
     ],
   },
+ {
+    id: 'environmental-crime',
+    category: 'National',
+    theme: 'Mining',
+    title: 'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department',
+    description:
+      'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department for negligence which has led to loss of biodiversity and violation of human rights!',
+    summary:
+      'Care for Nature Zambia to report EZED Mining to the National Prosecution Authority, Environmental crimes department for negligence which has led to loss of biodiversity and violation of human rights!',
+    highlight: 'Environmental crime',
+    mediaType: 'video',
+    media: 'https://res.cloudinary.com/dwxlzl5us/video/upload/q_auto/f_auto/v1779720564/AQM8P5o748CnLADarEMvBFPP4HPM36wRNQ_FOJ2NHRC1GBZ4o9f3Z6QRoKQkKnFcrNUU23rnyj1seOIHnDF3W915YoMf5F-oJFQPOC-n0w_wnvhas.mp4',
+    content: [
+      'More in the following report (Video file)',
+      
+    ],
+  },
+
   {
     id: 'national-mining-dialogue',
     category: 'National',
     theme: 'Policy',
     title: 'National Mining Dialogue',
     description:
-      'Highlights from participation in the National Mining Dialogue and policy engagements.',
+      'CSO and Children’s Capacity Building Training on Reporting and Monitoring Government’s commitments towards protecting children from climate change and environmental impacts.',
     summary:
-      'The national dialogue brought together communities, industry, and policymakers around responsible mining futures.',
+      'Care for Nature Zambia under the CSO strengthening program supported by Save the Children Zambia with funding from the Swedish International Development Cooperation Agency Sida conducted a two day training for Civil Society Organizations and members of the Zambia Children’s Climate Council on monitoring and reporting on the the commitments that government has made towards protecting children from climate change and environmental impacts. During the training, FIAN Zambia made a presentation on UN reporting mechanisms and shared experiences and examples of some of the reports that they have presented as an institution and as a coalition of CSOs.',
     highlight: 'A platform for inclusive mining dialogue and shared commitments',
     mediaType: 'image',
-    media: '/images/topics/national-mining-dialogue.jpg',
+    media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779720008/704914375_1465714018921200_6313954475734854321_n_lau5os.jpg',
     content: [
-      'The National Mining Dialogue created a space where community voices were heard alongside corporate and government stakeholders.',
-      'Outcomes from the meeting include stronger commitments on environmental protection, community benefit sharing, and compliance with mining regulations.',
+      'Care for Nature Zambia under the CSO strengthening program supported by Save the Children Zambia with funding from the Swedish International Development Cooperation Agency Sida conducted a two day training for Civil Society Organizations and members of the Zambia Children’s Climate Council on monitoring and reporting on the the commitments that government has made towards protecting children from climate change and environmental impacts.',
+      'During the training, FIAN Zambia made a presentation on UN reporting mechanisms and shared experiences and examples of some of the reports that they have presented as an institution and as a coalition of CSOs.',
+      'The training further looked at the guidance for children to integrate climate change and environment in the reporting process to the African Committee of Experts on the Rights and Welfare of the Child and used a case study from Cote de voire  to learn how CSO helped children to present a report to the ACERWC for the first time in 2022.',
+      'The training which deepened Children’s understand of their rights, state obligations and the periodic reporting and review processes ended with an action plan being developed by children who participated in the training both physically and virtually, including developing operational guidelines for the Zambia Children’s Climate Council.',
+      'Care for Nature Zambia remains committed to promoting meaningful participation of children in climate change and environmental policy and decision making processes at all levels. #carefornature See less',
     ],
   },
   {
