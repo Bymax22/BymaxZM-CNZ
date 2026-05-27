@@ -119,7 +119,8 @@ export function subscribeToLikeCount(
     return () => {};
   }
 
-  const channel = supabase
+  const client = supabase;
+  const channel = client
     .channel(`content-likes-${contentType}-${contentId}`)
     .on(
       'postgres_changes',
@@ -150,7 +151,7 @@ export function subscribeToLikeCount(
     .subscribe();
 
   return () => {
-    void supabase.removeChannel(channel);
+    void client.removeChannel(channel);
   };
 }
 
@@ -163,7 +164,9 @@ export function subscribeToComments(
     return () => {};
   }
 
-  const channel = supabase
+  const client = supabase;
+
+  const channel = client
     .channel(`content-comments-${contentType}-${contentId}`)
     .on(
       'postgres_changes',
@@ -186,6 +189,6 @@ export function subscribeToComments(
     .subscribe();
 
   return () => {
-    void supabase.removeChannel(channel);
+    void client.removeChannel(channel);
   };
 }
