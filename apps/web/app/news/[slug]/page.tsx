@@ -7,8 +7,9 @@ export async function generateStaticParams() {
   return news.map((item) => ({ slug: item.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const newsItem = getNewsItemBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const newsItem = getNewsItemBySlug(resolvedParams.slug);
 
   if (!newsItem) {
     return {
@@ -24,13 +25,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 }
 
 interface NewsArticlePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function NewsArticlePage({ params }: NewsArticlePageProps) {
-  const newsItem = getNewsItemBySlug(params.slug);
+export default async function NewsArticlePage({ params }: NewsArticlePageProps) {
+  const resolvedParams = await params;
+  const newsItem = getNewsItemBySlug(resolvedParams.slug);
 
   if (!newsItem) {
     notFound();
