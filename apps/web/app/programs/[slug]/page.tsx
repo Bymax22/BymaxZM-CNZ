@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { PROGRAMS } from '../../components/home/programsData';
 
 interface ProgramPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function ProgramDetailPage({ params }: ProgramPageProps) {
-  const program = PROGRAMS.find((item) => item.slug === params.slug);
+export default async function ProgramDetailPage({ params }: ProgramPageProps) {
+  const resolvedParams = await params;
+  const program = PROGRAMS.find((item) => item.slug === resolvedParams.slug);
   if (!program) {
     notFound();
   }
