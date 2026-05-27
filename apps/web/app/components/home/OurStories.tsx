@@ -79,7 +79,7 @@ export default function OurStories() {
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Project Stories</p>
           <h3 className="mt-4 text-3xl sm:text-4xl font-semibold tracking-tight text-slate-900">
-            Real stories from real people whose lives have been transformed.
+            Explore some of our stories from various projects.
           </h3>
         </div>
 
