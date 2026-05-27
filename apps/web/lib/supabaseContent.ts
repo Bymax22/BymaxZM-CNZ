@@ -48,7 +48,7 @@ export async function updateLikeCount(contentType: string, contentId: string, de
         content_id: contentId,
         likes: nextCount,
       },
-      { onConflict: ['content_type', 'content_id'] }
+      { onConflict: 'content_type,content_id' }
     );
 
   if (error) {
