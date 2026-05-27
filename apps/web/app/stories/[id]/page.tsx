@@ -4,15 +4,16 @@ import { storyTopics, StoryTopic } from '../../components/sections/storyData';
 import StoryInteractions from '../../components/stories/StoryInteractions';
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateStaticParams() {
   return storyTopics.map((s) => ({ id: s.id }));
 }
 
-export default function StoryDetail({ params }: Props) {
-  const story = storyTopics.find((s) => s.id === params.id) as StoryTopic | undefined;
+export default async function StoryDetail({ params }: Props) {
+  const resolvedParams = await params;
+  const story = storyTopics.find((s) => s.id === resolvedParams.id) as StoryTopic | undefined;
   if (!story) return notFound();
 
   return (
