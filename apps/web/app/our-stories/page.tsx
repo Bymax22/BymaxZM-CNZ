@@ -1,9 +1,10 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import type { StoryTopic } from '../components/sections/storyData';
 import { storyCategories, storyThemes, storyTopics } from '../components/sections/storyData';
+import { fetchComments, fetchLikeCount, updateLikeCount } from '../../lib/supabaseContent';
 
 function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
   const [liked, setLiked] = useState(false);
@@ -11,11 +12,33 @@ function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
   const [comments, setComments] = useState(4 + index * 2);
   const [shares, setShares] = useState(8 + index * 3);
 
-  const toggleLike = () => {
-    setLiked((current) => {
-      setLikes((value) => value + (current ? -1 : 1));
-      return !current;
-    });
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadStoryStats() {
+      const [likeCount, storedComments] = await Promise.all([
+        fetchLikeCount('story', story.id),
+        fetchComments('story', story.id),
+      ]);
+
+      if (!isMounted) return;
+      setLikes(likeCount);
+      setComments(storedComments.length);
+    }
+
+    void loadStoryStats();
+    return () => {
+      isMounted = false;
+    };
+  }, [story.id]);
+
+  const toggleLike = async () => {
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    setLikes((value) => Math.max(0, value + (nextLiked ? 1 : -1)));
+
+    const updatedCount = await updateLikeCount('story', story.id, nextLiked ? 1 : -1);
+    setLikes(updatedCount);
   };
 
   const handleShare = () => setShares((value) => value + 1);

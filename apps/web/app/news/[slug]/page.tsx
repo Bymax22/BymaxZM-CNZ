@@ -1,9 +1,35 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getNewsItemBySlug } from '../../components/sections/newsData';
+import { getNewsItemBySlug, news } from '../../components/sections/newsData';
 
-export default function NewsArticlePage({ params }: any) {
+export async function generateStaticParams() {
+  return news.map((item) => ({ slug: item.slug }));
+}
+
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const newsItem = getNewsItemBySlug(params.slug);
+
+  if (!newsItem) {
+    return {
+      title: 'News item not found',
+      description: 'The requested news story could not be found.',
+    };
+  }
+
+  return {
+    title: `${newsItem.title} | News`,
+    description: newsItem.excerpt,
+  };
+}
+
+interface NewsArticlePageProps {
+  params: {
+    slug: string;
+  };
+}
+
+export default function NewsArticlePage({ params }: NewsArticlePageProps) {
   const newsItem = getNewsItemBySlug(params.slug);
 
   if (!newsItem) {

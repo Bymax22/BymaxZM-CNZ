@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, type FormEvent } from 'react';
 import {
   FaFacebookF,
   FaTwitter,
@@ -13,9 +14,32 @@ import {
   FaPhone,
   FaMapMarkerAlt,
 } from 'react-icons/fa';
+import { subscribeNewsletter } from '../../../lib/supabaseContent';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({
+    type: 'idle',
+    message: '',
+  });
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return;
+
+    const { error } = await subscribeNewsletter(trimmedEmail.toLowerCase());
+
+    if (error) {
+      setStatus({ type: 'error', message: error.message || 'Unable to subscribe. Please try again.' });
+    } else {
+      setStatus({ type: 'success', message: 'Thank you! You are subscribed.' });
+      setEmail('');
+    }
+
+    window.setTimeout(() => setStatus({ type: 'idle', message: '' }), 5000);
+  };
 
   const footerLinks = {
     About: [
@@ -92,9 +116,11 @@ export const Footer = () => {
             <p className="text-gray-300 text-sm mb-4">
               Subscribe for updates on our projects, community programs and climate advocacy work.
             </p>
-            <form className="flex flex-col sm:flex-row gap-3">
+            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
               <input
                 type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-3 bg-[#220f03] border border-[#6b4a2b] rounded-lg text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#029346] focus:border-transparent"
                 required
@@ -106,6 +132,15 @@ export const Footer = () => {
                 Subscribe
               </button>
             </form>
+            {status.message ? (
+              <p
+                className={`mt-3 text-sm ${
+                  status.type === 'success' ? 'text-emerald-300' : 'text-amber-200'
+                }`}
+              >
+                {status.message}
+              </p>
+            ) : null}
           </div>
 
           <div className="lg:col-span-1">

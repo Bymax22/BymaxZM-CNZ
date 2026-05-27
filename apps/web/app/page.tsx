@@ -2,14 +2,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { HeroSection } from './components/sections/HeroSection';
-import StorySection from './components/sections/StorySection';
-import { FeaturedProjects } from './components/sections/FeaturedProjects';
-import { HowToHelp } from './components/sections/HowToHelp';
-import { LatestNews } from './components/sections/LatestNews';
+import Hero from './components/home/Hero';
+import Programs from './components/home/Programs';
+import ImpactBand from './components/home/ImpactBand';
 
-import { Partners } from './components/sections/Partners';
-
+import OurStories from './components/home/OurStories';
+import CTASection from './components/home/CTA';
+import NewsGrid from './components/home/NewsGrid';
+import Partners from './components/home/Partners';
+import Footer from './components/Footer';
 
 export default function HomePage() {
   const [isMounted, setIsMounted] = useState(false);
@@ -23,100 +24,37 @@ export default function HomePage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading Care for Nature Zambia...</p>
+          <div className="w-16 h-16 border-4 border-[#008000] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading…</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section id="home">
-        <HeroSection />
-      </section>
-      
-      {/* Impact Statistics */}
-      <section id="impact">
-        <StorySection />
-      </section>
-      
-      {/* Featured Projects */}
-      <section id="projects">
-        <FeaturedProjects />
-      </section>
-      
-      {/* How to Help */}
-      <section id="get-involved">
-        <HowToHelp />
-      </section>
-      
-      {/* Latest News */}
-      <section id="news">
-        <LatestNews />
-      </section>
-      
-      
-      {/* Partners */}
-      <section id="partners">
-        <Partners />
-      </section>
-      
+    <div>
+      <Hero />
+      <Programs />
+      <ImpactBand />
+     
+      <OurStories />
+      <CTASection />
+      <NewsGrid />
+      <Partners />
+      <Footer />
 
-      {/* Smooth Scroll Script */}
+      {/* Smooth Scroll + basic observers script */}
       <script
         dangerouslySetInnerHTML={{
           __html: `
-            // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
               anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                  target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                  });
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
               });
-            });
-
-            // Intersection Observer for animations
-            const observerOptions = {
-              threshold: 0.1,
-              rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-              entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                  entry.target.classList.add('animate-fade-in');
-                }
-              });
-            }, observerOptions);
-
-            // Observe all sections for animation
-            document.querySelectorAll('section').forEach(section => {
-              observer.observe(section);
-            });
-
-            // Performance monitoring
-            window.addEventListener('load', () => {
-              const navigationTiming = performance.getEntriesByType('navigation')[0];
-              if (navigationTiming) {
-                const loadTime = navigationTiming.loadEventEnd - navigationTiming.navigationStart;
-                console.log('Page fully loaded in:', loadTime + 'ms');
-                
-                // Send to analytics
-                if (typeof gtag !== 'undefined') {
-                  gtag('event', 'timing_complete', {
-                    'name': 'page_load',
-                    'value': loadTime,
-                    'event_category': 'Load Performance'
-                  });
-                }
-              }
             });
           `,
         }}

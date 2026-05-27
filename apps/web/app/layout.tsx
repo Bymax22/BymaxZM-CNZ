@@ -1,19 +1,19 @@
 export const dynamic = 'force-dynamic';
 
 import type { Metadata, Viewport } from 'next';
-import { Inter, Poppins } from 'next/font/google';
+import { Outfit, Poppins } from 'next/font/google';
 import './globals.css';
 import { CNZProvider } from './contexts/CNZContext';
 import AuthProvider from './providers/AuthProvider';
 import { Navigation } from './components/layout/Navigation';
 import { SecondaryNav } from './components/layout/SecondaryNav';
-import { Footer } from './components/layout/Footer';
+
 import { Toaster } from 'react-hot-toast';
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-outfit',
   preload: true,
 });
 
@@ -104,7 +104,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="en" className={`${outfit.variable} ${poppins.variable}`}>
       <head>
         <link rel="icon" href="/siteicone22.png" sizes="any" type="image/png" />
         <link rel="icon" href="/siteicone22.png" type="image/png" />
@@ -165,7 +165,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           }}
         />
       </head>
-      <body className={`${inter.className} antialiased bg-white min-h-screen flex flex-col`}>
+      <body className={`${outfit.className} antialiased bg-white min-h-screen flex flex-col`}>
         <CNZProvider>
           <AuthProvider>
             <div className="flex-1 flex flex-col">
@@ -192,8 +192,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               {children}
             </main>
 
-            {/* Footer */}
-            <Footer />
+          
             </div>
           </AuthProvider>
 

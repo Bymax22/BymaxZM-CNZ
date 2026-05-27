@@ -16,6 +16,7 @@ export type NewsItem = {
   color: string;
   bgColor: string;
   tags: string[];
+  comments?: string[];
   slug: string;
   href: string;
 };

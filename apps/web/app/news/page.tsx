@@ -1,10 +1,403 @@
+﻿"use client";
+
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import { Heart, MessageCircle, Search, Share2, Sparkles } from 'lucide-react';
+import { news as newsData, type NewsItem } from '../components/sections/newsData';
+
+type NewsEventItem = NewsItem & {
+  itemType: 'News' | 'Event';
+  comments: string[];
+};
+
+const EVENTS: NewsEventItem[] = [
+  {
+    id: 101,
+    title: 'XXXXXXXXXXXXXXX',
+    excerpt: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    content: [
+      'xxxxxxxxxxxxxxxxxxxxxx',
+      
+    ],
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/c_fill,h_400,w_700/v1779731230/486959969_1068853805273892_8836352372438584646_n_v9vwz0.jpg',
+    category: 'Community',
+    date: '2026-06-12',
+    author: 'Care For Nature Zambia',
+    readTime: '2 min',
+    icon: Sparkles,
+    color: 'from-[#029346] to-[#0C4726]',
+    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
+    tags: ['Community', 'Action', 'Volunteer'],
+    slug: 'community-clean-up-drive',
+    href: '/news',
+    itemType: 'Event',
+    comments: ['Looking forward to this event!', 'Great initiative for our community.'],
+  },
+  {
+    id: 102,
+    title: 'xxxxxxxxxxxxxxxxxxxx',
+    excerpt: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    content: [
+      'xxxxxxxxxxxx',
+      'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    ],
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/c_fill,h_400,w_700/v1779731230/486959969_1068853805273892_8836352372438584646_n_v9vwz0.jpg',
+    category: 'Empowerment',
+    date: '2026-06-20',
+    author: 'Care For Nature Zambia',
+    readTime: '3 min',
+    icon: Sparkles,
+    color: 'from-[#F79021] to-[#AA5D26]',
+    bgColor: 'bg-gradient-to-br from-[#F79021]/10 to-[#AA5D26]/10',
+    tags: ['Women', 'Training', 'Skills'],
+    slug: 'women-skills-workshop',
+    href: '/news',
+    itemType: 'Event',
+    comments: ['Important chance for women entrepreneurs.', 'Would love to attend this workshop.'],
+  },
+];
+
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
 export default function NewsPage() {
+  const [activeTab, setActiveTab] = useState<'all' | 'news' | 'events'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeCommentItem, setActiveCommentItem] = useState<number | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [likes, setLikes] = useState<Record<number, number>>(() => {
+    const initialLikes: Record<number, number> = {};
+    [...newsData, ...EVENTS].forEach((item, index) => {
+      initialLikes[item.id] = 12 + index * 2;
+    });
+    return initialLikes;
+  });
+  const [likedItems, setLikedItems] = useState<Record<number, boolean>>({});
+  const [comments, setComments] = useState<Record<number, string[]>>(() => {
+    const commentMap: Record<number, string[]> = {};
+    [...newsData, ...EVENTS].forEach((item) => {
+      commentMap[item.id] = item.comments ?? ['Nice story.'];
+    });
+    return commentMap;
+  });
+  const [shareMessages, setShareMessages] = useState<Record<number, string>>({});
+
+  const allItems = useMemo(
+    () =>
+      [
+        ...newsData.map((item) => ({
+          ...item,
+          itemType: 'News' as const,
+          comments: item.comments ?? ['Great update!'],
+        })),
+        ...EVENTS,
+      ],
+    []
+  );
+
+  const filteredItems = useMemo(
+    () =>
+      allItems.filter((item) => {
+        const matchesTab =
+          activeTab === 'all' ||
+          (activeTab === 'news' && item.itemType === 'News') ||
+          (activeTab === 'events' && item.itemType === 'Event');
+
+        const query = searchTerm.trim().toLowerCase();
+        const matchesSearch =
+          !query ||
+          item.title.toLowerCase().includes(query) ||
+          item.excerpt.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query);
+
+        return matchesTab && matchesSearch;
+      }),
+    [activeTab, searchTerm, allItems]
+  );
+
+  const handleToggleLike = (itemId: number) => {
+    setLikedItems((prev) => {
+      const isLiked = !prev[itemId];
+      setLikes((current) => ({
+        ...current,
+        [itemId]: (current[itemId] ?? 0) + (isLiked ? 1 : -1),
+      }));
+      return { ...prev, [itemId]: isLiked };
+    });
+  };
+
+  const handleAddComment = (itemId: number) => {
+    const trimmed = commentText.trim();
+    if (!trimmed) return;
+
+    setComments((prev) => ({
+      ...prev,
+      [itemId]: [trimmed, ...(prev[itemId] ?? [])],
+    }));
+    setCommentText('');
+  };
+
+  const handleShare = async (itemId: number, href: string) => {
+    const shareText = `${typeof window !== 'undefined' ? window.location.origin : ''}${href}`;
+
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setShareMessages((prev) => ({
+        ...prev,
+        [itemId]: 'Link copied!',
+      }));
+      window.setTimeout(() => {
+        setShareMessages((prev) => ({ ...prev, [itemId]: '' }));
+      }, 2200);
+    } catch {
+      setShareMessages((prev) => ({
+        ...prev,
+        [itemId]: 'Copy failed. Use browser share.',
+      }));
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold mb-4">News</h1>
-      <p className="mb-6">This page will display news and updates.</p>
-      <Link href="/" className="text-green-600 hover:underline">Back to Home</Link>
-    </div>
+    <main className="bg-slate-50 min-h-screen py-16">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <section className="rounded-[32px] border border-slate-200 bg-white p-10 shadow-sm">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm uppercase tracking-[0.32em] text-slate-500">News & Events</p>
+              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+                Explore all stories, updates, and upcoming community events.
+              </h1>
+              <p className="mt-4 text-base leading-7 text-slate-600">
+                Browse the latest news, filter by type, and engage with posts using likes, comments, and share actions.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+              >
+                Back to Home
+              </Link>
+              <button
+                type="button"
+                onClick={() => setActiveTab('all')}
+                className="inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+              >
+                Show All
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-10 grid gap-4 lg:grid-cols-[1.5fr_0.9fr]">
+            <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-4 md:p-6">
+              <div className="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                <Search size={18} className="text-slate-400" />
+                <label className="sr-only" htmlFor="news-search">
+                  Search news and events
+                </label>
+                <input
+                  id="news-search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search news, events, or topics"
+                  className="w-full border-0 bg-transparent text-sm text-slate-900 outline-none placeholder:text-slate-400"
+                />
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                {['all', 'news', 'events'].map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab as 'all' | 'news' | 'events')}
+                    className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                      activeTab === tab
+                        ? 'bg-emerald-600 text-white shadow-sm'
+                        : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {tab === 'all' ? 'All' : tab === 'news' ? 'News' : 'Events'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-8 rounded-[28px] bg-white p-6 shadow-sm">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm uppercase tracking-[0.32em] text-slate-500">Showing</p>
+                    <p className="mt-2 text-3xl font-semibold text-slate-900">{filteredItems.length} items</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-slate-600">Current filter</p>
+                    <p className="text-sm font-semibold text-slate-900">
+                      {activeTab === 'all'
+                        ? 'All news and events'
+                        : activeTab === 'news'
+                        ? 'News only'
+                        : 'Events only'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-slate-900">Quick tips</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                Use the buttons below each card to like, comment, or share. The news feed updates immediately as you type.
+              </p>
+
+              <div className="mt-6 space-y-4 text-sm text-slate-700">
+                <div className="rounded-3xl bg-slate-50 p-4">
+                  <p className="font-semibold text-slate-900">Comment inline</p>
+                  <p className="mt-2 text-slate-600">Click the comment icon to open the form and leave your thoughts.</p>
+                </div>
+                <div className="rounded-3xl bg-slate-50 p-4">
+                  <p className="font-semibold text-slate-900">Share quickly</p>
+                  <p className="mt-2 text-slate-600">Click the share icon to copy the story link to your clipboard.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+          {filteredItems.length > 0 ? (
+            filteredItems.map((item) => (
+              <article
+                key={item.id}
+                className="group overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="relative h-64 overflow-hidden bg-slate-100">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-slate-200" />
+                  )}
+                  <div
+                    className={`absolute left-4 top-4 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] ${
+                      item.itemType === 'Event' ? 'bg-emerald-600 text-white' : 'bg-orange-500 text-white'
+                    }`}
+                  >
+                    {item.itemType}
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.28em] text-slate-500">
+                    <span>{item.category}</span>
+                    <span>{formatDate(item.date)}</span>
+                  </div>
+
+                  <h2 className="mt-4 text-2xl font-semibold text-slate-900">{item.title}</h2>
+                  <p className="mt-4 text-sm leading-6 text-slate-600">{item.excerpt}</p>
+
+                  <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <Link href={item.href} className="text-sm font-semibold text-[#008000] transition hover:text-[#026730]">
+                      {item.itemType === 'Event' ? 'View Details →' : 'Read Full Story →'}
+                    </Link>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleLike(item.id)}
+                        aria-label="Like"
+                        className={`flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 transition ${
+                          likedItems[item.id] ? 'bg-emerald-600 text-white' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        <Heart size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveCommentItem(item.id);
+                          setCommentText('');
+                        }}
+                        aria-label="Comment"
+                        className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100"
+                      >
+                        <MessageCircle size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleShare(item.id, item.href)}
+                        aria-label="Share"
+                        className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100"
+                      >
+                        <Share2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-500">
+                    <span>{likes[item.id] ?? 0} likes</span>
+                    <span>{(comments[item.id] ?? []).length} comments</span>
+                    {shareMessages[item.id] ? (
+                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700">
+                        {shareMessages[item.id]}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  {activeCommentItem === item.id ? (
+                    <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-5">
+                      <div className="text-sm font-semibold text-slate-900">Leave a comment</div>
+                      <textarea
+                        value={commentText}
+                        onChange={(event) => setCommentText(event.target.value)}
+                        placeholder="Write your note here..."
+                        className="mt-4 h-24 w-full rounded-[24px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-emerald-600"
+                      />
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setActiveCommentItem(null)}
+                          className="rounded-full px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleAddComment(item.id)}
+                          disabled={!commentText.trim()}
+                          className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-50"
+                        >
+                          Post Comment
+                        </button>
+                      </div>
+
+                      {((comments[item.id] ?? []).length > 0) ? (
+                        <div className="mt-5 space-y-3">
+                          {(comments[item.id] ?? []).slice(0, 3).map((comment, index) => (
+                            <div key={index} className="rounded-3xl bg-white p-4 text-sm text-slate-700 shadow-sm">
+                              {comment}
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="col-span-full rounded-[32px] border border-dashed border-slate-300 bg-white p-12 text-center text-slate-600">
+              <h2 className="text-xl font-semibold text-slate-900">No results found</h2>
+              <p className="mt-3">Try a different keyword or select another category.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
   );
 }

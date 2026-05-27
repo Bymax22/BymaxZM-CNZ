@@ -93,7 +93,11 @@ export default async function InitiativeDetailPage({ params }: { params: Promise
               </div>
             </div>
 
-            <ContentActions contextLabel={initiative.title} />
+            <ContentActions
+              contentType="initiative"
+              contentId={initiative.id}
+              contextLabel={initiative.title}
+            />
           </div>
 
           <aside className="space-y-6">

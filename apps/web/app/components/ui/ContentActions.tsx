@@ -1,9 +1,24 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { FaCommentAlt, FaHeart, FaShareAlt } from 'react-icons/fa';
+import {
+  fetchComments,
+  fetchLikeCount,
+  postComment,
+  subscribeToComments,
+  subscribeToLikeCount,
+  updateLikeCount,
+} from '../../../lib/supabaseContent';
+
+type CommentItem = {
+  id: string;
+  content: string;
+};
 
 type ContentActionsProps = {
+  contentType?: string;
+  contentId: string;
   initialLikes?: number;
   initialComments?: number;
   initialShares?: number;
@@ -12,6 +27,8 @@ type ContentActionsProps = {
 };
 
 export function ContentActions({
+  contentType = 'initiative',
+  contentId,
   initialLikes = 28,
   initialComments = 12,
   initialShares = 8,
@@ -23,14 +40,47 @@ export function ContentActions({
   const [comments, setComments] = useState(initialComments);
   const [shares, setShares] = useState(initialShares);
   const [commentText, setCommentText] = useState('');
-  const [commentList, setCommentList] = useState<string[]>([]);
+  const [commentList, setCommentList] = useState<CommentItem[]>([]);
   const [feedback, setFeedback] = useState('');
 
-  const toggleLike = () => {
-    setLiked((current) => {
-      setLikes((count) => count + (current ? -1 : 1));
-      return !current;
-    });
+  useEffect(() => {
+    let cleanupLikes = () => {};
+    let cleanupComments = () => {};
+
+    async function loadInitialData() {
+      const [likeCount, storedComments] = await Promise.all([
+        fetchLikeCount(contentType, contentId),
+        fetchComments(contentType, contentId),
+      ]);
+
+      setLikes(likeCount);
+      setComments(storedComments.length);
+      setCommentList(storedComments.map((comment) => ({ id: comment.id, content: comment.content })));
+
+      cleanupLikes = subscribeToLikeCount(contentType, contentId, setLikes);
+      cleanupComments = subscribeToComments(contentType, contentId, (comment) => {
+        setCommentList((current) => {
+          if (current.some((item) => item.id === comment.id)) return current;
+          return [{ id: comment.id, content: comment.content }, ...current];
+        });
+        setComments((value) => value + 1);
+      });
+    }
+
+    void loadInitialData();
+    return () => {
+      cleanupLikes();
+      cleanupComments();
+    };
+  }, [contentId, contentType]);
+
+  const toggleLike = async () => {
+    const nextLiked = !liked;
+    setLiked(nextLiked);
+    setLikes((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
+
+    const result = await updateLikeCount(contentType, contentId, nextLiked ? 1 : -1);
+    setLikes(result);
   };
 
   const handleShare = async () => {
@@ -54,17 +104,27 @@ export function ContentActions({
     }
   };
 
-  const handleCommentSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleCommentSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = commentText.trim();
     if (!trimmed) {
       return;
     }
 
-    setCommentList((items) => [trimmed, ...items]);
-    setComments((value) => value + 1);
-    setCommentText('');
-    setFeedback('Comment added');
+    const savedComment = await postComment(contentType, contentId, trimmed);
+
+    if (savedComment) {
+      setCommentList((items) => {
+        if (items.some((item) => item.id === savedComment.id)) return items;
+        return [{ id: savedComment.id, content: savedComment.content }, ...items];
+      });
+      setComments((value) => value + 1);
+      setCommentText('');
+      setFeedback('Comment added');
+    } else {
+      setFeedback('Unable to post comment. Try again.');
+    }
+
     window.setTimeout(() => setFeedback(''), 2500);
   };
 
@@ -155,9 +215,9 @@ export function ContentActions({
 
       {commentList.length > 0 && (
         <div className="mt-6 space-y-3">
-          {commentList.slice(0, 3).map((comment, index) => (
-            <div key={index} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm text-slate-800">{comment}</p>
+          {commentList.slice(0, 3).map((comment) => (
+            <div key={comment.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm text-slate-800">{comment.content}</p>
             </div>
           ))}
         </div>

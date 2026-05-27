@@ -8,6 +8,7 @@ export type StoryTopic = {
   highlight: string;
   mediaType: 'image' | 'video';
   media: string;
+  gallery?: string[];
   content: string[];
 };
 
@@ -28,6 +29,9 @@ export const storyTopics: StoryTopic[] = [
     highlight: 'Government says children remain among the most vulnerable groups affected by climate change.',
     mediaType: 'video',
     media: 'https://res.cloudinary.com/dwxlzl5us/video/upload/q_auto/f_auto/v1779063895/vid_w3flah.mp4',
+    gallery: [
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779064259/_MG_2437_jlo9ix.jpg',
+    ],
     content: [
       'By Raphael Kumwenda.',
       'Ministry of Green Economy and Environment Permanent Secretary DOUTY CHIBAMBA says the recent drought experienced in the country shows the urgent need for stronger climate action and child-sensitive policies.',
@@ -75,6 +79,10 @@ export const storyTopics: StoryTopic[] = [
     highlight: 'Executive Director Nsama Kearns thanked the people of Samfya for the support towards the children and ensured stakeholders of continued support towards the child and youth led program. ',
     mediaType: 'image',
     media: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779720408/651746913_1388376536654949_2206623137915631918_n_kvdcdo.jpg',
+    gallery: [
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779727626/484405851_1060700349422571_6461318569406411229_n_ezlgok.jpg',
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779727627/484946287_1060700342755905_5628316666382113607_n_ehpd5d.jpg',
+    ],
     content: [
       'As we prepare to kick start our three year Civil Society and Children’s Climate Action Project on the Copperbelt with support from Save the Children Zambia under the SIDA Civil Society Strengthening Program, we brought together children from 8 Child Rights Clubs from Samfya District including Government officers, traditional leaders, civic leaders and teachers to train them on how to effectively manage child and youth led clubs.',
       'The training was conducted to ensure that children continue to participate in climate change and environmental policy and decision making processes at all levels even as the organization moves to implementing programs at National and Regional level. Children from the child rights club have already joined efforts to establish and register a club called "Save Nature for Young People" under the Local Authority. The training focused on topics relating to legal and policy frameworks on child participation in Zambia, Child protection and safeguarding, Club Management, Networking and Partnerships and Project sustainability.',
