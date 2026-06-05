@@ -4,7 +4,20 @@ import { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'STAFF' | 'VOLUNTEER' | 'DONOR' | 'USER';
+export type UserRole =
+  | 'SUPER_ADMIN'
+  | 'ADMIN'
+  | 'STAFF'
+  | 'USER'
+  | 'DONOR'
+  | 'PARTNER'
+  | 'PROJECT_MANAGER'
+  | 'FINANCE_OFFICER'
+  | 'VOLUNTEER_COORDINATOR'
+  | 'FIELD_OFFICER'
+  | 'CLUB_LEADER'
+  | 'YOUTH'
+  | 'GUEST';
 
 interface UseProtectedRouteOptions {
   requiredRole?: UserRole | UserRole[];

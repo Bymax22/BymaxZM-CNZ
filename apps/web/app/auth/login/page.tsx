@@ -50,22 +50,50 @@ export default function LoginPage() {
 
       showSuccess('Login successful! Redirecting...');
 
-      // Get updated session with role
-      setTimeout(() => {
-        fetch('/api/auth/session')
-          .then(res => res.json())
-          .then(session => {
-            const userRole = session?.user?.role;
-            if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
-              router.push('/admin/dashboard');
-            } else {
-              router.push('/portal/dashboard');
+      const redirectByRole = (role: string | undefined) => {
+        switch (role) {
+          case 'SUPER_ADMIN':
+          case 'ADMIN':
+            return '/admin/dashboard';
+          case 'STAFF':
+          case 'PROJECT_MANAGER':
+          case 'FINANCE_OFFICER':
+          case 'VOLUNTEER_COORDINATOR':
+          case 'FIELD_OFFICER':
+            return '/staff/dashboard';
+          case 'DONOR':
+            return '/donor/dashboard';
+          case 'CLUB_LEADER':
+            return '/club/dashboard';
+          default:
+            return '/portal/dashboard';
+        }
+      };
+
+      const getSessionRole = async (): Promise<string | undefined> => {
+        const maxAttempts = 6;
+        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+          try {
+            const response = await fetch('/api/auth/session', { cache: 'no-store' });
+            if (!response.ok) {
+              continue;
             }
-          })
-          .catch(() => {
-            router.push('/portal/dashboard');
-          });
-      }, 1000);
+            const session = await response.json();
+            const userRole = session?.user?.role;
+            if (userRole) {
+              return userRole;
+            }
+          } catch {
+            // swallow error and retry
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 400));
+        }
+        return undefined;
+      };
+
+      const userRole = await getSessionRole();
+      router.push(redirectByRole(userRole));
     } catch (err) {
       showError('An unexpected error occurred. Please try again.');
     } finally {

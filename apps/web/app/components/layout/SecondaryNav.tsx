@@ -7,6 +7,7 @@ import { MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
 import { FaSearch, FaFacebookF, FaEnvelope, FaWhatsapp, FaPhone } from 'react-icons/fa';
 import { FaTree, FaUsers, FaTools, FaHandshake } from 'react-icons/fa';
 import React from 'react';
+import { useSession } from 'next-auth/react';
 
 const socialLinks = [
   { href: 'https://facebook.com/carefornaturezambia', icon: FaFacebookF, label: 'Facebook', external: true },
@@ -38,10 +39,33 @@ const mobileMenus: MobileMenu[] = [
 ];
 
 export const SecondaryNav = () => {
+  const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+
+  const getDashboardHref = (role?: string) => {
+    switch (role) {
+      case 'SUPER_ADMIN':
+      case 'ADMIN':
+        return '/admin/dashboard';
+      case 'STAFF':
+      case 'PROJECT_MANAGER':
+      case 'FINANCE_OFFICER':
+      case 'VOLUNTEER_COORDINATOR':
+      case 'FIELD_OFFICER':
+        return '/staff/dashboard';
+      case 'DONOR':
+        return '/donor/dashboard';
+      case 'CLUB_LEADER':
+        return '/club/dashboard';
+      default:
+        return '/portal/dashboard';
+    }
+  };
+
+  const dashboardHref = getDashboardHref(session?.user?.role);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsPopupVisible(true), 10000);
@@ -149,11 +173,11 @@ export const SecondaryNav = () => {
 
                 <div className="border-t pt-5 flex flex-col gap-3">
                   <Link
-                    href="/portal/dashboard"
+                    href={dashboardHref}
                     className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#029346] hover:bg-[#027437] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Portal
+                    {session?.user?.role ? 'My Dashboard' : 'Portal'}
                   </Link>
                   <Link
                     href="/portal/clubs"

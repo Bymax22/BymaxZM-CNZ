@@ -7,21 +7,59 @@ export default withAuth(
     const token = request.nextauth.token;
     const pathname = request.nextUrl.pathname;
 
-    // Check admin routes — only ADMIN or SUPER_ADMIN allowed
+    const isAuthenticated = !!token;
+    const role = token?.role as string | undefined;
+
     if (pathname.startsWith('/admin')) {
-      if (!token) {
+      if (!isAuthenticated) {
         return NextResponse.redirect(new URL('/auth/login', request.url));
       }
 
-      const role = token.role as string | undefined;
       if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
         return NextResponse.redirect(new URL('/portal/dashboard', request.url));
       }
     }
 
-    // Portal routes require any authenticated user
+    if (pathname.startsWith('/staff')) {
+      if (!isAuthenticated) {
+        return NextResponse.redirect(new URL('/auth/login', request.url));
+      }
+
+      if (
+        role !== 'SUPER_ADMIN' &&
+        role !== 'ADMIN' &&
+        role !== 'STAFF' &&
+        role !== 'PROJECT_MANAGER' &&
+        role !== 'FINANCE_OFFICER' &&
+        role !== 'VOLUNTEER_COORDINATOR' &&
+        role !== 'FIELD_OFFICER'
+      ) {
+        return NextResponse.redirect(new URL('/portal/dashboard', request.url));
+      }
+    }
+
+    if (pathname.startsWith('/donor')) {
+      if (!isAuthenticated) {
+        return NextResponse.redirect(new URL('/auth/login', request.url));
+      }
+
+      if (role !== 'SUPER_ADMIN' && role !== 'ADMIN' && role !== 'DONOR') {
+        return NextResponse.redirect(new URL('/portal/dashboard', request.url));
+      }
+    }
+
+    if (pathname.startsWith('/club')) {
+      if (!isAuthenticated) {
+        return NextResponse.redirect(new URL('/auth/login', request.url));
+      }
+
+      if (role !== 'SUPER_ADMIN' && role !== 'ADMIN' && role !== 'CLUB_LEADER') {
+        return NextResponse.redirect(new URL('/portal/dashboard', request.url));
+      }
+    }
+
     if (pathname.startsWith('/portal')) {
-      if (!token) {
+      if (!isAuthenticated) {
         return NextResponse.redirect(new URL('/auth/login', request.url));
       }
     }
@@ -38,6 +76,9 @@ export default withAuth(
 export const config = {
   matcher: [
     '/admin/:path*',
+    '/staff/:path*',
+    '/donor/:path*',
+    '/club/:path*',
     '/portal/:path*'
   ]
 };

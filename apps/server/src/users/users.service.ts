@@ -65,7 +65,7 @@ export class UsersService {
         email: data.email,
         phone: data.phone,
         password: hashedPassword,
-        role: data.role ? (data.role as UserRole) : UserRole.MEMBER,
+        role: data.role ? (data.role as UserRole) : UserRole.USER,
         profile: {
           create: { bio: '' },
         },

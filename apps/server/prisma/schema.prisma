@@ -11,14 +11,15 @@ datasource db {
 enum UserRole {
   SUPER_ADMIN
   ADMIN
+  STAFF
+  USER
+  DONOR
+  PARTNER
   PROJECT_MANAGER
   FINANCE_OFFICER
   VOLUNTEER_COORDINATOR
   FIELD_OFFICER
   CLUB_LEADER
-  MEMBER
-  DONOR
-  PARTNER
   YOUTH
   GUEST
 }
@@ -54,6 +55,15 @@ enum ClubStatus {
   INACTIVE
   PENDING
   SUSPENDED
+}
+
+enum ClubRole {
+  LEADER
+  VICE_LEADER
+  COORDINATOR
+  MEMBER
+  VOLUNTEER
+  GUEST
 }
 
 enum EventType {
@@ -95,7 +105,7 @@ model User {
   lastName    String
   phone       String?
   avatar      String?
-  role        UserRole @default(GUEST)
+  role        UserRole @default(USER)
   isActive    Boolean  @default(true)
   isVerified  Boolean  @default(false)
   lastLogin   DateTime?
@@ -246,7 +256,7 @@ model ClubMember {
   id          String   @id @default(cuid())
   userId      String
   clubId      String
-  role        UserRole @default(MEMBER)
+  role        ClubRole @default(MEMBER)
   joinDate    DateTime @default(now())
   isActive    Boolean  @default(true)
   permissions String[] // Custom permissions for club management

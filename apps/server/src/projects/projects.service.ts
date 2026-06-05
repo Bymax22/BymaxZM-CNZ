@@ -57,6 +57,8 @@ export class ProjectsService {
         status: data.status ? (data.status as ProjectStatus) : ProjectStatus.PLANNING,
         managerId: data.ownerId,
         isPublic: true,
+        location: 'Zambia',
+        province: 'Lusaka',
       },
       include: {
         manager: {

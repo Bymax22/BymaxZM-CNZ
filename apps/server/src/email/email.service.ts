@@ -80,6 +80,29 @@ export class EmailService {
     }
   }
 
+  async sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
+    try {
+      const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+      const templateId = parseInt(process.env.BREVO_TEMPLATE_PASSWORD_RESET || '0');
+      if (templateId === 0) {
+        this.logger.warn('BREVO_TEMPLATE_PASSWORD_RESET not configured');
+        return false;
+      }
+
+      return await this.sendTemplatedEmail({
+        to: email,
+        templateId,
+        params: {
+          reset_link: resetLink,
+          user_email: email,
+        }
+      });
+    } catch (error) {
+      this.logger.error('Failed to send password reset email:', error);
+      return false;
+    }
+  }
+
   async sendOtpEmail(email: string, otp: string): Promise<boolean> {
     try {
       const templateId = parseInt(process.env.BREVO_TEMPLATE_OTP || '0');

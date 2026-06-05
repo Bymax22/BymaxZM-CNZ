@@ -91,4 +91,36 @@ export class AuthController {
       );
     }
   }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: { email: string }) {
+    try {
+      const result = await this.authService.forgotPassword(body.email);
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        { error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: { email: string; token: string; password: string }) {
+    try {
+      const result = await this.authService.resetPassword(body.email, body.token, body.password);
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        { error: error.message },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

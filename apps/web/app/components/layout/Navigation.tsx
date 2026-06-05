@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 import { FaSearch, FaFacebookF, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { FiBell, FiUser } from 'react-icons/fi';
 
@@ -12,7 +13,30 @@ export const Navigation = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [secondaryHidden, setSecondaryHidden] = useState(false);
+  const { data: session } = useSession();
   const router = useRouter();
+
+  const getDashboardHref = (role?: string) => {
+    switch (role) {
+      case 'SUPER_ADMIN':
+      case 'ADMIN':
+        return '/admin/dashboard';
+      case 'STAFF':
+      case 'PROJECT_MANAGER':
+      case 'FINANCE_OFFICER':
+      case 'VOLUNTEER_COORDINATOR':
+      case 'FIELD_OFFICER':
+        return '/staff/dashboard';
+      case 'DONOR':
+        return '/donor/dashboard';
+      case 'CLUB_LEADER':
+        return '/club/dashboard';
+      default:
+        return '/portal/dashboard';
+    }
+  };
+
+  const dashboardHref = getDashboardHref(session?.user?.role);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -137,13 +161,22 @@ export const Navigation = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/auth/login"
-              className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
-              aria-label="Login or sign up"
-            >
-              <FiUser className="w-6 h-6" />
-            </Link>
+            {session?.user?.role ? (
+              <Link
+                href={dashboardHref}
+                className="inline-flex items-center justify-center rounded-full bg-[#029346] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#027437]"
+              >
+                Open Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
+                aria-label="Login or sign up"
+              >
+                <FiUser className="w-6 h-6" />
+              </Link>
+            )}
 
             <button
               type="button"

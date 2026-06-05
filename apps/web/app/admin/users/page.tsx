@@ -22,6 +22,7 @@ import {
   FaUserShield,
   FaUser,
   FaClock,
+  FaDonate,
   FaBan
 } from 'react-icons/fa';
 
@@ -60,7 +61,7 @@ export default function UsersManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [form, setForm] = useState<UserForm>({ firstName: '', lastName: '', email: '', role: 'CLUB_LEADER', phone: '' });
+  const [form, setForm] = useState<UserForm>({ firstName: '', lastName: '', email: '', role: 'USER', phone: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -106,9 +107,16 @@ export default function UsersManagement() {
     if (status === 'authenticated') fetchUsers();
   }, [status, searchTerm, filter]);
 
+  const staffRoles = ['STAFF', 'PROJECT_MANAGER', 'FINANCE_OFFICER', 'VOLUNTEER_COORDINATOR', 'FIELD_OFFICER'];
+
   const filteredUsers = users.filter(user => {
-    const matchesFilter = filter === 'ALL' || user.status === filter || user.role === filter;
-    const matchesSearch = 
+    const matchesFilter =
+      filter === 'ALL' ||
+      user.status === filter ||
+      user.role === filter ||
+      (filter === 'STAFF' && staffRoles.includes(user.role));
+
+    const matchesSearch =
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -129,8 +137,19 @@ export default function UsersManagement() {
       case 'SUPER_ADMIN':
       case 'ADMIN':
         return FaUserShield;
-      case 'PENDING':
-        return FaClock;
+      case 'DONOR':
+        return FaDonate;
+      case 'CLUB_LEADER':
+      case 'PROJECT_MANAGER':
+      case 'FINANCE_OFFICER':
+      case 'VOLUNTEER_COORDINATOR':
+      case 'FIELD_OFFICER':
+      case 'STAFF':
+      case 'PARTNER':
+      case 'YOUTH':
+      case 'GUEST':
+      case 'USER':
+        return FaUser;
       default:
         return FaUser;
     }
@@ -142,10 +161,24 @@ export default function UsersManagement() {
         return 'bg-purple-100 text-purple-800';
       case 'ADMIN':
         return 'bg-blue-100 text-blue-800';
+      case 'STAFF':
+      case 'PROJECT_MANAGER':
+      case 'FINANCE_OFFICER':
+      case 'VOLUNTEER_COORDINATOR':
+      case 'FIELD_OFFICER':
+        return 'bg-sky-100 text-sky-800';
       case 'CLUB_LEADER':
         return 'bg-emerald-100 text-emerald-800';
-      case 'PROJECT_MANAGER':
+      case 'DONOR':
+        return 'bg-green-100 text-green-800';
+      case 'PARTNER':
         return 'bg-amber-100 text-amber-800';
+      case 'YOUTH':
+        return 'bg-fuchsia-100 text-fuchsia-800';
+      case 'GUEST':
+        return 'bg-gray-100 text-gray-800';
+      case 'USER':
+        return 'bg-zinc-100 text-zinc-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -306,8 +339,19 @@ export default function UsersManagement() {
             <option value="ACTIVE">Active</option>
             <option value="INACTIVE">Inactive</option>
             <option value="PENDING">Pending</option>
+            <option value="SUPER_ADMIN">Super Admins</option>
             <option value="ADMIN">Admins</option>
+            <option value="STAFF">Staff</option>
+            <option value="PROJECT_MANAGER">Project Managers</option>
+            <option value="FINANCE_OFFICER">Finance Officers</option>
+            <option value="VOLUNTEER_COORDINATOR">Volunteer Coordinators</option>
+            <option value="FIELD_OFFICER">Field Officers</option>
             <option value="CLUB_LEADER">Club Leaders</option>
+            <option value="DONOR">Donors</option>
+            <option value="PARTNER">Partners</option>
+            <option value="USER">Users</option>
+            <option value="YOUTH">Youth</option>
+            <option value="GUEST">Guests</option>
           </select>
           <button className="px-4 py-3 border border-gray-300 rounded-xl flex items-center space-x-2 text-gray-700 hover:bg-gray-50 transition-colors">
             <FaFilter className="w-4 h-4" />
@@ -472,10 +516,19 @@ export default function UsersManagement() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Role</label>
                 <select name="role" value={form.role} onChange={handleFormChange} className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2">
-                  <option value="CLUB_LEADER">Club Leader</option>
-                  <option value="ADMIN">Admin</option>
                   <option value="SUPER_ADMIN">Super Admin</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="STAFF">Staff</option>
                   <option value="PROJECT_MANAGER">Project Manager</option>
+                  <option value="FINANCE_OFFICER">Finance Officer</option>
+                  <option value="VOLUNTEER_COORDINATOR">Volunteer Coordinator</option>
+                  <option value="FIELD_OFFICER">Field Officer</option>
+                  <option value="CLUB_LEADER">Club Leader</option>
+                  <option value="DONOR">Donor</option>
+                  <option value="PARTNER">Partner</option>
+                  <option value="USER">User</option>
+                  <option value="YOUTH">Youth</option>
+                  <option value="GUEST">Guest</option>
                 </select>
               </div>
               <div>

@@ -153,7 +153,6 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-    });
 
     // TODO: Send invitation email
 

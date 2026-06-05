@@ -165,6 +165,80 @@ export class AuthService {
     }
   }
 
+  async forgotPassword(email: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        this.logger.warn(`Password reset requested for unknown email: ${email}`);
+        return {
+          message: 'If that email exists in our system, you will receive password reset instructions shortly.',
+        };
+      }
+
+      const token = crypto.randomBytes(32).toString('hex');
+      const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+
+      await this.prisma.passwordResetToken.create({
+        data: {
+          email,
+          token,
+          expires,
+        },
+      });
+
+      const emailSent = await this.emailService.sendPasswordResetEmail(email, token);
+
+      if (!emailSent) {
+        throw new BadRequestException('Failed to send password reset email');
+      }
+
+      this.logger.log(`Password reset email sent to ${email}`);
+      return { message: 'Password reset instructions sent to your email' };
+    } catch (error) {
+      this.logger.error('Forgot password error:', error);
+      throw error;
+    }
+  }
+
+  async resetPassword(email: string, token: string, password: string) {
+    try {
+      const resetToken = await this.prisma.passwordResetToken.findUnique({
+        where: { token },
+      });
+
+      if (!resetToken || resetToken.email !== email) {
+        throw new UnauthorizedException('Invalid or expired reset token');
+      }
+
+      if (resetToken.expires < new Date()) {
+        await this.prisma.passwordResetToken.delete({ where: { token } });
+        throw new UnauthorizedException('Reset token has expired');
+      }
+
+      const user = await this.prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 12);
+      await this.prisma.user.update({
+        where: { email },
+        data: { password: hashedPassword },
+      });
+
+      await this.prisma.passwordResetToken.deleteMany({ where: { email } });
+
+      this.logger.log(`Password reset completed for ${email}`);
+      return { message: 'Password has been reset successfully' };
+    } catch (error) {
+      this.logger.error('Reset password error:', error);
+      throw error;
+    }
+  }
+
   async sendOtp(email: string) {
     try {
       const user = await this.prisma.user.findUnique({
