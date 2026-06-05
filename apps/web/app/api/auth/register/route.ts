@@ -28,11 +28,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-    const err = error as { message?: string; stack?: string } | undefined;
-    console.error('Registration error:', err?.stack ?? err ?? String(error));
-    return NextResponse.json(
-      { error: 'Internal server error', message: String(err?.message ?? error) },
-      { status: 500 }
-    );
-  }
-}
