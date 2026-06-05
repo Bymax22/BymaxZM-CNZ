@@ -153,30 +153,6 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-        { error: 'User already exists with this email' },
-        { status: 400 }
-      );
-    }
-
-    // Create user (password will be set via email invitation)
-    const user = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        role,
-        password: 'temp-password', // Should be set via email invitation
-        isActive: true,
-        profile: {
-          create: {
-            country: 'Zambia'
-          }
-        }
-      },
-      include: {
-        profile: true
-      }
     });
 
     // TODO: Send invitation email

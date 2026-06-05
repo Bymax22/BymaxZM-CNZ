@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserRole } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -42,6 +45,7 @@ export class UsersService {
     email: string;
     phone?: string;
     role?: string;
+    password?: string;
   }) {
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email },
@@ -51,13 +55,17 @@ export class UsersService {
       throw new Error('User already exists');
     }
 
+    const password = data.password ?? crypto.randomUUID();
+    const hashedPassword = await bcrypt.hash(password, 12);
+
     return this.prisma.user.create({
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
-        role: data.role || 'USER',
+        password: hashedPassword,
+        role: data.role ? (data.role as UserRole) : UserRole.MEMBER,
         profile: {
           create: { bio: '' },
         },
@@ -86,7 +94,10 @@ export class UsersService {
   ) {
     return this.prisma.user.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        role: data.role ? (data.role as UserRole) : undefined,
+      },
       select: {
         id: true,
         firstName: true,

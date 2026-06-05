@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ProjectStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -10,7 +11,7 @@ export class ProjectsService {
       this.prisma.project.findMany({
         where: { isPublic: true },
         include: {
-          owner: {
+          manager: {
             select: { id: true, firstName: true, lastName: true, email: true },
           },
           donations: {
@@ -32,10 +33,9 @@ export class ProjectsService {
         title: p.title,
         description: p.description,
         status: p.status,
-        image: p.image,
         createdAt: p.createdAt,
         updatedAt: p.updatedAt,
-        owner: p.owner,
+        manager: p.manager,
         totalDonations: p.donations.reduce((sum, d) => sum + (d.amount || 0), 0),
         volunteerCount: p.volunteers.length,
       })),
@@ -54,13 +54,12 @@ export class ProjectsService {
       data: {
         title: data.title,
         description: data.description,
-        status: data.status || 'PLANNING',
-        image: data.image,
-        ownerId: data.ownerId,
+        status: data.status ? (data.status as ProjectStatus) : ProjectStatus.PLANNING,
+        managerId: data.ownerId,
         isPublic: true,
       },
       include: {
-        owner: {
+        manager: {
           select: { id: true, firstName: true, lastName: true, email: true },
         },
       },
@@ -78,7 +77,10 @@ export class ProjectsService {
   ) {
     return this.prisma.project.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        status: data.status ? (data.status as ProjectStatus) : undefined,
+      },
     });
   }
 

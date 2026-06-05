@@ -147,7 +147,7 @@ export class OtpService {
       // Update user as email verified
       await this.prisma.user.update({
         where: { id: userId },
-        data: { emailVerified: new Date() }
+        data: { isVerified: true }
       });
 
       this.logger.log(`Email verified for user ${userId}`);

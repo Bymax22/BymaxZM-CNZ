@@ -847,6 +847,35 @@ model Account {
   @@map("accounts")
 }
 
+model Otp {
+  id          String   @id @default(cuid())
+  userId      String
+  otp         String
+  method      String
+  expiresAt   DateTime
+  attempts    Int      @default(0)
+  isVerified  Boolean  @default(false)
+  verifiedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("otps")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
 model VerificationToken {
   identifier String
   token      String   @unique

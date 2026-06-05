@@ -28,9 +28,6 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-    );
-  } catch (error: unknown) {
-    // Narrow the unknown error safely for logging
     const err = error as { message?: string; stack?: string } | undefined;
     console.error('Registration error:', err?.stack ?? err ?? String(error));
     return NextResponse.json(

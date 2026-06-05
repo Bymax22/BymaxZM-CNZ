@@ -2,7 +2,9 @@ import { Injectable, BadRequestException, UnauthorizedException, Logger } from '
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { OtpService } from '../otp/otp.service';
+import { MembershipType } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -60,8 +62,9 @@ export class AuthService {
     await this.prisma.membership.create({
       data: {
         userId: user.id,
-        joinedAt: new Date(),
-        status: 'ACTIVE',
+        membershipId: crypto.randomUUID(),
+        type: MembershipType.ORDINARY,
+        joinDate: new Date(),
       },
     });
 
@@ -102,6 +105,12 @@ export class AuthService {
     // Update last login
     await this.prisma.user.update({
       where: { id: user.id },
+      data: { lastLogin: new Date() },
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
 
   async sendEmailVerification(email: string) {
     try {
@@ -113,7 +122,7 @@ export class AuthService {
         throw new BadRequestException('User not found');
       }
 
-      if (user.emailVerified) {
+      if (user.isVerified) {
         throw new BadRequestException('Email already verified');
       }
 
@@ -203,11 +212,5 @@ export class AuthService {
       this.logger.error('Verify OTP error:', error);
       throw error;
     }
-  }
-      data: { lastLogin: new Date() },
-    });
-
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
   }
 }
