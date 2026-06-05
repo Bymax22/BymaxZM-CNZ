@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "postinstall": "prisma generate --schema=./prisma/schema.prisma"
+    "postinstall": "prisma generate --schema=./apps/server/prisma/schema.prisma"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
