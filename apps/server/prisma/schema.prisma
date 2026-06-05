@@ -127,6 +127,10 @@ model User {
   reportsApproved Report[] @relation("UserReportsApproved")
   enrollments Enrollment[]
   notifications Notification[]
+  notificationGroupsCreated NotificationGroup[]
+  notificationRecipients NotificationRecipient[]
+  submissionsSubmitted Submission[] @relation("SubmissionSubmitter")
+  submissionsAssigned Submission[] @relation("SubmissionAssignee")
   auditLogs   AuditLog[]
   sessions    Session[]
   volunteerHours VolunteerHour[] @relation("VolunteerHoursUser")
@@ -519,27 +523,33 @@ model Comment {
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  startDate   DateTime
-  endDate     DateTime
-  location    String
-  latitude    Float?
-  longitude   Float?
-  maxAttendees Int?
-  type        EventType
-  isPublic    Boolean  @default(true)
-  organizerId String
-  clubId      String?
-  projectId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  startDate      DateTime
+  endDate        DateTime
+  location       String
+  latitude       Float?
+  longitude      Float?
+  maxAttendees   Int?
+  type           EventType
+  isPublic       Boolean  @default(true)
+  isOnline       Boolean  @default(false)
+  meetingUrl     String?
+  platform       String?
+  host           String?
+  registrationUrl String?
+  inviteMessage  String?
+  organizerId    String
+  clubId         String?
+  projectId      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  organizer   User     @relation(fields: [organizerId], references: [id])
-  club        Club?    @relation(fields: [clubId], references: [id])
-  project     Project? @relation(fields: [projectId], references: [id])
-  registrations EventRegistration[]
+  organizer      User     @relation(fields: [organizerId], references: [id])
+  club           Club?    @relation(fields: [clubId], references: [id])
+  project        Project? @relation(fields: [projectId], references: [id])
+  registrations  EventRegistration[]
   volunteerHours VolunteerHour[]
 
   @@map("events")
@@ -722,7 +732,103 @@ model Notification {
 
   user        User     @relation(fields: [userId], references: [id])
 
+  recipients  NotificationRecipient[]
+  groups      NotificationGroup[] @relation("NotificationGroups")
+
   @@map("notifications")
+}
+
+model NotificationGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  userIds     String[]
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  notifications Notification[] @relation("NotificationGroups")
+
+  @@map("notification_groups")
+}
+
+model NotificationRecipient {
+  id             String   @id @default(cuid())
+  notificationId String
+  userId         String
+  status         String   @default("PENDING")
+  channel        String   @default("EMAIL")
+  deliveredAt    DateTime?
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+
+  @@unique([notificationId, userId])
+  @@map("notification_recipients")
+}
+
+model NewsletterSubscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  firstName   String?
+  lastName    String?
+  source      String?  // e.g. website, event, campaign
+  isActive    Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+  lastSentAt  DateTime?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
+
+model Submission {
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  type         String   // request, report, feedback, support, task
+  status       String   @default("PENDING")
+  priority     String   @default("MEDIUM")
+  submitterId  String
+  assigneeId   String?
+  attachments  Json?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  submitter    User     @relation("SubmissionSubmitter", fields: [submitterId], references: [id])
+  assignee     User?    @relation("SubmissionAssignee", fields: [assigneeId], references: [id])
+
+  @@map("submissions")
+}
+
+model ContentCard {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  subtitle     String?
+  description  String?
+  imageUrl     String?
+  imageAlt     String?
+  link         String?
+  cardType     String   // STORY, NEWS, PROJECT, EVENT, ANNOUNCEMENT, GENERIC
+  category     String?
+  tags         String[]
+  status       String   @default("DRAFT")
+  featured     Boolean  @default(false)
+  displayOrder Int      @default(0)
+  metadata     Json?
+  relatedId    String?
+  publishedAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("content_cards")
 }
 
 model AuditLog {

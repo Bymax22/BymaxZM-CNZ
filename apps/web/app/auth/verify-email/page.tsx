@@ -16,15 +16,52 @@ export default function VerifyEmailPage() {
   const [isVerified, setIsVerified] = useState(false);
   const [resendCount, setResendCount] = useState(0);
   const [resendTimer, setResendTimer] = useState(0);
+  const [autoSent, setAutoSent] = useState(false);
+  const [isOtpSending, setIsOtpSending] = useState(false);
   const router = useRouter();
   const { error, isOpen, showError, showSuccess, clearError } = useAuthError();
 
-  // Auto-verify if token is present
+  const sendVerificationEmail = async () => {
+    if (!email) {
+      return false;
+    }
+
+    try {
+      const response = await fetch('/api/auth/send-verification-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        showError(data?.error || 'Failed to send verification email');
+        return false;
+      }
+
+      showSuccess('Verification email sent! Check your inbox.');
+      setResendCount((prev) => prev + 1);
+      setResendTimer(60);
+      return true;
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      showError('Unable to send verification email. Please try again later.');
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (token && email) {
       verifyEmailWithToken();
     }
   }, [token, email]);
+
+  useEffect(() => {
+    if (email && !token && !autoSent) {
+      setAutoSent(true);
+      sendVerificationEmail();
+    }
+  }, [email, token, autoSent]);
 
   // Resend timer countdown
   useEffect(() => {
@@ -110,24 +147,36 @@ export default function VerifyEmailPage() {
 
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/send-verification-email', {
+      await sendVerificationEmail();
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendOtp = async () => {
+    if (!email) {
+      showError('Email is required to send OTP');
+      return;
+    }
+
+    setIsOtpSending(true);
+    try {
+      const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || 'Failed to send verification email');
+        throw new Error(data.error || 'Failed to send OTP');
       }
 
-      showSuccess('Verification email sent! Check your inbox.');
-      setResendCount(prev => prev + 1);
-      setResendTimer(60);
+      showSuccess('OTP sent to your email. Enter it above to verify.');
     } catch (err) {
       showError((err as Error).message);
     } finally {
-      setIsLoading(false);
+      setIsOtpSending(false);
     }
   };
 
@@ -273,7 +322,7 @@ export default function VerifyEmailPage() {
         </div>
 
         {/* Resend Section */}
-        <div className="text-center">
+        <div className="text-center space-y-3">
           <p className="text-sm text-gray-600 mb-3">
             {resendCount > 0 && (
               <span className="text-blue-600 block mb-2">
@@ -282,18 +331,30 @@ export default function VerifyEmailPage() {
             )}
             Didn&apos;t receive the email?
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="button"
-            onClick={handleResendEmail}
-            disabled={isLoading || resendTimer > 0}
-            className="text-emerald-600 hover:text-emerald-700 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
-          >
-            {resendTimer > 0
-              ? `Resend in ${resendTimer}s`
-              : 'Resend Verification Email'}
-          </motion.button>
+          <div className="flex flex-col gap-2 items-center justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              type="button"
+              onClick={handleResendEmail}
+              disabled={isLoading || resendTimer > 0}
+              className="text-emerald-600 hover:text-emerald-700 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              {resendTimer > 0
+                ? `Resend in ${resendTimer}s`
+                : 'Resend Verification Email'}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: isOtpSending ? 1 : 1.05 }}
+              whileTap={{ scale: isOtpSending ? 1 : 0.95 }}
+              type="button"
+              onClick={handleSendOtp}
+              disabled={isOtpSending}
+              className="text-emerald-600 hover:text-emerald-700 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              {isOtpSending ? 'Sending OTP...' : 'Send OTP Code'}
+            </motion.button>
+          </div>
         </div>
 
         {/* Help Text */}

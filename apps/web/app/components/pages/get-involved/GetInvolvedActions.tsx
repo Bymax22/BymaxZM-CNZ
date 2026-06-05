@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { subscribeNewsletter } from '../../../../lib/supabaseContent';
 import { motion } from 'framer-motion';
 
 type ProjectOption = {
@@ -94,15 +93,26 @@ export function GetInvolvedActions() {
     }
 
     const trimmed = newsletterEmail.trim().toLowerCase();
-    const { error } = await subscribeNewsletter(trimmed);
 
-    if (error) {
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmed }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        setNewsletterStatus(data.error || 'Unable to subscribe right now. Please try again later.');
+        return;
+      }
+
+      setNewsletterStatus('Thank you! You are subscribed to our newsletter.');
+      setNewsletterEmail('');
+    } catch (error) {
+      console.error('Newsletter signup failed', error);
       setNewsletterStatus('Unable to subscribe right now. Please try again later.');
-      return;
     }
-
-    setNewsletterStatus('Thank you! You are subscribed to our newsletter.');
-    setNewsletterEmail('');
   };
 
   const submitForm = async (

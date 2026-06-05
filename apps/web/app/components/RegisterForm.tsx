@@ -181,6 +181,7 @@ export default function RegisterForm({ role }: RegisterFormProps) {
     }
 
     setIsLoading(true);
+    const normalizedEmail = email.trim();
 
     const profile: Record<string, any> = {};
     if (organization) profile.organization = organization;
@@ -194,10 +195,10 @@ export default function RegisterForm({ role }: RegisterFormProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phone,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email: normalizedEmail,
+          phone: phone.trim(),
           password,
           role: config.roleValue,
           profile,
@@ -211,10 +212,29 @@ export default function RegisterForm({ role }: RegisterFormProps) {
         return;
       }
 
-      showSuccess('Registration successful. Redirecting to login...');
+      let verificationSent = false;
+
+      try {
+        const verifyResponse = await fetch('/api/auth/send-verification-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: normalizedEmail }),
+        });
+
+        verificationSent = verifyResponse.ok;
+      } catch (error) {
+        console.warn('Failed to send verification email after registration:', error);
+      }
+
+      if (verificationSent) {
+        showSuccess('Registration successful. Verification email sent. Redirecting...');
+      } else {
+        showSuccess('Registration successful. Please verify your email on the next page.');
+      }
+
       setTimeout(() => {
-        router.push('/auth/login');
-      }, 800);
+        router.push(`/auth/verify-email?email=${encodeURIComponent(normalizedEmail)}`);
+      }, 1200);
     } catch (submitError) {
       showError(
         submitError instanceof Error

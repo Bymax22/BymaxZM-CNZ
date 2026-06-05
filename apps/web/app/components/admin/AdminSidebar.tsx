@@ -112,6 +112,18 @@ export default function AdminSidebar() {
       ]
     },
     {
+      name: 'Communications',
+      href: '/admin/communications',
+      icon: FaBell,
+      children: [
+        { name: 'Newsletter Subscribers', href: '/admin/communications/newsletter' },
+        { name: 'Broadcast Newsletters', href: '/admin/communications/newsletter/send' },
+        { name: 'Notifications', href: '/admin/communications/notifications' },
+        { name: 'Notification Groups', href: '/admin/communications/groups' },
+        { name: 'Submissions', href: '/admin/communications/submissions' }
+      ]
+    },
+    {
       name: 'Reports & Analytics',
       href: '/admin/analytics',
       icon: FaChartBar,

@@ -34,7 +34,9 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    const normalizedEmail = email.trim();
+
+    if (!normalizedEmail || !password) {
       showError('Please enter both email and password');
       return;
     }
@@ -43,7 +45,7 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
 
     try {
       const result = await signIn('credentials', {
-        email,
+        email: normalizedEmail,
         password,
         redirect: false,
       });
