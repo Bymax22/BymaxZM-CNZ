@@ -18,7 +18,7 @@ import {
 import AuthErrorModal from './AuthErrorModal';
 import { useAuthError } from '@/hooks/useAuthError';
 
-export type RoleKey = 'member' | 'donor' | 'partner' | 'club-leader' | 'youth';
+export type RoleKey = 'member' | 'donor' | 'partner' | 'club-leader' | 'youth' | 'admin' | 'staff';
 
 export const roleConfigMap: Record<RoleKey, {
   title: string;
@@ -62,6 +62,28 @@ export const roleConfigMap: Record<RoleKey, {
     cta: 'Create partner account',
     extraFields: {
       organization: true,
+      bio: true,
+    },
+  },
+  admin: {
+    title: 'Admin Registration',
+    description: 'Register as an administrator to manage CNZ operations and workflows.',
+    roleValue: 'ADMIN',
+    cta: 'Create admin account',
+    extraFields: {
+      organization: true,
+      occupation: true,
+      bio: true,
+    },
+  },
+  staff: {
+    title: 'Staff Registration',
+    description: 'Register as staff to support CNZ programs, projects, and community services.',
+    roleValue: 'STAFF',
+    cta: 'Create staff account',
+    extraFields: {
+      organization: true,
+      occupation: true,
       bio: true,
     },
   },
