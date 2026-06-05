@@ -34,8 +34,8 @@ export const roleConfigMap: Record<RoleKey, {
   };
 }> = {
   member: {
-    title: 'Member Registration',
-    description: 'Create a general member account for portal access and community participation.',
+    title: 'Community Member Registration',
+    description: 'Create a community member account for general portal access to news, events, and community resources.',
     roleValue: 'USER',
     cta: 'Create member account',
     extraFields: {

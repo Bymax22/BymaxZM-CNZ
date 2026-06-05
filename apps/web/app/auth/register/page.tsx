@@ -1,385 +1,122 @@
 // app/auth/register/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaPhone, FaArrowRight } from 'react-icons/fa';
-import Image from 'next/image';
-import AuthErrorModal from '../../components/AuthErrorModal';
-import { useAuthError } from '../../hooks/useAuthError';
+import { FaUsers, FaHeart, FaHandshake, FaChild, FaArrowRight } from 'react-icons/fa';
+
+const ROLE_CARDS = [
+  {
+    key: 'member',
+    label: 'Community Member',
+    description: 'Access programs, news, events, and community resources.',
+    icon: FaUsers,
+    color: 'from-emerald-500 to-green-600',
+  },
+  {
+    key: 'donor',
+    label: 'Donor',
+    description: 'Manage donations, receipts, and donor benefits.',
+    icon: FaHeart,
+    color: 'from-fuchsia-500 to-red-500',
+  },
+  {
+    key: 'partner',
+    label: 'Partner',
+    description: 'Collaborate on projects, campaigns, and partnerships.',
+    icon: FaHandshake,
+    color: 'from-sky-500 to-indigo-600',
+  },
+  {
+    key: 'youth',
+    label: 'Youth',
+    description: 'Join youth programs, training, and community events.',
+    icon: FaChild,
+    color: 'from-cyan-500 to-blue-600',
+  },
+];
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    agreeToTerms: false
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const { error, isOpen, showError, showSuccess, clearError } = useAuthError();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const validateForm = (): boolean => {
-    if (!formData.firstName.trim()) {
-      showError('Please enter your first name');
-      return false;
-    }
-
-    if (!formData.lastName.trim()) {
-      showError('Please enter your last name');
-      return false;
-    }
-
-    if (!formData.email.trim()) {
-      showError('Please enter your email address');
-      return false;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      showError('Please enter a valid email address');
-      return false;
-    }
-
-    if (formData.password.length < 8) {
-      showError('Password must be at least 8 characters long');
-      return false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      showError('Passwords do not match');
-      return false;
-    }
-
-    if (!formData.agreeToTerms) {
-      showError('Please agree to the terms and conditions');
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        showError(data.error || 'Registration failed. Please try again.');
-        setIsLoading(false);
-        return;
-      }
-
-      showSuccess('Account created successfully! Redirecting to verification...');
-
-      setTimeout(() => {
-        router.push('/auth/verify-email?email=' + encodeURIComponent(formData.email));
-      }, 1500);
-    } catch (error) {
-      showError((error as Error).message || 'An unexpected error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <AuthErrorModal
-        type={error?.type}
-        title={error?.title}
-        message={error?.message || ''}
-        isOpen={isOpen}
-        onClose={clearError}
-      />
-
+    <div className="min-h-screen bg-[#F0FDF4] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full space-y-8 bg-white rounded-2xl shadow-2xl p-8"
+        className="relative w-full max-w-6xl rounded-[40px] border border-emerald-200 bg-white/95 p-6 shadow-2xl shadow-emerald-200/10 backdrop-blur-md sm:p-10"
       >
-        {/* Header */}
-        <div className="text-center">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mb-4"
-          >
-            <Image
-              src="/Care for Nature logo d-site-01.png"
-              alt="Care for Nature Zambia"
-              width={60}
-              height={60}
-              priority
-            />
-          </motion.div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Join Our Mission
-          </h2>
-          <p className="text-gray-600">
-            Create your CNZ Portal account
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="inline-flex rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-emerald-700">
+            Choose your account type
+          </p>
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+            Select the right portal access
+          </h1>
+          <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
+            Pick the account type that best matches how you want to use the CNZ portal. Hover a card on desktop to sign in or sign up.
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[
-            { label: 'Member', href: '/auth/register/member', description: 'General member access for portal and community engagement.' },
-            { label: 'Donor', href: '/auth/register/donor', description: 'Register to manage donations and donor communications.' },
-            { label: 'Partner', href: '/auth/register/partner', description: 'Register to collaborate on projects and corporate partnerships.' },
-            { label: 'Club Leader', href: '/auth/register/club-leader', description: 'Register as a club leader to manage club activities.' },
-            { label: 'Youth', href: '/auth/register/youth', description: 'Register for youth programs and event participation.' },
-          ].map((role) => (
-            <Link
-              key={role.href}
-              href={role.href}
-              className="group rounded-3xl border border-gray-200 bg-emerald-50 px-5 py-4 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:bg-white"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-lg font-semibold text-gray-900">{role.label}</p>
-                  <p className="mt-1 text-sm text-gray-600">{role.description}</p>
-                </div>
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition-all duration-200 group-hover:bg-emerald-600">
-                  <FaArrowRight className="h-4 w-4" />
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="rounded-3xl border border-dashed border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-700">
-          <p className="font-semibold">Choose a specific registration path above</p>
-          <p className="mt-1">Each role page includes fields tailored to the database profile schema.</p>
-        </div>
-
-        {/* Registration Form */}
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                First Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  required
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="First name"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                Last Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaUser className="h-4 w-4 text-gray-400" />
-                </div>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  required
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="Last name"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaEnvelope className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                disabled={isLoading}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Enter your email"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number (Optional)
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaPhone className="h-4 w-4 text-gray-400" />
-              </div>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                disabled={isLoading}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="+260 XXX XXX XXX"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaLock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={formData.password}
-                onChange={handleChange}
-                disabled={isLoading}
-                className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Create a password (min 8 chars)"
-              />
-              <button
-                type="button"
-                disabled={isLoading}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center disabled:opacity-50"
-                onClick={() => setShowPassword(!showPassword)}
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {ROLE_CARDS.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={card.key}
+                className="group relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:bg-white"
               >
-                {showPassword ? (
-                  <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                ) : (
-                  <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
-                )}
-              </button>
-            </div>
-          </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className={`inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br ${card.color} text-white shadow-lg shadow-slate-200/50`}>
+                    <Icon className="h-7 w-7" />
+                  </span>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white">
+                    <FaArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
 
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaLock className="h-5 w-5 text-gray-400" />
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold text-slate-900">{card.label}</h2>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">{card.description}</p>
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:hidden">
+                  <Link
+                    href={`/auth/register/${card.key}`}
+                    className="inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                  >
+                    Register
+                  </Link>
+                  <Link
+                    href={`/auth/login?role=${card.key}`}
+                    className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-emerald-300 hover:text-emerald-700"
+                  >
+                    Login
+                  </Link>
+                </div>
+
+                <div className="pointer-events-none absolute inset-0 hidden rounded-[32px] bg-white/95 opacity-0 transition duration-300 group-hover:block group-hover:opacity-100 group-hover:pointer-events-auto sm:block">
+                  <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[32px] bg-white/95 p-6 text-center">
+                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">Ready?</p>
+                    <div className="grid w-full gap-3">
+                      <Link
+                        href={`/auth/register/${card.key}`}
+                        className="inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                      >
+                        Register
+                      </Link>
+                      <Link
+                        href={`/auth/login?role=${card.key}`}
+                        className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-emerald-300 hover:text-emerald-700"
+                      >
+                        Login
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                disabled={isLoading}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Confirm your password"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center">
-            <input
-              id="agreeToTerms"
-              name="agreeToTerms"
-              type="checkbox"
-              checked={formData.agreeToTerms}
-              onChange={handleChange}
-              disabled={isLoading}
-              className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <label htmlFor="agreeToTerms" className="ml-2 block text-sm text-gray-700">
-              I agree to the{' '}
-              <Link href="/terms" className="text-emerald-600 hover:text-emerald-500">
-                Terms and Conditions
-              </Link>{' '}
-              and{' '}
-              <Link href="/privacy" className="text-emerald-600 hover:text-emerald-500">
-                Privacy Policy
-              </Link>
-            </label>
-          </div>
-
-          <motion.button
-            whileHover={{ scale: isLoading ? 1 : 1.02 }}
-            whileTap={{ scale: isLoading ? 1 : 0.98 }}
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              'Create Account'
-            )}
-          </motion.button>
-        </form>
-
-        {/* Login Link */}
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/auth/login" className="font-medium text-emerald-600 hover:text-emerald-500">
-              Sign in
-            </Link>
-          </p>
+            );
+          })}
         </div>
+
       </motion.div>
     </div>
   );

@@ -10,6 +10,7 @@ import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from 'next/image';
 import AuthErrorModal from '../../components/AuthErrorModal';
 import { useAuthError } from '../../hooks/useAuthError';
+import { roleConfigMap, type RoleKey } from '@/components/RegisterForm';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -19,6 +20,12 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const selectedRole = searchParams.get('role') || undefined;
+  const selectedRoleKey = selectedRole && roleConfigMap[selectedRole as RoleKey] ? (selectedRole as RoleKey) : undefined;
+  const selectedRoleLabel = selectedRoleKey
+    ? roleConfigMap[selectedRoleKey].title.replace(/ Registration$/, '')
+    : selectedRole
+      ? selectedRole.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())
+      : undefined;
   const { error, isOpen, showError, showSuccess, clearError } = useAuthError();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,10 +142,10 @@ export default function LoginPage() {
             />
           </motion.div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            {selectedRole ? `Login as ${selectedRole.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}` : 'Welcome Back'}
+            {selectedRole ? `Login as ${selectedRoleLabel}` : 'Welcome Back'}
           </h2>
           <p className="text-gray-600">
-            {selectedRole ? `Sign in to your ${selectedRole.replace(/-/g, ' ')} account` : 'Sign in to your CNZ Portal account'}
+            {selectedRole ? `Sign in to your ${selectedRoleLabel} account` : 'Sign in to your CNZ Portal account'}
           </p>
         </div>
 
