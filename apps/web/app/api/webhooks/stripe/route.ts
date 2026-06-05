@@ -8,10 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
-async function getPrisma() {
-  const { prisma } = await import('../../../../lib/prisma');
-  return prisma;
-}
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -27,88 +24,24 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const prisma = await getPrisma();
+    // Forward the verified webhook to the backend for processing
+    const forwardRes = await fetch(`${BACKEND}/webhooks/stripe`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'stripe-signature': signature,
+      },
+      body,
+    });
 
-    switch (event.type) {
-      case 'charge.succeeded': {
-        const charge = event.data.object as Stripe.Charge;
-        const session = await stripe.checkout.sessions.retrieve(
-          charge.payment_intent as string
-        );
-
-        if (session.metadata && session.metadata.donorName && session.metadata.donorEmail) {
-          const donation = await prisma.donation.create({
-            data: {
-              amount: charge.amount / 100, // Convert from cents to ZMW
-              currency: (charge.currency || 'zmw').toUpperCase(),
-              donorName: session.metadata.donorName,
-              donorEmail: session.metadata.donorEmail,
-              message: session.metadata.message || null,
-              paymentMethod: 'STRIPE',
-              transactionId: charge.id,
-              status: 'COMPLETED',
-              isRecurring: session.metadata.isRecurring === 'true',
-              projectId: session.metadata.projectId || null,
-              isAnonymous: false,
-            },
-          });
-
-          console.log('Donation created:', donation.id);
-        }
-        break;
-      }
-
-      case 'charge.failed': {
-        const charge = event.data.object as Stripe.Charge;
-        const session = await stripe.checkout.sessions.retrieve(
-          charge.payment_intent as string
-        );
-
-        if (session.metadata && session.metadata.donorName && session.metadata.donorEmail) {
-          const donation = await prisma.donation.create({
-            data: {
-              amount: charge.amount / 100,
-              currency: (charge.currency || 'zmw').toUpperCase(),
-              donorName: session.metadata.donorName as string,
-              donorEmail: session.metadata.donorEmail as string,
-              message: session.metadata.message || null,
-              paymentMethod: 'STRIPE',
-              transactionId: charge.id,
-              status: 'FAILED',
-              isRecurring: session.metadata.isRecurring === 'true',
-              projectId: session.metadata.projectId || null,
-              isAnonymous: false,
-            },
-          });
-
-          console.log('Failed donation recorded:', donation.id);
-        }
-        break;
-      }
-
-      case 'charge.refunded': {
-        const charge = event.data.object as Stripe.Charge;
-        if (charge.payment_intent) {
-          await prisma.donation.updateMany({
-            where: { transactionId: charge.id },
-            data: { status: 'REFUNDED' },
-          });
-
-          console.log('Donation refunded:', charge.id);
-        }
-        break;
-      }
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
+    if (!forwardRes.ok) {
+      console.error('Backend webhook forward failed:', await forwardRes.text());
+      return NextResponse.json({ error: 'Backend processing failed' }, { status: 502 });
     }
 
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook processing error:', error);
-    return NextResponse.json(
-      { error: 'Webhook processing failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }

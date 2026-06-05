@@ -3,6 +3,7 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma';
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,37 +22,23 @@ export const authOptions: NextAuthOptions = {
 
           console.debug('[next-auth] Authorize attempt for:', credentials.email);
 
-          const user = await prisma.user.findUnique({
-            where: {
-              email: credentials.email
-            },
-            include: {
-              profile: true
-            }
+          // Proxy authentication to backend instead of using Prisma in the web package
+          const res = await fetch(`${BACKEND}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: credentials.email, password: credentials.password }),
           });
 
-          if (!user) {
-            console.debug('[next-auth] No user found for', credentials.email);
+          if (!res.ok) {
+            console.debug('[next-auth] Backend login failed for', credentials.email);
             return null;
           }
 
-          if (!user.isActive) {
-            console.debug('[next-auth] User not active:', credentials.email);
-            return null;
-          }
+          const payload = await res.json();
+          const user = payload.user;
 
-          if (!user.password) {
-            console.debug('[next-auth] User has no password set (possible SSO user):', credentials.email);
-            return null;
-          }
-
-          const passwordMatch = await bcrypt.compare(credentials.password, user.password);
-
-          if (!passwordMatch) {
-            console.debug('[next-auth] Password mismatch for', credentials.email);
-            return null;
-          }
-
+          if (!user) return null;
+          if (user.isActive === false) return null;
           console.debug('[next-auth] Authorize successful for', credentials.email);
 
           return {

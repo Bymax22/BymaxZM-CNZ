@@ -2,10 +2,43 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { projects } from '../../sections/projectsData';
+import { projects as staticProjects } from '../../sections/projectsData';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export function ProjectsGrid() {
+  const [projects, setProjects] = useState(staticProjects);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const res = await fetch('/api/communications/cards?cardType=PROJECT&take=6');
+        if (!res.ok) return;
+        const data = await res.json();
+        const cards = data.cards || data.contentCards || [];
+        if (!mounted) return;
+        // map generic card to project-like shape used in UI
+        const mapped = cards.map((c: any, i: number) => ({
+          id: c.id || c.slug || String(i),
+          title: c.title,
+          shortDescription: c.description || c.subtitle || '',
+          description: c.description || c.subtitle || '',
+          location: c.metadata?.location || 'Zambia',
+          status: c.metadata?.status || 'ongoing',
+          image: c.imageUrl || '',
+          category: (c.category || 'conservation').toLowerCase(),
+          sdgs: c.metadata?.sdgs || [],
+        }));
+        if (mapped.length) setProjects(mapped);
+      } catch (e) {
+        // keep static projects
+      }
+    }
+    void load();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

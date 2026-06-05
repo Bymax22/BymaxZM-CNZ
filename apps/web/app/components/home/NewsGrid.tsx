@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 
 const NEWS = [
@@ -55,6 +55,36 @@ const NEWS = [
 ];
 
 export default function NewsGrid() {
+  const [items, setItems] = useState<any[]>(NEWS);
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const res = await fetch('/api/communications/cards?cardType=NEWS&take=4');
+        if (!res.ok) return;
+        const data = await res.json();
+        const cards = data.cards || data.contentCards || [];
+        if (!mounted) return;
+        setItems(
+          cards.map((c: any) => ({
+            title: c.title,
+            excerpt: c.description || c.subtitle || '',
+            image: c.imageUrl || c.media || '',
+            date: c.publishedAt ? new Date(c.publishedAt).toLocaleDateString() : '',
+            month: c.publishedAt ? new Date(c.publishedAt).toLocaleString('en-US', { month: 'short' }) : '',
+            day: c.publishedAt ? new Date(c.publishedAt).getDate().toString().padStart(2, '0') : '',
+            type: c.cardType || 'News',
+          }))
+        );
+      } catch (e) {
+        // keep static
+      }
+    }
+    void load();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">

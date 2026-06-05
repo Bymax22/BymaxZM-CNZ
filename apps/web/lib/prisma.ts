@@ -1,25 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-
-declare global {
-  var __prisma__: PrismaClient | undefined;
-}
-
-/**
- * Singleton Prisma client for serverless environments (Vercel).
- * Reuses connections across invocations to avoid exhausting the connection pool.
- * In development, this is stored globally to prevent hot-reload recreations.
- * 
- * The schema is located at apps/server/prisma/schema.prisma (relative to project root).
- */
-export const prisma =
-  global.__prisma__ ??
-  new PrismaClient({
-    log:
-      process.env.NODE_ENV === 'production'
-        ? ['error']
-        : ['query', 'info', 'warn', 'error'],
-  });
-
-if (process.env.NODE_ENV !== 'production') {
-  global.__prisma__ = prisma;
-}
+// Frontend should not instantiate a Prisma client. Backend owns Prisma.
+// Export a lightweight `any` stub so server-side code in the web package
+// can be migrated away from direct Prisma usage without causing type errors
+// during `next build` on Vercel.
+export const prisma: any = {};

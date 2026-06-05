@@ -1,12 +1,4 @@
-// lib/prisma.ts
-import { PrismaClient } from '@prisma/client';
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma;
-}
+// Frontend app should not instantiate Prisma client. Backend owns Prisma.
+// Export a lightweight `any` stub so app code can be migrated away from direct
+// Prisma usage without causing type errors during `next build` on Vercel.
+export const prisma: any = {};

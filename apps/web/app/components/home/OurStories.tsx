@@ -3,8 +3,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
+import { useEffect, useState } from 'react';
 
-const STORY_CARDS = storyTopics.map((s, i) => ({
+type CardView = { id: string; text?: string; author?: string; image?: string; color?: string };
+
+// initial fallback from static data
+const initialCards: CardView[] = storyTopics.map((s, i) => ({
   id: s.id,
   text: s.summary || s.description || s.highlight,
   author: s.title,
@@ -23,6 +27,32 @@ function truncateSentences(text: string, max = 3) {
 export default function OurStories() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [cards, setCards] = useState<CardView[]>(initialCards);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadCards() {
+      try {
+        const res = await fetch('/api/communications/cards?cardType=STORY&take=6');
+        if (!res.ok) return;
+        const data = await res.json();
+        const items = data.cards || data.contentCards || [];
+        const mapped: CardView[] = items.map((c: any, i: number) => ({
+          id: c.id || c.slug || String(i),
+          text: c.description || c.subtitle || c.metadata?.summary || '',
+          author: c.title,
+          image: c.imageUrl || c.media || '',
+          color: i % 3 === 0 ? 'bg-emerald-500' : i % 3 === 1 ? 'bg-orange-500' : 'bg-slate-900',
+        }));
+        if (mounted && mapped.length) setCards(mapped);
+      } catch (e) {
+        // keep fallback
+      }
+    }
+
+    void loadCards();
+    return () => { mounted = false; };
+  }, []);
 
   const scrollToIndex = (index: number) => {
     if (!scrollRef.current) return;
@@ -97,7 +127,7 @@ export default function OurStories() {
             ref={scrollRef}
             className="scrollbar-none snap-x snap-mandatory flex items-stretch gap-6 overflow-x-auto pb-6 pl-12 pr-12 scroll-smooth touch-pan-x md:pl-14 md:pr-14"
           >
-            {STORY_CARDS.map((t) => {
+            {cards.map((t) => {
               return (
                 <article
                   key={t.id}
@@ -161,7 +191,7 @@ export default function OurStories() {
         </div>
 
         <div className="mt-8 flex justify-center gap-2">
-          {STORY_CARDS.map((_, dotIndex) => (
+          {cards.map((_, dotIndex) => (
             <button
               key={dotIndex}
               type="button"

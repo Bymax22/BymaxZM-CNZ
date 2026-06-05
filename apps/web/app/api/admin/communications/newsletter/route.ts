@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
-import { prisma } from '../../../../lib/prisma';
+
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,25 +13,17 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const activeOnly = searchParams.get('activeOnly') === 'true';
-    const skip = parseInt(searchParams.get('skip') || '0', 10);
-    const take = parseInt(searchParams.get('take') || '50', 10);
+    const skip = searchParams.get('skip') || '0';
+    const take = searchParams.get('take') || '50';
 
-    const where: Record<string, unknown> = {};
-    if (activeOnly) where.isActive = true;
+    const params = new URLSearchParams({ skip, take });
+    if (activeOnly) params.set('activeOnly', 'true');
 
-    const [subscribers, total] = await Promise.all([
-      prisma.newsletterSubscriber.findMany({
-        where,
-        orderBy: { subscribedAt: 'desc' },
-        skip,
-        take,
-      }),
-      prisma.newsletterSubscriber.count({ where }),
-    ]);
-
-    return NextResponse.json({ subscribers, total });
+    const res = await fetch(`${BACKEND}/communications/newsletter/subscribers?${params.toString()}`);
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    console.error('Admin newsletter GET error:', error);
+    console.error('Admin newsletter GET proxy error:', error);
     return NextResponse.json({ error: 'Failed to fetch subscribers' }, { status: 500 });
   }
 }
@@ -49,27 +42,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const existing = await prisma.newsletterSubscriber.findUnique({ where: { email } });
-    if (existing) {
-      const updated = await prisma.newsletterSubscriber.update({
-        where: { email },
-        data: { isActive: true, unsubscribedAt: null, lastSentAt: null },
-      });
-      return NextResponse.json({ subscriber: updated });
-    }
-
-    const subscriber = await prisma.newsletterSubscriber.create({
-      data: {
-        email,
-        firstName,
-        lastName,
-        source,
-      },
+    const res = await fetch(`${BACKEND}/communications/newsletter/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, firstName, lastName, source }),
     });
 
-    return NextResponse.json({ subscriber }, { status: 201 });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    console.error('Admin newsletter POST error:', error);
+    console.error('Admin newsletter POST proxy error:', error);
     return NextResponse.json({ error: 'Failed to add subscriber' }, { status: 500 });
   }
 }

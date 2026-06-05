@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
-import { prisma } from '../../../lib/prisma';
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,21 +17,13 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status') || undefined;
     const skip = (page - 1) * limit;
 
-    const where: Record<string, unknown> = {};
-    if (cardType) where.cardType = cardType;
-    if (status) where.status = status;
+    const params = new URLSearchParams({ skip: String(skip), take: String(limit) });
+    if (cardType) params.set('cardType', cardType);
+    if (status) params.set('status', status);
 
-    const [contentCards, total] = await Promise.all([
-      prisma.contentCard.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      }),
-      prisma.contentCard.count({ where }),
-    ]);
-
-    return NextResponse.json({ contentCards, total });
+    const res = await fetch(`${BACKEND}/communications/cards?${params.toString()}`);
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
     console.error('Admin content GET error:', error);
     return NextResponse.json({ error: 'Failed to fetch content cards' }, { status: 500 });
@@ -69,8 +61,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Title, slug and card type are required' }, { status: 400 });
     }
 
-    const card = await prisma.contentCard.create({
-      data: {
+    const res = await fetch(`${BACKEND}/communications/cards`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         title,
         slug,
         subtitle,
@@ -86,11 +80,12 @@ export async function POST(request: NextRequest) {
         displayOrder: displayOrder ?? 0,
         metadata: metadata || {},
         relatedId,
-        publishedAt: status === 'PUBLISHED' ? new Date() : publishedAt ? new Date(publishedAt) : undefined,
-      },
+        publishedAt: status === 'PUBLISHED' ? new Date().toISOString() : publishedAt || undefined,
+      }),
     });
 
-    return NextResponse.json({ card }, { status: 201 });
+    const data = await res.json();
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
     console.error('Admin content POST error:', error);
     return NextResponse.json({ error: 'Failed to create content card' }, { status: 500 });
