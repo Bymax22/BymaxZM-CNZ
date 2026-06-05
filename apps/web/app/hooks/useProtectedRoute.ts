@@ -40,7 +40,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
     }
 
     if (requiredRole) {
-      const userRole = session?.user?.role;
+      const userRole = session?.user?.role as UserRole | undefined;
       const requiredRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
 
       if (!userRole || !requiredRoles.includes(userRole)) {
@@ -54,7 +54,7 @@ export function useProtectedRoute(options: UseProtectedRouteOptions = {}) {
     session,
     isLoading: status === 'loading',
     isAuthenticated: status === 'authenticated',
-    userRole: session?.user?.role,
+    userRole: session?.user?.role as UserRole | undefined,
   };
 }
 

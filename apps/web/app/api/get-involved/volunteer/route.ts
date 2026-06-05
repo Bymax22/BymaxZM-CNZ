@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         email: normalizedEmail,
         phone: phone ? String(phone).trim() : null,
         password: hashedPassword,
-        role: 'MEMBER',
+        role: 'USER',
         isActive: true,
         isVerified: false,
         profile: {
