@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function CloudinaryUploader() {
+export default function CloudinaryUploader({ onUpload }: { onUpload?: (url: string) => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
@@ -31,6 +31,7 @@ export default function CloudinaryUploader() {
 
         if (data.secure_url) {
           setUrl(data.secure_url);
++          if (onUpload) onUpload(data.secure_url);
         } else {
           console.error('Upload failed', data);
           alert('Upload failed, check console for details.');
@@ -76,6 +77,7 @@ export default function CloudinaryUploader() {
 
       if (data.secure_url) {
         setUrl(data.secure_url);
+        if (onUpload) onUpload(data.secure_url);
       } else {
         console.error('Upload failed', data);
         alert('Upload failed, check console for details.');
