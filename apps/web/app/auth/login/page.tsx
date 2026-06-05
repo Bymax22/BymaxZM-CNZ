@@ -250,7 +250,11 @@ export default function LoginPage() {
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
             <Link
-              href={selectedRole ? `/auth/register/${selectedRole}` : '/auth/register'}
+              href={
+                selectedRole
+                  ? { pathname: '/auth/register/[role]', query: { role: selectedRole } }
+                  : '/auth/register'
+              }
               className="font-medium text-emerald-600 hover:text-emerald-500"
             >
               Sign up now

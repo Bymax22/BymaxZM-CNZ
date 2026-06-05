@@ -3,121 +3,99 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaUsers, FaHeart, FaHandshake, FaChild, FaArrowRight } from 'react-icons/fa';
+import { FaUsers, FaHeart, FaHandshake, FaChild } from 'react-icons/fa';
 
 const ROLE_CARDS = [
   {
     key: 'member',
     label: 'Community Member',
-    description: 'Access programs, news, events, and community resources.',
+    description: 'General access to portal news, events, and community resources.',
     icon: FaUsers,
-    color: 'from-emerald-500 to-green-600',
+    accent: 'bg-emerald-50 text-emerald-700 ring-emerald-100',
   },
   {
     key: 'donor',
     label: 'Donor',
-    description: 'Manage donations, receipts, and donor benefits.',
+    description: 'Manage donations, receipts, and donor giving details.',
     icon: FaHeart,
-    color: 'from-fuchsia-500 to-red-500',
+    accent: 'bg-fuchsia-50 text-fuchsia-700 ring-fuchsia-100',
   },
   {
     key: 'partner',
     label: 'Partner',
-    description: 'Collaborate on projects, campaigns, and partnerships.',
+    description: 'Collaborate on projects and work with CNZ initiatives.',
     icon: FaHandshake,
-    color: 'from-sky-500 to-indigo-600',
+    accent: 'bg-sky-50 text-sky-700 ring-sky-100',
   },
   {
     key: 'youth',
     label: 'Youth',
     description: 'Join youth programs, training, and community events.',
     icon: FaChild,
-    color: 'from-cyan-500 to-blue-600',
+    accent: 'bg-cyan-50 text-cyan-700 ring-cyan-100',
   },
 ];
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen bg-[#F0FDF4] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative w-full max-w-6xl rounded-[40px] border border-emerald-200 bg-white/95 p-6 shadow-2xl shadow-emerald-200/10 backdrop-blur-md sm:p-10"
-      >
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="inline-flex rounded-full bg-emerald-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-emerald-700">
-            Choose your account type
-          </p>
-          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-            Select the right portal access
-          </h1>
-          <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg">
-            Pick the account type that best matches how you want to use the CNZ portal. Hover a card on desktop to sign in or sign up.
-          </p>
-        </div>
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-lg shadow-slate-200/30 sm:p-12"
+        >
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.32em] text-slate-700">
+              Select a role
+            </p>
+            <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
+              Register or sign in to the right CNZ portal.
+            </h1>
+            <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+              Choose the account type that matches your connection to the organization, then continue with either register or login.
+            </p>
+          </div>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {ROLE_CARDS.map((card) => {
-            const Icon = card.icon;
-            return (
-              <div
-                key={card.key}
-                className="group relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-50 p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:bg-white"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className={`inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br ${card.color} text-white shadow-lg shadow-slate-200/50`}>
-                    <Icon className="h-7 w-7" />
-                  </span>
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white">
-                    <FaArrowRight className="h-4 w-4" />
-                  </span>
-                </div>
-
-                <div className="mt-8">
-                  <h2 className="text-xl font-semibold text-slate-900">{card.label}</h2>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">{card.description}</p>
-                </div>
-
-                <div className="mt-6 grid gap-3 sm:hidden">
-                  <Link
-                    href={`/auth/register/${card.key}`}
-                    className="inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
-                  >
-                    Register
-                  </Link>
-                  <Link
-                    href={`/auth/login?role=${card.key}`}
-                    className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-emerald-300 hover:text-emerald-700"
-                  >
-                    Login
-                  </Link>
-                </div>
-
-                <div className="pointer-events-none absolute inset-0 hidden rounded-[32px] bg-white/95 opacity-0 transition duration-300 group-hover:block group-hover:opacity-100 group-hover:pointer-events-auto sm:block">
-                  <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[32px] bg-white/95 p-6 text-center">
-                    <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">Ready?</p>
-                    <div className="grid w-full gap-3">
-                      <Link
-                        href={`/auth/register/${card.key}`}
-                        className="inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
-                      >
-                        Register
-                      </Link>
-                      <Link
-                        href={`/auth/login?role=${card.key}`}
-                        className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-emerald-300 hover:text-emerald-700"
-                      >
-                        Login
-                      </Link>
+          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+            {ROLE_CARDS.map((card) => {
+              const Icon = card.icon;
+              return (
+                <div key={card.key} className="flex flex-col rounded-3xl border border-slate-200 bg-slate-50 p-6 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-200/30">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ring-1 ${card.accent}`}>
+                      <Icon className="h-6 w-6" />
                     </div>
+                    <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+                      Role
+                    </span>
+                  </div>
+
+                  <div className="mt-6">
+                    <h2 className="text-xl font-semibold text-slate-900">{card.label}</h2>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{card.description}</p>
+                  </div>
+
+                  <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <Link
+                      href={{ pathname: '/auth/register/[role]', query: { role: card.key } }}
+                      className="inline-flex min-w-[110px] flex-1 items-center justify-center rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                    >
+                      Register
+                    </Link>
+                    <Link
+                      href={{ pathname: '/auth/login', query: { role: card.key } }}
+                      className="inline-flex min-w-[110px] flex-1 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-300 hover:bg-slate-50"
+                    >
+                      Login
+                    </Link>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-      </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
