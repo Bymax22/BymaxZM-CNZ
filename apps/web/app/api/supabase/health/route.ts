@@ -1,30 +1,15 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/prisma';
 
-export async function GET() {
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
+export async function GET(request: Request) {
   try {
-    const [projectCount, userCount] = await Promise.all([
-      prisma.project.count(),
-      prisma.user.count(),
-    ]);
-
-    return NextResponse.json(
-      {
-        status: 'ok',
-        projectCount,
-        userCount,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
+    const backendUrl = `${BACKEND}${new URL(request.url).pathname.replace('/api', '')}`;
+    const res = await fetch(backendUrl, { headers: { cookie: (request as any).headers?.get?.('cookie') || '' } });
+    const data = await res.json().catch(() => ({}));
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    console.error('Supabase health check failed:', error);
-    return NextResponse.json(
-      {
-        status: 'error',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    );
+    console.error('Supabase health proxy error:', error);
+    return NextResponse.json({ status: 'error', message: 'Proxy failed' }, { status: 500 });
   }
 }

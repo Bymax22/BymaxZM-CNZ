@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
-import { useEffect, useState } from 'react';
 
 type CardView = { id: string; text?: string; author?: string; image?: string; color?: string };
 
@@ -68,7 +67,7 @@ export default function OurStories() {
 
   const scroll = (direction: 'left' | 'right') => {
     const nextIndex =
-      direction === 'left' ? Math.max(0, activeIndex - 1) : Math.min(STORY_CARDS.length - 1, activeIndex + 1);
+      direction === 'left' ? Math.max(0, activeIndex - 1) : Math.min(cards.length - 1, activeIndex + 1);
     scrollToIndex(nextIndex);
   };
 
@@ -142,7 +141,7 @@ export default function OurStories() {
 
                   <div className="flex flex-1 flex-col px-5 py-5">
                     <h4 className="text-lg font-semibold text-slate-900">{t.author}</h4>
-                    <p className="mt-3 text-sm leading-7 text-slate-900 line-clamp-3 overflow-hidden">{truncateSentences(t.text, 2)}</p>
+                    <p className="mt-3 text-sm leading-7 text-slate-900 line-clamp-3 overflow-hidden">{truncateSentences(t.text || '', 2)}</p>
                     <div className="mt-auto border-t border-slate-200 pt-4 flex items-center justify-between gap-3">
                       <a href={`/stories/${t.id}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
                         Read Full Story →

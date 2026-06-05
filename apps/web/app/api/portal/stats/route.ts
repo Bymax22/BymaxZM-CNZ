@@ -1,68 +1,21 @@
 // app/api/portal/stats/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 
-// Lazy load prisma to avoid build-time import errors
-async function getPrisma() {
-  const { prisma } = await import('../../../lib/prisma');
-  return prisma;
-}
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const prisma = await getPrisma();
-
-    // Get dashboard statistics
-    const [
-      totalMembers,
-      activeProjects,
-      totalDonations,
-      volunteerHours,
-      treesPlanted,
-      upcomingEvents
-    ] = await Promise.all([
-      prisma.user.count({ where: { isActive: true } }),
-      prisma.project.count({ where: { status: 'ACTIVE' } }),
-      prisma.donation.aggregate({
-        where: { status: 'COMPLETED' },
-        _sum: { amount: true }
-      }),
-      prisma.volunteerHour.aggregate({
-        _sum: { hours: true }
-      }),
-      prisma.impactMetric.aggregate({
-        where: { name: 'trees_planted' },
-        _sum: { value: true }
-      }),
-      prisma.event.count({
-        where: {
-          startDate: { gt: new Date() }
-        }
-      })
-    ]);
-
-    const stats = {
-      totalMembers,
-      activeProjects,
-      totalDonations: totalDonations._sum.amount || 0,
-      volunteerHours: volunteerHours._sum.hours || 0,
-      treesPlanted: treesPlanted._sum.value || 0,
-      upcomingEvents
-    };
-
-    return NextResponse.json(stats);
+    const backendUrl = `${BACKEND}${new URL(request.url).pathname.replace('/api', '')}${new URL(request.url).search}`;
+    const res = await fetch(backendUrl, { headers: { cookie: request.headers.get('cookie') || '' } });
+    const data = await res.json().catch(() => ({}));
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    console.error('Stats API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Portal stats proxy error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

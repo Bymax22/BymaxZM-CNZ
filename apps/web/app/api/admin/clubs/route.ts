@@ -2,10 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 
-// Lazy load prisma to avoid build-time import errors
-async function getPrisma() {
-  const { prisma } = await import('../../../lib/prisma');
-  return prisma;
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
+async function proxyToBackend(request: NextRequest) {
+  const url = new URL(request.url);
+  const backendPath = url.pathname.replace('/api', '');
+  const backendUrl = `${BACKEND}${backendPath}${url.search}`;
+  const init: any = {
+    method: request.method,
+    headers: {
+      'Content-Type': request.headers.get('content-type') || 'application/json',
+      cookie: request.headers.get('cookie') || '',
+    },
+    credentials: 'include',
+  };
+  if (request.method !== 'GET' && request.method !== 'HEAD') init.body = await request.text();
+  const res = await fetch(backendUrl, init);
+  const text = await res.text();
+  return new NextResponse(text, { status: res.status, headers: { 'Content-Type': res.headers.get('content-type') || 'application/json' } });
 }
 
 export async function POST(request: NextRequest) {
@@ -14,15 +28,9 @@ export async function POST(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const body = await request.json();
-    const prisma = await getPrisma();
-    const club = await prisma.club.create({
-      data: body,
-      include: { leader: true, projects: true, members: true }
-    });
-    return NextResponse.json({ club }, { status: 201 });
+    return await proxyToBackend(request);
   } catch (error) {
-    console.error('Create club error:', error);
+    console.error('Create club proxy error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -33,20 +41,9 @@ export async function PUT(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const body = await request.json();
-    const { id, ...updateData } = body;
-    if (!id) {
-      return NextResponse.json({ error: 'Club ID required' }, { status: 400 });
-    }
-    const prisma = await getPrisma();
-    const club = await prisma.club.update({
-      where: { id },
-      data: updateData,
-      include: { leader: true, projects: true, members: true }
-    });
-    return NextResponse.json({ club });
+    return await proxyToBackend(request);
   } catch (error) {
-    console.error('Update club error:', error);
+    console.error('Update club proxy error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -57,16 +54,9 @@ export async function DELETE(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    if (!id) {
-      return NextResponse.json({ error: 'Club ID required' }, { status: 400 });
-    }
-    const prisma = await getPrisma();
-    await prisma.club.delete({ where: { id } });
-    return NextResponse.json({ success: true });
+    return await proxyToBackend(request);
   } catch (error) {
-    console.error('Delete club error:', error);
+    console.error('Delete club proxy error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -74,68 +64,12 @@ export async function DELETE(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
-    const filter = searchParams.get('filter') || 'ALL';
-
-    const skip = (page - 1) * limit;
-
-    const prisma = await getPrisma();
-
-    // Build where clause
-    const where: Record<string, unknown> = {};
-
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } },
-        { location: { contains: search, mode: 'insensitive' } },
-        { province: { contains: search, mode: 'insensitive' } }
-      ];
-    }
-
-    if (filter !== 'ALL') {
-      if (['ACTIVE', 'PENDING', 'SUSPENDED', 'INACTIVE'].includes(filter)) {
-        where.status = filter;
-      }
-    }
-
-    const [clubs, total] = await Promise.all([
-      prisma.club.findMany({
-        where,
-        skip,
-        take: limit,
-        include: {
-          leader: true,
-          projects: true,
-          members: true
-        },
-        orderBy: { createdAt: 'desc' }
-      }),
-      prisma.club.count({ where })
-    ]);
-
-    return NextResponse.json({
-      clubs,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+    return await proxyToBackend(request);
   } catch (error) {
-    console.error('Admin clubs API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Admin clubs proxy GET error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

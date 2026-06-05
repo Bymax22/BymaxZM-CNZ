@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../../lib/auth';
-import { prisma } from '../../../../lib/prisma';
+
+const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
+async function proxyToBackend(request: NextRequest) {
+  const url = new URL(request.url);
+  const backendPath = url.pathname.replace('/api', '');
+  const backendUrl = `${BACKEND}${backendPath}${url.search}`;
+  const init: any = {
+    method: request.method,
+    headers: {
+      'Content-Type': request.headers.get('content-type') || 'application/json',
+      cookie: request.headers.get('cookie') || '',
+    },
+    credentials: 'include',
+  };
+  if (request.method !== 'GET' && request.method !== 'HEAD') init.body = await request.text();
+  const res = await fetch(backendUrl, init);
+  const text = await res.text();
+  return new NextResponse(text, { status: res.status, headers: { 'Content-Type': res.headers.get('content-type') || 'application/json' } });
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,29 +28,10 @@ export async function GET(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const { searchParams } = new URL(request.url);
-    const skip = parseInt(searchParams.get('skip') || '0', 10);
-    const take = parseInt(searchParams.get('take') || '50', 10);
-    const userId = searchParams.get('userId') || undefined;
-
-    const where: any = {};
-    if (userId) where.userId = userId;
-
-    const [notifications, total] = await Promise.all([
-      prisma.notification.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take,
-      }),
-      prisma.notification.count({ where }),
-    ]);
-
-    return NextResponse.json({ notifications, total });
+    return await proxyToBackend(request);
   } catch (error) {
-    console.error('Admin notifications GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
+    console.error('Admin notifications proxy GET error:', error);
+    return NextResponse.json({ error: 'Failed to proxy notifications' }, { status: 500 });
   }
 }
 
@@ -41,28 +41,9 @@ export async function POST(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const body = await request.json();
-    const { title, content, type, userId, relatedId, relatedType } = body;
-
-    if (!title || !content || !type || !userId) {
-      return NextResponse.json({ error: 'Title, content, type and userId are required' }, { status: 400 });
-    }
-
-    const notification = await prisma.notification.create({
-      data: {
-        title,
-        content,
-        type,
-        userId,
-        relatedId,
-        relatedType,
-      },
-    });
-
-    return NextResponse.json({ notification }, { status: 201 });
+    return await proxyToBackend(request);
   } catch (error) {
-    console.error('Admin notifications POST error:', error);
-    return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
+    console.error('Admin notifications proxy POST error:', error);
+    return NextResponse.json({ error: 'Failed to proxy notifications' }, { status: 500 });
   }
 }
