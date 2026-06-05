@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../../../../lib/prisma';
 
 const randomPassword = () => Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
         email: normalizedEmail,
         phone: phone ? String(phone).trim() : null,
         password: hashedPassword,
-        role: 'USER',
+        role: 'USER' as any,
         isActive: true,
         isVerified: false,
         profile: {
