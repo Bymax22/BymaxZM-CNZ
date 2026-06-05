@@ -1,76 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../lib/prisma';
 
 /**
  * GET /api/projects
- * Fetch all public projects (paginated)
+ * Proxies to backend API
  */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const skip = (page - 1) * limit;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
-    // Fetch public projects
-    const [projects, total] = await Promise.all([
-      prisma.project.findMany({
-        where: { isPublic: true },
-        include: {
-          manager: {
-            select: { id: true, firstName: true, lastName: true, email: true },
-          },
-          donations: {
-            select: { amount: true },
-          },
-          volunteers: {
-            select: { id: true },
-          },
-        },
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-      }),
-      prisma.project.count({ where: { isPublic: true } }),
-    ]);
+    const response = await fetch(`${backendUrl}/projects?limit=${limit}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-    // Format response
-    const formattedProjects = projects.map((project) => ({
-      id: project.id,
-      title: project.title,
-      description: project.description,
-      status: project.status,
-      location: project.location,
-      province: project.province,
-      startDate: project.startDate,
-      endDate: project.endDate,
-      budget: project.budget,
-      fundsRaised: project.fundsRaised,
-      tags: project.tags,
-      manager: project.manager,
-      donationsCount: project.donations.length,
-      totalDonations: project.donations.reduce((sum, d) => sum + d.amount, 0),
-      volunteersCount: project.volunteers.length,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt,
-    }));
+    const data = await response.json();
 
-    return NextResponse.json(
-      {
-        projects: formattedProjects,
-        pagination: {
-          page,
-          limit,
-          total,
-          pages: Math.ceil(total / limit),
-        },
-      },
-      { status: 200 }
-    );
+    if (!response.ok) {
+      return NextResponse.json(data, { status: response.status });
+    }
+
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('Get projects error:', error);
+    console.error('Get projects proxy error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to fetch projects' },
       { status: 500 }
     );
   }
@@ -78,52 +33,30 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/projects
- * Create a new project (authenticated, requires PROJECT_MANAGER or ADMIN role)
+ * Proxies to backend API
  */
 export async function POST(request: NextRequest) {
   try {
-    // In production, extract userId from session/JWT
-    // For now, this is a skeleton showing the pattern
     const body = await request.json();
-    const { title, description, location, province, budget, managerId } = body;
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
-    if (!title || !description || !managerId) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    const project = await prisma.project.create({
-      data: {
-        title,
-        description,
-        location: location || '',
-        province: province || '',
-        budget: budget || 0,
-        managerId,
-        objectives: [],
-        tags: [],
-        isPublic: true,
-      },
-      include: {
-        manager: {
-          select: { id: true, firstName: true, lastName: true, email: true },
-        },
-      },
+    const response = await fetch(`${backendUrl}/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
     });
 
-    return NextResponse.json(
-      {
-        message: 'Project created successfully',
-        project,
-      },
-      { status: 201 }
-    );
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(data, { status: response.status });
+    }
+
+    return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Create project error:', error);
+    console.error('Create project proxy error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Failed to create project' },
       { status: 500 }
     );
   }

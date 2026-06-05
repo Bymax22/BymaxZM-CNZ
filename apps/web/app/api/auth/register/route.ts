@@ -1,83 +1,33 @@
 // app/api/auth/register/route.ts
+// Proxies to backend API to avoid direct database access from frontend
 import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { prisma } from '../../../lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
-    const { firstName, lastName, email, phone, password } = await request.json();
+    const body = await request.json();
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
-    // Validate required fields
-    if (!firstName || !lastName || !email || !password) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+    const response = await fetch(`${backendUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return NextResponse.json(data, { status: response.status });
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'User already exists with this email' },
-        { status: 400 }
-      );
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        phone,
-        password: hashedPassword,
-        role: 'MEMBER', // Default role
-        isActive: true,
-        profile: {
-          create: {
-            country: 'Zambia'
-          }
-        }
-      },
-      include: {
-        profile: true
-      }
-    });
-
-    // Create a membership record
-    await prisma.membership.create({
-      data: {
-        type: 'ORDINARY',
-        membershipId: `CNZ-${Date.now()}`,
-        userId: user.id,
-        membershipFee: 0, // Default fee
-        isActive: true
-      }
-    });
-
-    console.debug('Registration successful for user id:', user.id, 'email:', user.email);
-
-    // TODO: Send verification email
-    // await sendVerificationEmail(user.email, verificationToken);
-
+    return NextResponse.json(data, { status: 201 });
+  } catch (error) {
+    console.error('Register proxy error:', error);
     return NextResponse.json(
-      { 
-        message: 'User created successfully',
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName
-        }
-      },
-      { status: 201 }
+      { error: 'Registration failed' },
+      { status: 500 }
+    );
+  }
+}
     );
   } catch (error: unknown) {
     // Narrow the unknown error safely for logging

@@ -8,19 +8,26 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from 'next/image';
+import AuthErrorModal from '../../components/AuthErrorModal';
+import { useAuthError } from '../../hooks/useAuthError';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const router = useRouter();
+  const { error, isOpen, showError, showSuccess, clearError } = useAuthError();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      showError('Please enter both email and password');
+      return;
+    }
+
     setIsLoading(true);
-    setError('');
 
     try {
       const result = await signIn('credentials', {
@@ -30,24 +37,37 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        showError(result.error === 'CredentialsSignin' ? 'Invalid email or password' : result.error);
         setIsLoading(false);
         return;
       }
 
-      // Fetch updated session to get the role
-      const res = await fetch('/api/auth/session');
-      const session = await res.json();
-
-      // Redirect based on role
-      const userRole = session?.user?.role;
-      if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/portal/dashboard');
+      if (!result?.ok) {
+        showError('Login failed. Please try again.');
+        setIsLoading(false);
+        return;
       }
-    } catch {
-      setError('An error occurred. Please try again.');
+
+      showSuccess('Login successful! Redirecting...');
+
+      // Get updated session with role
+      setTimeout(() => {
+        fetch('/api/auth/session')
+          .then(res => res.json())
+          .then(session => {
+            const userRole = session?.user?.role;
+            if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
+              router.push('/admin/dashboard');
+            } else {
+              router.push('/portal/dashboard');
+            }
+          })
+          .catch(() => {
+            router.push('/portal/dashboard');
+          });
+      }, 1000);
+    } catch (err) {
+      showError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -55,6 +75,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <AuthErrorModal
+        type={error?.type}
+        title={error?.title}
+        message={error?.message || ''}
+        isOpen={isOpen}
+        onClose={clearError}
+      />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -84,17 +112,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
-          >
-            {error}
-          </motion.div>
-        )}
-
         {/* Login Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
@@ -113,7 +130,8 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                disabled={isLoading}
+                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Enter your email"
               />
             </div>
@@ -135,12 +153,14 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                disabled={isLoading}
+                className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 placeholder="Enter your password"
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                disabled={isLoading}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center disabled:opacity-50"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
@@ -158,7 +178,8 @@ export default function LoginPage() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
+                disabled={isLoading}
+                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
                 Remember me
@@ -173,8 +194,8 @@ export default function LoginPage() {
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
             type="submit"
             disabled={isLoading}
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
@@ -211,13 +232,15 @@ export default function LoginPage() {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
+            disabled={isLoading}
+            className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Google
           </button>
           <button
             type="button"
-            className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200"
+            disabled={isLoading}
+            className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Facebook
           </button>

@@ -91,7 +91,7 @@ export default function Hero() {
         </div>
 
         <div className="max-w-[1440px] mx-auto px-6 lg:px-10 pt-10 lg:pt-14">
-          <div className="grid lg:grid-cols-2 items-center gap-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
             {/* LEFT CONTENT */}
             <div className="relative z-20 pb-10 lg:pb-0 lg:pl-8 xl:pl-12 space-y-6">
               <p className="text-sm uppercase tracking-[0.32em] text-[#2f1000]">Care For Nature Zambia</p>
@@ -150,11 +150,11 @@ export default function Hero() {
             </div>
 
             {/* RIGHT IMAGE */}
-            <div className="relative h-[500px] lg:h-[600px] flex items-center justify-end pr-0 -mr-6 lg:-mr-10 overflow-visible lg:-ml-8 xl:-ml-12">
+            <div className="relative h-[320px] sm:h-[420px] lg:h-[600px] flex items-center justify-center overflow-hidden lg:justify-end">
               {/* MAIN IMAGE */}
-              <div className="relative w-[2000%] lg:w-[200%] h-full overflow-hidden rounded-bl-3xl">
+              <div className="relative w-full lg:w-[105%] h-full overflow-hidden rounded-bl-3xl">
                 {/* PLAY BUTTON */}
-                <div className="absolute right-16 bottom-24 flex items-center gap-3 z-20">
+                <div className="absolute right-4 sm:right-8 bottom-4 sm:bottom-8 flex items-center gap-3 z-20">
                   <button className="w-10 h-10 rounded-full bg-white shadow-xl flex items-center justify-center hover:scale-105 transition">
                     <Play size={14} className="text-[#007200] fill-[#007200]" />
                   </button>
