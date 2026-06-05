@@ -63,12 +63,12 @@ export async function GET(request: NextRequest) {
     const stats = {
       totalDonations: allDonations.length,
       completedAmount: allDonations
-        .filter((d) => d.status === 'COMPLETED')
-        .reduce((sum, d) => sum + d.amount, 0),
+        .filter((d: any) => d.status === 'COMPLETED')
+        .reduce((sum: number, d: any) => sum + (d.amount || 0), 0),
       pendingAmount: allDonations
-        .filter((d) => d.status === 'PENDING')
-        .reduce((sum, d) => sum + d.amount, 0),
-      donorCount: new Set(allDonations.map((d) => d.donorEmail)).size,
+        .filter((d: any) => d.status === 'PENDING')
+        .reduce((sum: number, d: any) => sum + (d.amount || 0), 0),
+      donorCount: new Set(allDonations.map((d: any) => d.donorEmail)).size,
     };
 
     return NextResponse.json({
