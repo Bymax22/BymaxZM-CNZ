@@ -170,9 +170,9 @@ export const Navigation = () => {
               </Link>
             ) : (
               <Link
-                href="/auth/login"
+                href="/auth/register"
                 className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346]"
-                aria-label="Login or sign up"
+                aria-label="Choose account"
               >
                 <FiUser className="w-6 h-6" />
               </Link>
@@ -196,9 +196,9 @@ export const Navigation = () => {
 
           <div className="md:hidden flex items-center gap-2">
             <Link
-              href="/auth/login"
+              href="/auth/register"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
-              aria-label="Sign in or sign up"
+              aria-label="Choose account"
             >
               <FiUser className="w-5 h-5" />
             </Link>
@@ -260,8 +260,8 @@ export const Navigation = () => {
             <Link href="/contact" className="transition-colors duration-200 hover:text-[#F0F9F4]">Contact</Link>
             <Link href="/about/reports" className="transition-colors duration-200 hover:text-[#F0F9F4]">Reports</Link>
             <Link href="/webinar" className="transition-colors duration-200 hover:text-[#F0F9F4]">Webinar</Link>
-            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#F0F9F4]">Create Account</Link>
-            <Link href="/auth/login" className="transition-colors duration-200 hover:text-[#F0F9F4]">Login</Link>
+            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#F0F9F4]">Choose Account</Link>
+            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#F0F9F4]">Choose Account</Link>
           </div>
 
           <Link

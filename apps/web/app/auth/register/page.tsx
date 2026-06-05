@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaPhone } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaPhone, FaArrowRight } from 'react-icons/fa';
 import Image from 'next/image';
 import AuthErrorModal from '../../components/AuthErrorModal';
 import { useAuthError } from '../../hooks/useAuthError';
@@ -153,6 +153,37 @@ export default function RegisterPage() {
           <p className="text-gray-600">
             Create your CNZ Portal account
           </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {[
+            { label: 'Member', href: '/auth/register/member', description: 'General member access for portal and community engagement.' },
+            { label: 'Donor', href: '/auth/register/donor', description: 'Register to manage donations and donor communications.' },
+            { label: 'Partner', href: '/auth/register/partner', description: 'Register to collaborate on projects and corporate partnerships.' },
+            { label: 'Club Leader', href: '/auth/register/club-leader', description: 'Register as a club leader to manage club activities.' },
+            { label: 'Youth', href: '/auth/register/youth', description: 'Register for youth programs and event participation.' },
+          ].map((role) => (
+            <Link
+              key={role.href}
+              href={role.href}
+              className="group rounded-3xl border border-gray-200 bg-emerald-50 px-5 py-4 shadow-sm transition-all duration-200 hover:border-emerald-300 hover:bg-white"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-lg font-semibold text-gray-900">{role.label}</p>
+                  <p className="mt-1 text-sm text-gray-600">{role.description}</p>
+                </div>
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500 text-white transition-all duration-200 group-hover:bg-emerald-600">
+                  <FaArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="rounded-3xl border border-dashed border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-700">
+          <p className="font-semibold">Choose a specific registration path above</p>
+          <p className="mt-1">Each role page includes fields tailored to the database profile schema.</p>
         </div>
 
         {/* Registration Form */}

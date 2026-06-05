@@ -191,14 +191,14 @@ export const SecondaryNav = () => {
                     className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Create Account
+                    Choose Account
                   </Link>
                   <Link
-                    href="/auth/login"
+                    href="/auth/register"
                     className="block rounded-lg px-4 py-3 text-center text-sm font-bold text-white bg-[#F79021] hover:bg-[#e67e1a] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login
+                    Choose Account
                   </Link>
                   <Link
                     href="/about"

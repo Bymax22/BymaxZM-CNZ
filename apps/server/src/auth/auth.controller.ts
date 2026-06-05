@@ -14,6 +14,20 @@ export class AuthController {
       email: string;
       phone?: string;
       password: string;
+      role?: string;
+      profile?: {
+        bio?: string;
+        occupation?: string;
+        organization?: string;
+        interests?: string[];
+        skills?: string[];
+        emergencyContactName?: string;
+        emergencyContactPhone?: string;
+        address?: string;
+        city?: string;
+        province?: string;
+        country?: string;
+      };
     },
   ) {
     try {
@@ -21,7 +35,7 @@ export class AuthController {
       return { message: 'User created successfully', user };
     } catch (error) {
       throw new HttpException(
-        { error: error.message },
+        { error: error instanceof Error ? error.message : 'Unable to register user' },
         HttpStatus.BAD_REQUEST,
       );
     }

@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, UnauthorizedException, Logger } from '
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { OtpService } from '../otp/otp.service';
-import { MembershipType } from '@prisma/client';
+import { MembershipType, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
 
@@ -22,8 +22,25 @@ export class AuthService {
     email: string;
     phone?: string;
     password: string;
+    role?: string;
+    profile?: {
+      bio?: string;
+      occupation?: string;
+      organization?: string;
+      interests?: string[];
+      skills?: string[];
+      emergencyContactName?: string;
+      emergencyContactPhone?: string;
+      address?: string;
+      city?: string;
+      province?: string;
+      country?: string;
+    };
   }) {
-    // Check if user exists
+    // Only allow self-registration for safe user roles.
+    const allowedRoles: UserRole[] = ['USER', 'DONOR', 'PARTNER', 'CLUB_LEADER', 'YOUTH'];
+    const role = allowedRoles.includes(data.role as UserRole) ? (data.role as UserRole) : 'USER';
+
     const existingUser = await this.prisma.user.findUnique({
       where: { email: data.email },
     });
@@ -35,7 +52,21 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(data.password, 12);
 
-    // Create user
+    const profileData = {
+      bio: data.profile?.bio ?? '',
+      occupation: data.profile?.occupation,
+      organization: data.profile?.organization,
+      interests: data.profile?.interests ?? [],
+      skills: data.profile?.skills ?? [],
+      emergencyContactName: data.profile?.emergencyContactName,
+      emergencyContactPhone: data.profile?.emergencyContactPhone,
+      address: data.profile?.address,
+      city: data.profile?.city,
+      province: data.profile?.province,
+      country: data.profile?.country ?? 'Zambia',
+    };
+
+    // Create user with profile
     const user = await this.prisma.user.create({
       data: {
         firstName: data.firstName,
@@ -43,10 +74,9 @@ export class AuthService {
         email: data.email,
         phone: data.phone,
         password: hashedPassword,
+        role,
         profile: {
-          create: {
-            bio: '',
-          },
+          create: profileData,
         },
       },
       select: {

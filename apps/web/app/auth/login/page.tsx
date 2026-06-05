@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
@@ -17,6 +17,8 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedRole = searchParams.get('role') || undefined;
   const { error, isOpen, showError, showSuccess, clearError } = useAuthError();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -133,10 +135,10 @@ export default function LoginPage() {
             />
           </motion.div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome Back
+            {selectedRole ? `Login as ${selectedRole.replace(/-/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}` : 'Welcome Back'}
           </h2>
           <p className="text-gray-600">
-            Sign in to your CNZ Portal account
+            {selectedRole ? `Sign in to your ${selectedRole.replace(/-/g, ' ')} account` : 'Sign in to your CNZ Portal account'}
           </p>
         </div>
 
@@ -240,7 +242,10 @@ export default function LoginPage() {
         <div className="text-center">
           <p className="text-sm text-gray-600">
             Don&apos;t have an account?{' '}
-            <Link href="/auth/register" className="font-medium text-emerald-600 hover:text-emerald-500">
+            <Link
+              href={selectedRole ? `/auth/register/${selectedRole}` : '/auth/register'}
+              className="font-medium text-emerald-600 hover:text-emerald-500"
+            >
               Sign up now
             </Link>
           </p>
