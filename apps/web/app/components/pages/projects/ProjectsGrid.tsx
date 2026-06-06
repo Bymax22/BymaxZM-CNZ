@@ -6,6 +6,24 @@ import { projects as staticProjects } from '../../sections/projectsData';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
+function isVideoUrl(url: string) {
+  return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+}
+
+function formatRelativeTime(value?: string) {
+  if (!value) return ''; 
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return '';
+  const seconds = Math.round((Date.now() - date.getTime()) / 1000);
+  const absSeconds = Math.abs(seconds);
+  const formatter = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
+  if (absSeconds < 60) return formatter.format(-seconds, 'second');
+  if (absSeconds < 3600) return formatter.format(-Math.round(seconds / 60), 'minute');
+  if (absSeconds < 86400) return formatter.format(-Math.round(seconds / 3600), 'hour');
+  if (absSeconds < 2592000) return formatter.format(-Math.round(seconds / 86400), 'day');
+  return formatter.format(-Math.round(seconds / 2592000), 'month');
+}
+
 export function ProjectsGrid() {
   const [projects, setProjects] = useState(staticProjects);
 
@@ -18,18 +36,25 @@ export function ProjectsGrid() {
         const data = await res.json();
         const cards = data.cards || data.contentCards || [];
         if (!mounted) return;
-        // map generic card to project-like shape used in UI
-        const mapped = cards.map((c: any, i: number) => ({
-          id: c.id || c.slug || String(i),
-          title: c.title,
-          shortDescription: c.description || c.subtitle || '',
-          description: c.description || c.subtitle || '',
-          location: c.metadata?.location || 'Zambia',
-          status: c.metadata?.status || 'ongoing',
-          image: c.imageUrl || '',
-          category: (c.category || 'conservation').toLowerCase(),
-          sdgs: c.metadata?.sdgs || [],
-        }));
+        const mapped = cards.map((c: any, i: number) => {
+          const gallery = Array.isArray(c.metadata?.gallery) ? c.metadata.gallery : [];
+          const heroImage = c.imageUrl || gallery.find((item: any) => item.type === 'image')?.url || '';
+          const heroVideo = gallery.find((item: any) => item.type === 'video')?.url || (isVideoUrl(c.imageUrl || '') ? c.imageUrl : undefined);
+
+          return {
+            id: c.id || c.slug || String(i),
+            title: c.title,
+            shortDescription: c.description || c.subtitle || '',
+            description: c.description || c.subtitle || '',
+            location: c.metadata?.location || 'Zambia',
+            status: c.metadata?.status || 'ongoing',
+            image: heroImage,
+            video: heroVideo,
+            publishedAt: c.publishedAt || c.createdAt,
+            category: (c.category || 'conservation').toLowerCase(),
+            sdgs: c.metadata?.sdgs || [],
+          };
+        });
         if (mapped.length) setProjects(mapped);
       } catch (e) {
         // keep static projects
@@ -80,7 +105,9 @@ export function ProjectsGrid() {
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100 h-full flex flex-col overflow-hidden">
                   {/* Image */}
                   <div className={`relative h-48 ${categoryColors[project.category]} overflow-hidden flex items-center justify-center`}>
-                    {project.image.includes('cloudinary') || project.image.includes('http') ? (
+                    {project.video ? (
+                      <video src={project.video} controls muted loop playsInline className="w-full h-full object-cover" />
+                    ) : project.image && (project.image.includes('cloudinary') || project.image.includes('http')) ? (
                       <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                     ) : (
                       <div className="text-white text-center">
@@ -102,6 +129,9 @@ export function ProjectsGrid() {
                     </div>
 
                     <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2">{project.title}</h3>
+                    {project.publishedAt && (
+                      <p className="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Published {formatRelativeTime(project.publishedAt)}</p>
+                    )}
                     <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-1">{project.shortDescription}</p>
                     
                     {/* Location */}

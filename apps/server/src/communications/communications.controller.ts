@@ -143,7 +143,12 @@ export class CommunicationsController {
   }
 
   @Get('cards')
-  async listCards(@Query('skip') skip = 0, @Query('take') take = 50, @Query('cardType') cardType?: string, @Query('featured') featured?: string) {
+  async listCards(
+    @Query('skip') skip = 0,
+    @Query('take') take = 50,
+    @Query('cardType') cardType?: string | string[],
+    @Query('featured') featured?: string,
+  ) {
     try {
       const featuredFlag = featured === 'true' ? true : featured === 'false' ? false : undefined;
       return await this.communicationsService.listCards(Number(skip), Number(take), cardType, featuredFlag);

@@ -218,6 +218,32 @@ export class CommunicationsService {
     });
   }
 
+  async updateCard(id: string, payload: any) {
+    // allow updating publishedAt and other fields
+    const data: any = {};
+    if (payload.title !== undefined) data.title = payload.title;
+    if (payload.slug !== undefined) data.slug = payload.slug;
+    if (payload.subtitle !== undefined) data.subtitle = payload.subtitle;
+    if (payload.description !== undefined) data.description = payload.description;
+    if (payload.imageUrl !== undefined) data.imageUrl = payload.imageUrl;
+    if (payload.imageAlt !== undefined) data.imageAlt = payload.imageAlt;
+    if (payload.link !== undefined) data.link = payload.link;
+    if (payload.cardType !== undefined) data.cardType = payload.cardType;
+    if (payload.category !== undefined) data.category = payload.category;
+    if (payload.tags !== undefined) data.tags = payload.tags;
+    if (payload.status !== undefined) data.status = payload.status;
+    if (payload.featured !== undefined) data.featured = payload.featured;
+    if (payload.displayOrder !== undefined) data.displayOrder = payload.displayOrder;
+    if (payload.metadata !== undefined) data.metadata = payload.metadata;
+    if (payload.relatedId !== undefined) data.relatedId = payload.relatedId;
+    if (payload.publishedAt !== undefined) data.publishedAt = payload.publishedAt;
+
+    return this.prisma.contentCard.update({
+      where: { id },
+      data,
+    });
+  }
+
   async ensureUniqueSlug(slug: string) {
     if (!slug) return slug;
     const base = slug;
@@ -242,9 +268,18 @@ export class CommunicationsService {
     return card;
   }
 
-  async listCards(skip = 0, take = 50, cardType?: string, featured?: boolean) {
+  async listCards(skip = 0, take = 50, cardType?: string | string[], featured?: boolean) {
     const where: any = {};
-    if (cardType) where.cardType = cardType;
+    if (cardType) {
+      const types = Array.isArray(cardType)
+        ? cardType
+        : cardType.split(',').map((t) => t.trim()).filter(Boolean);
+      if (types.length === 1) {
+        where.cardType = types[0];
+      } else if (types.length > 1) {
+        where.cardType = { in: types };
+      }
+    }
     if (featured !== undefined) where.featured = featured;
 
     const [cards, total] = await Promise.all([

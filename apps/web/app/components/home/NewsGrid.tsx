@@ -85,7 +85,7 @@ export default function NewsGrid() {
     let mounted = true;
     async function load() {
       try {
-        const res = await fetch('/api/communications/cards?cardType=NEWS&take=4');
+        const res = await fetch('/api/communications/cards?cardType=NEWS&cardType=EVENT&take=4');
         if (!res.ok) return;
         const data = await res.json();
         const cards = data.cards || data.contentCards || [];

@@ -4,7 +4,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
 
-type CardView = { id: string; text?: string; author?: string; image?: string; color?: string };
+type CardView = { id: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; color?: string };
+
+function isVideoUrl(url: string) {
+  return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+}
+
+function formatRelativeTime(value?: string) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return '';
+  const seconds = Math.round((Date.now() - date.getTime()) / 1000);
+  const absSeconds = Math.abs(seconds);
+  const formatter = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
+  if (absSeconds < 60) return formatter.format(-seconds, 'second');
+  if (absSeconds < 3600) return formatter.format(-Math.round(seconds / 60), 'minute');
+  if (absSeconds < 86400) return formatter.format(-Math.round(seconds / 3600), 'hour');
+  if (absSeconds < 2592000) return formatter.format(-Math.round(seconds / 86400), 'day');
+  return formatter.format(-Math.round(seconds / 2592000), 'month');
+}
 
 // initial fallback from static data
 const initialCards: CardView[] = storyTopics.map((s, i) => ({
@@ -36,13 +54,20 @@ export default function OurStories() {
         if (!res.ok) return;
         const data = await res.json();
         const items = data.cards || data.contentCards || [];
-        const mapped: CardView[] = items.map((c: any, i: number) => ({
-          id: c.id || c.slug || String(i),
-          text: c.description || c.subtitle || c.metadata?.summary || '',
-          author: c.title,
-          image: c.imageUrl || c.media || '',
-          color: i % 3 === 0 ? 'bg-emerald-500' : i % 3 === 1 ? 'bg-orange-500' : 'bg-slate-900',
-        }));
+        const mapped: CardView[] = items.map((c: any, i: number) => {
+          const gallery = Array.isArray(c.metadata?.gallery) ? c.metadata.gallery : [];
+          const heroImage = c.imageUrl || gallery.find((item: any) => item.type === 'image')?.url || '';
+          const heroVideo = gallery.find((item: any) => item.type === 'video')?.url || (isVideoUrl(c.imageUrl || '') ? c.imageUrl : undefined);
+          return {
+            id: c.id || c.slug || String(i),
+            text: c.description || c.subtitle || c.metadata?.summary || '',
+            author: c.title,
+            image: heroImage,
+            video: heroVideo,
+            publishedAt: c.publishedAt || c.createdAt,
+            color: i % 3 === 0 ? 'bg-emerald-500' : i % 3 === 1 ? 'bg-orange-500' : 'bg-slate-900',
+          };
+        });
         if (mounted && mapped.length) setCards(mapped);
       } catch (e) {
         // keep fallback
@@ -133,7 +158,11 @@ export default function OurStories() {
                   className="snap-start w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-0.75rem)] shrink-0 flex h-full min-h-[34rem] flex-col overflow-hidden rounded-[24px] bg-white shadow-sm"
                 >
                   <div className="relative h-52 overflow-hidden rounded-t-[24px]">
-                    <img src={t.image} alt={t.author} className="h-full w-full object-cover" />
+                    {t.video ? (
+                      <video src={t.video} controls muted loop playsInline className="h-full w-full object-cover" />
+                    ) : (
+                      <img src={t.image} alt={t.author} className="h-full w-full object-cover" />
+                    )}
                     <div className={`absolute left-4 top-4 inline-flex h-12 w-12 items-center justify-center rounded-full text-white shadow-xl ${t.color}`}>
                       <MessageCircle size={20} />
                     </div>
@@ -141,6 +170,9 @@ export default function OurStories() {
 
                   <div className="flex flex-1 flex-col px-5 py-5">
                     <h4 className="text-lg font-semibold text-slate-900">{t.author}</h4>
+                    {t.publishedAt && (
+                      <p className="mt-2 text-xs uppercase tracking-[0.2em] text-slate-500">Published {formatRelativeTime(t.publishedAt)}</p>
+                    )}
                     <p className="mt-3 text-sm leading-7 text-slate-900 line-clamp-3 overflow-hidden">{truncateSentences(t.text || '', 2)}</p>
                     <div className="mt-auto border-t border-slate-200 pt-4 flex items-center justify-between gap-3">
                       <a href={`/stories/${t.id}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">

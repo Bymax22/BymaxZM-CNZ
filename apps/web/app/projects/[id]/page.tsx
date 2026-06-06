@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
           impact: card.metadata?.impact || [],
           image: card.imageUrl || '',
           sdgs: card.metadata?.sdgs || [],
+          partnerLogos: card.metadata?.partnerLogos || [],
+          gallery: card.metadata?.gallery || [],
+          publishedAt: card.publishedAt || card.createdAt,
         } as any;
       }
     } catch (e) {
@@ -65,6 +68,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           impact: card.metadata?.impact || [],
           image: card.imageUrl || '',
           sdgs: card.metadata?.sdgs || [],
+          partnerLogos: card.metadata?.partnerLogos || [],
+          gallery: card.metadata?.gallery || [],
+          publishedAt: card.publishedAt || card.createdAt,
         } as any;
       }
     } catch (e) {
@@ -101,7 +107,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           <div className="md:col-span-2">
             {/* Project Image */}
             <div className="rounded-2xl overflow-hidden shadow-lg mb-12 h-96 bg-gradient-to-br from-[#F0F9F4] to-[#E0F0EB] flex items-center justify-center">
-              {project.image.includes('cloudinary') || project.image.includes('http') ? (
+              {project.image && (project.image.includes('cloudinary') || project.image.includes('http')) ? (
                 <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="text-center">
@@ -110,6 +116,34 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 </div>
               )}
             </div>
+
+            {/* Partner Logos */}
+            {project.partnerLogos && project.partnerLogos.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Partners</h2>
+                <div className="flex flex-wrap gap-4 items-center">
+                  {project.partnerLogos.map((logo, idx) => (
+                    <img key={idx} src={logo} alt="Partner logo" className="h-16 object-contain" />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Gallery */}
+            {project.gallery && project.gallery.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Gallery</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {project.gallery.map((item: any, idx: number) => (
+                    item.type === 'video' ? (
+                      <video key={idx} src={item.url} controls className="w-full h-40 object-cover rounded-lg" />
+                    ) : (
+                      <img key={idx} src={item.url} alt="Gallery" className="w-full h-40 object-cover rounded-lg" />
+                    )
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Full Description */}
             <div className="mb-12">

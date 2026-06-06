@@ -5,17 +5,40 @@ import CloudinaryUploader from '../../../components/admin/CloudinaryUploader';
 
 interface ContentCard {
   id: string;
+  slug?: string;
   title: string;
-  body: string;
-  published: boolean;
+  description?: string;
+  body?: string;
+  status?: string;
+  imageUrl?: string;
+  publishedAt?: string | null;
   createdAt: string;
+  cardType?: string;
+  subtitle?: string;
+  imageAlt?: string;
+  category?: string;
+  tags?: string[];
+  featured?: boolean;
+  metadata?: any;
+}
+
+function parseMediaUrls(value: string) {
+  return value
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function isVideoUrl(url: string) {
+  return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
 }
 
 export default function AdminContentPage() {
   const [cards, setCards] = useState<ContentCard[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ title: '', body: '', published: false });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState({ title: '', body: '' });
   const [message, setMessage] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [slug, setSlug] = useState<string>('');
@@ -26,6 +49,9 @@ export default function AdminContentPage() {
   const [category, setCategory] = useState<string>('general');
   const [status, setStatus] = useState<string>('DRAFT');
   const [featured, setFeatured] = useState<boolean>(false);
+  const [publishedAtInput, setPublishedAtInput] = useState<string>('');
+  const [partnerLogosInput, setPartnerLogosInput] = useState<string>('');
+  const [galleryUrlsInput, setGalleryUrlsInput] = useState<string>('');
 
   useEffect(() => {
     async function loadCards() {
@@ -34,7 +60,7 @@ export default function AdminContentPage() {
         const res = await fetch('/api/admin/content');
         const data = await res.json();
         if (res.ok) {
-          setCards(data.contentCards || []);
+          setCards(data.cards || data.contentCards || []);
         } else {
           console.error(data.error);
         }
@@ -48,13 +74,45 @@ export default function AdminContentPage() {
     loadCards();
   }, []);
 
+  function toDateTimeLocalString(iso?: string | null) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    // format to yyyy-MM-ddTHH:mm (datetime-local)
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const MM = pad(d.getMonth() + 1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
+  }
+
+  function formatDisplayDate(iso?: string | null) {
+    if (!iso) return 'Date not available';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return 'Date not available';
+    return d.toLocaleString();
+  }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSaving(true);
     setMessage(null);
 
     try {
-      const payload = {
+      const providedPublishedAt = publishedAtInput ? new Date(publishedAtInput).toISOString() : undefined;
+      const finalPublishedAt = providedPublishedAt || (status === 'PUBLISHED' ? new Date().toISOString() : undefined);
+      const partnerLogos = parseMediaUrls(partnerLogosInput);
+      const galleryUrls = parseMediaUrls(galleryUrlsInput);
+      const metadata: any = {};
+
+      if (partnerLogos.length) metadata.partnerLogos = partnerLogos;
+      if (galleryUrls.length) {
+        metadata.gallery = galleryUrls.map((url) => ({ url, type: isVideoUrl(url) ? 'video' : 'image' }));
+      }
+
+      const payload: any = {
         title: form.title,
         slug: slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
         subtitle,
@@ -65,44 +123,77 @@ export default function AdminContentPage() {
         cardType,
         category,
         tags: tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
-        status,
-        featured,
+        status: status || 'DRAFT',
+        featured: Boolean(featured),
         displayOrder: 0,
-        metadata: {},
+        metadata,
         relatedId: undefined,
-        publishedAt: status === 'PUBLISHED' ? new Date().toISOString() : undefined,
+        publishedAt: finalPublishedAt,
       };
 
+      const method = editingId ? 'PUT' : 'POST';
+      if (editingId) payload.id = editingId;
+
       const response = await fetch('/api/admin/content', {
-        method: 'POST',
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
-      if (response.ok) {
-        setCards((prev) => [data.contentCard || data.contentCards?.[0] || payload, ...prev]);
-        setMessage('Content card created successfully.');
-        setForm({ title: '', body: '', published: false });
+      const savedCard = data?.contentCard || data?.card || data?.cards?.[0] || data;
+      if (response.ok && savedCard?.id) {
+        if (editingId) {
+          setCards((prev) => prev.map((c) => (c.id === editingId ? { ...c, ...savedCard } : c)));
+          setMessage('Content card updated successfully.');
+        } else {
+          setCards((prev) => [savedCard, ...prev]);
+          setMessage('Content card created successfully.');
+        }
+
+        setEditingId(null);
+        setForm({ title: '', body: '' });
         setImageUrl('');
         setSlug('');
         setSubtitle('');
         setImageAlt('');
         setTags('');
         setCategory('general');
-+        setCardType('STORY');
-+        setStatus('DRAFT');
-+        setFeatured(false);
+        setCardType('STORY');
+        setStatus('DRAFT');
+        setFeatured(false);
+        setPublishedAtInput('');
+        setPartnerLogosInput('');
+        setGalleryUrlsInput('');
       } else {
-        setMessage(data.error || 'Failed to create content card.');
+        setMessage(data.error || 'Failed to save content card.');
       }
     } catch (error) {
       console.error(error);
-      setMessage('Failed to create content card.');
+      setMessage('Failed to save content card.');
     } finally {
       setSaving(false);
     }
   };
+
+  function startEdit(card: ContentCard) {
+    const existingMetadata = card.metadata || {};
+    setEditingId(card.id);
+    setForm({ title: card.title || '', body: card.description || card.body || '' });
+    setImageUrl(card.imageUrl || '');
+    setSlug(card.slug || '');
+    setSubtitle(card.subtitle || '');
+    setImageAlt(card.imageAlt || '');
+    setTags((card.tags || []).join(','));
+    setCategory(card.category || 'general');
+    setCardType(card.cardType || 'STORY');
+    setStatus(card.status || 'DRAFT');
+    setFeatured(Boolean(card.featured));
+    setPublishedAtInput(toDateTimeLocalString(card.publishedAt || card.createdAt));
+    setPartnerLogosInput((existingMetadata.partnerLogos || []).join('\n'));
+    setGalleryUrlsInput((existingMetadata.gallery || []).map((item: any) => item.url).join('\n'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
@@ -117,7 +208,7 @@ export default function AdminContentPage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-slate-900">New Content Card</h2>
-              <p className="mt-2 text-sm text-slate-500">Build a headline card and publish it right away.</p>
+              <p className="mt-2 text-sm text-slate-500">Build a headline card and publish it right away. Use the published date/time field to backdate if needed.</p>
             </div>
           </div>
 
@@ -185,6 +276,7 @@ export default function AdminContentPage() {
                 <select value={cardType} onChange={(e) => setCardType(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3">
                   <option value="STORY">Story</option>
                   <option value="NEWS">News</option>
+                  <option value="EVENT">Event</option>
                   <option value="PROJECT">Project</option>
                 </select>
               </div>
@@ -207,12 +299,36 @@ export default function AdminContentPage() {
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Partner logos (one URL per line)</label>
+              <textarea
+                value={partnerLogosInput}
+                onChange={(e) => setPartnerLogosInput(e.target.value)}
+                rows={3}
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3"
+                placeholder="https://.../logo1.png\nhttps://.../logo2.png"
+              />
+              <p className="mt-2 text-xs text-slate-500">Optional logo URLs for partners or sponsors used on project/story cards.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Gallery media URLs (one per line)</label>
+              <textarea
+                value={galleryUrlsInput}
+                onChange={(e) => setGalleryUrlsInput(e.target.value)}
+                rows={4}
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3"
+                placeholder="https://.../image1.jpg\nhttps://.../video1.mp4"
+              />
+              <p className="mt-2 text-xs text-slate-500">Optional gallery media for the card detail page. Videos are detected by extension.</p>
+            </div>
+
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 text-sm text-slate-700">
                 <input
                   type="checkbox"
-                  checked={form.published}
-                  onChange={(event) => setForm({ ...form, published: event.target.checked })}
+                  checked={status === 'PUBLISHED'}
+                  onChange={(event) => setStatus(event.target.checked ? 'PUBLISHED' : 'DRAFT')}
                   className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 Publish immediately
@@ -231,12 +347,18 @@ export default function AdminContentPage() {
               </label>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Published date & time (optional)</label>
+              <input type="datetime-local" value={publishedAtInput} onChange={(e) => setPublishedAtInput(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" />
+              <p className="mt-2 text-xs text-slate-500">Leave blank to use current date/time when publishing, or set to backdate.</p>
+            </div>
+
             <button
               type="submit"
               disabled={saving}
               className="rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {saving ? 'Publishing...' : 'Save Content Card'}
+              {saving ? 'Saving...' : editingId ? 'Update Content Card' : 'Save Content Card'}
             </button>
           </form>
         </div>
@@ -252,12 +374,23 @@ export default function AdminContentPage() {
               cards.map((card) => (
                 <div key={card.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-900">{card.title}</h3>
-                      <p className="text-sm text-slate-500">{card.published ? 'Published' : 'Draft'} • {new Date(card.createdAt).toLocaleDateString()}</p>
+                    <div className="flex items-center gap-4">
+                      {card.imageUrl ? (
+                        <img src={card.imageUrl} alt={card.title} className="h-16 w-24 object-cover rounded-md" />
+                      ) : (
+                        <div className="h-16 w-24 rounded-md bg-slate-200 flex items-center justify-center">No image</div>
+                      )}
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">{card.title}</h3>
+                        <p className="text-sm text-slate-500">{(card.status === 'PUBLISHED') ? 'Published' : 'Draft'} • {formatDisplayDate(card.publishedAt || card.createdAt)}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => startEdit(card)} className="text-sm text-emerald-600">Edit</button>
                     </div>
                   </div>
-                  <p className="mt-4 text-slate-600">{card.body}</p>
+                  <p className="mt-4 text-slate-600">{card.description || card.body}</p>
                 </div>
               ))
             )}

@@ -10,6 +10,10 @@ export type Project = {
   impact: string[];
   image: string;
   sdgs: number[];
+  video?: string;
+  publishedAt?: string;
+  partnerLogos?: string[];
+  gallery?: { type: 'image' | 'video'; url: string }[];
 };
 
 export const projects: Project[] = [

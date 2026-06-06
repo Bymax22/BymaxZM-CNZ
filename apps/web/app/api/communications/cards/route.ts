@@ -7,11 +7,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const skip = searchParams.get('skip') || '0';
     const take = searchParams.get('take') || '10';
-    const cardType = searchParams.get('cardType') || undefined;
     const featured = searchParams.get('featured') || undefined;
 
     const params = new URLSearchParams({ skip, take });
-    if (cardType) params.set('cardType', cardType);
+    const cardTypes = searchParams.getAll('cardType');
+    cardTypes.forEach((type) => params.append('cardType', type));
     if (featured) params.set('featured', featured);
 
     const res = await fetch(`${BACKEND}/communications/cards?${params.toString()}`);
