@@ -193,10 +193,13 @@ export class CommunicationsService {
     relatedId?: string;
     publishedAt?: Date;
   }) {
+    // Ensure slug is unique — append suffix if needed to avoid unique constraint errors
+    const finalSlug = await this.ensureUniqueSlug(payload.slug);
+
     return this.prisma.contentCard.create({
       data: {
         title: payload.title,
-        slug: payload.slug,
+        slug: finalSlug,
         subtitle: payload.subtitle,
         description: payload.description,
         imageUrl: payload.imageUrl,
@@ -213,6 +216,30 @@ export class CommunicationsService {
         publishedAt: payload.publishedAt,
       },
     });
+  }
+
+  async ensureUniqueSlug(slug: string) {
+    if (!slug) return slug;
+    const base = slug;
+    let candidate = base;
+    let i = 1;
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const existing = await this.prisma.contentCard.findUnique({ where: { slug: candidate } });
+      if (!existing) return candidate;
+      candidate = `${base}-${i}`;
+      i += 1;
+    }
+  }
+
+  async getCardByIdOrSlug(identifier: string) {
+    if (!identifier) return null;
+    // Try by id first
+    let card = await this.prisma.contentCard.findUnique({ where: { id: identifier } }).catch(() => null);
+    if (card) return card;
+    // Then try by slug
+    card = await this.prisma.contentCard.findUnique({ where: { slug: identifier } }).catch(() => null);
+    return card;
   }
 
   async listCards(skip = 0, take = 50, cardType?: string, featured?: boolean) {

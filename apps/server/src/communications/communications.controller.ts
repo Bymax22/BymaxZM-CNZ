@@ -151,4 +151,17 @@ export class CommunicationsController {
       throw new HttpException({ error: error.message }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Get('cards/:id')
+  async getCard(@Param('id') id: string) {
+    try {
+      const card = await this.communicationsService.getCardByIdOrSlug(id);
+      if (!card) {
+        throw new Error('Card not found');
+      }
+      return card;
+    } catch (error) {
+      throw new HttpException({ error: error.message }, HttpStatus.NOT_FOUND);
+    }
+  }
 }

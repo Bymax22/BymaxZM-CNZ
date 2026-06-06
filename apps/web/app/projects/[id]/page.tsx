@@ -12,23 +12,65 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const project = getProjectById(resolvedParams.id);
-  
+  let project = getProjectById(resolvedParams.id);
   if (!project) {
-    return {
-      title: 'Project Not Found',
-    };
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || ''}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
+      if (res.ok) {
+        const card = await res.json();
+        project = {
+          id: card.slug || card.id,
+          name: card.title,
+          category: (card.category || 'conservation') as any,
+          title: card.title,
+          shortDescription: card.subtitle || (card.description || '').slice(0, 160),
+          description: card.description || '',
+          location: card.metadata?.location || 'Zambia',
+          status: card.metadata?.status || 'ongoing',
+          impact: card.metadata?.impact || [],
+          image: card.imageUrl || '',
+          sdgs: card.metadata?.sdgs || [],
+        } as any;
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
-  return {
-    title: `${project.title} - Care for Nature Zambia`,
-    description: project.description,
-  };
+  if (!project) {
+    return { title: 'Project Not Found' };
+  }
+
+  return { title: `${project.title} - Care for Nature Zambia`, description: project.description };
 }
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
-  const project = getProjectById(resolvedParams.id);
+  let project = getProjectById(resolvedParams.id);
+
+  if (!project) {
+    try {
+      const res = await fetch(`/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
+      if (res.ok) {
+        const card = await res.json();
+        project = {
+          id: card.slug || card.id,
+          name: card.title,
+          category: (card.category || 'conservation') as any,
+          title: card.title,
+          shortDescription: card.subtitle || (card.description || '').slice(0, 160),
+          description: card.description || '',
+          location: card.metadata?.location || 'Zambia',
+          status: card.metadata?.status || 'ongoing',
+          impact: card.metadata?.impact || [],
+          image: card.imageUrl || '',
+          sdgs: card.metadata?.sdgs || [],
+        } as any;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
 
   if (!project) {
     notFound();
