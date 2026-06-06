@@ -31,7 +31,7 @@ export default function CloudinaryUploader({ onUpload }: { onUpload?: (url: stri
 
         if (data.secure_url) {
           setUrl(data.secure_url);
-+          if (onUpload) onUpload(data.secure_url);
+          if (onUpload) onUpload(data.secure_url);
         } else {
           console.error('Upload failed', data);
           alert('Upload failed, check console for details.');
