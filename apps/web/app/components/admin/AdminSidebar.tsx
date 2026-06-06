@@ -116,6 +116,7 @@ export default function AdminSidebar() {
       href: '/admin/communications',
       icon: FaBell,
       children: [
+        { name: 'Content Cards', href: '/admin/communications/content' },
         { name: 'Newsletter Subscribers', href: '/admin/communications/newsletter' },
         { name: 'Broadcast Newsletters', href: '/admin/communications/newsletter/send' },
         { name: 'Notifications', href: '/admin/communications/notifications' },

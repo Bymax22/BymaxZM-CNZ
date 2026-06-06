@@ -3,6 +3,7 @@
 import Link from 'next/link';
 
 const cards = [
+  { title: 'Content Cards', href: '/admin/communications/content' },
   { title: 'Newsletter Subscribers', href: '/admin/communications/newsletter' },
   { title: 'Broadcast Newsletters', href: '/admin/communications/newsletter/send' },
   { title: 'Notifications', href: '/admin/communications/notifications' },
