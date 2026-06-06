@@ -35,7 +35,7 @@ const workProjects = [
 
 export function OurWorkProjects() {
   return (
-    <section className="py-20 bg-white">
+    <section id="work" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <p className="text-sm font-semibold uppercase tracking-[0.35em] text-gray-500 mb-3">Our Work</p>

@@ -108,15 +108,6 @@ export function ProjectsGrid() {
             >
               <Link href={`/projects/${project.slug}`}>
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100 h-full flex flex-col overflow-hidden">
-                  {/* Partner Logos */}
-                  {project.partnerLogos && project.partnerLogos.length > 0 && (
-                    <div className="bg-slate-50 px-4 py-2 flex flex-wrap gap-2 items-center justify-center border-b">
-                      {project.partnerLogos.map((logo: string, idx: number) => (
-                        <img key={idx} src={logo} alt="Partner" className="h-6 object-contain" />
-                      ))}
-                    </div>
-                  )}
-
                   {/* Image */}
                   <div className={`relative h-48 ${categoryColors[project.category]} overflow-hidden flex items-center justify-center`}>
                     {project.video ? (
@@ -149,10 +140,18 @@ export function ProjectsGrid() {
                     <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-1">{project.shortDescription}</p>
                     
                     {/* Location */}
-                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                       <span>📍</span>
                       <span className="line-clamp-1">{project.location}</span>
                     </div>
+
+                    {project.partnerLogos && project.partnerLogos.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2 text-sm mb-4">
+                        {project.partnerLogos.map((logo: string, idx: number) => (
+                          <img key={idx} src={logo} alt="Partner logo" className="h-5 object-contain" />
+                        ))}
+                      </div>
+                    )}
 
                     {/* SDGs */}
                     {project.sdgs.length > 0 && (

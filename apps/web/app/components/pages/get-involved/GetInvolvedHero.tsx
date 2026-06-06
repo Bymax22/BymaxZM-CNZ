@@ -1,68 +1,38 @@
 'use client';
+import Link from 'next/link';
 
-import { motion } from 'framer-motion';
-import { FaHandsHelping, FaHeart, FaUsers, FaSeedling } from 'react-icons/fa';
 
 export function GetInvolvedHero() {
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-[#029346] via-[#0C4726] to-[#08331C]">
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-[#F79021]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#029346]/10 rounded-full blur-3xl"></div>
+    <main className="bg-slate-50 pt-20">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-6">
+        <Link href="/" className="text-sm text-[#008000] font-semibold hover:text-[#026730]">
+          ← Back to Home
+        </Link>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="w-20 h-20 mx-auto mb-6 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/20"
-          >
-            <FaHandsHelping className="w-10 h-10 text-white" />
-          </motion.div>
-          
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
-            Get <span className="text-[#F79021]">Involved</span>
-          </h1>
-          
-          <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            Join thousands of Zambians making a difference. Whether you donate, volunteer, partner, 
-            or spread awareness, your action creates lasting impact for our environment and communities.
-          </p>
-        </motion.div>
+      <section className="relative overflow-hidden bg-[#0b4f2f]">
+        <div className="absolute inset-0">
+          <div className="absolute inset-y-0 right-0 w-full lg:w-3/5 bg-[url('/children.jpg')] bg-cover bg-right-center bg-no-repeat" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#008000]/100 via-[#008000]/100 to-transparent" />
+        </div>
 
-        {/* Quick Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12"
-        >
-          {[
-            { number: '5K+', label: 'Active Volunteers', icon: FaUsers },
-            { number: '50K+', label: 'Supporters', icon: FaHeart },
-            { number: '100+', label: 'Partners', icon: FaHandsHelping },
-            { number: '15K', label: 'Actions Taken', icon: FaSeedling },
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 + index * 0.1 }}
-              className="text-center p-4 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
-            >
-              <stat.icon className="w-6 h-6 text-[#F79021] mx-auto mb-2" />
-              <div className="text-2xl font-bold text-white mb-1">{stat.number}</div>
-              <div className="text-white/80 text-sm">{stat.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
+        <div className="relative mx-auto max-w-7xl px-6 py-14 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] items-center">
+            <div className="max-w-2xl text-white">
+              <p className="text-sm uppercase tracking-[0.32em] text-[#bfe8c9]">Get Involved</p>
+              <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
+                Join thousands of Zambians making a difference.
+              </h1>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-slate-200">
+                Whether you donate, volunteer, partner, or spread awareness, your action creates lasting impact for our environment and communities.
+              </p>
+            </div>
+
+       
+          </div>
+        </div>
+      </section>
+      </main>
   );
 }

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
 
-type CardView = { id: string; slug?: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; color?: string };
+type CardView = { id: string; slug?: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; color?: string; location?: string; partnerLogos?: string[] };
 
 function isVideoUrl(url: string) {
   return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
@@ -31,6 +31,8 @@ const initialCards: CardView[] = storyTopics.map((s, i) => ({
   author: s.title,
   image: s.media,
   color: i % 3 === 0 ? 'bg-emerald-500' : i % 3 === 1 ? 'bg-orange-500' : 'bg-slate-900',
+  location: 'Zambia',
+  partnerLogos: [],
 }));
 
 function truncateSentences(text: string, max = 3) {
@@ -70,6 +72,8 @@ export default function OurStories() {
             video: heroVideo,
             publishedAt: c.publishedAt || c.createdAt,
             color: i % 3 === 0 ? 'bg-emerald-500' : i % 3 === 1 ? 'bg-orange-500' : 'bg-slate-900',
+            location: c.metadata?.location || 'Zambia',
+            partnerLogos: c.metadata?.partnerLogos || [],
           };
         });
         if (mounted && mapped.length) setCards(mapped);
@@ -178,6 +182,17 @@ export default function OurStories() {
                       <p className="mt-2 text-xs uppercase tracking-[0.2em] text-slate-500">Published {formatRelativeTime(t.publishedAt)}</p>
                     )}
                     <p className="mt-3 text-sm leading-7 text-slate-900 line-clamp-3 overflow-hidden">{truncateSentences(t.text || '', 2)}</p>
+                    <div className="mt-4 flex items-center gap-2 text-sm text-slate-500">
+                      <span>📍</span>
+                      <span className="line-clamp-1">{t.location || 'Zambia'}</span>
+                    </div>
+                    {t.partnerLogos && t.partnerLogos.length > 0 && (
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        {t.partnerLogos.map((logo, idx) => (
+                          <img key={idx} src={logo} alt="Partner logo" className="h-5 object-contain" />
+                        ))}
+                      </div>
+                    )}
                     <div className="mt-auto border-t border-slate-200 pt-4 flex items-center justify-between gap-3">
                       <a href={`/stories/${t.slug}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
                         Read Full Story →
