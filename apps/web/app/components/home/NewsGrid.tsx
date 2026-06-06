@@ -80,7 +80,7 @@ function formatRelativePublishedTime(publishedAt: string, now: number) {
 export default function NewsGrid() {
   const [items, setItems] = useState<any[]>(NEWS);
   const [now, setNow] = useState(() => Date.now());
-
+  const [likes, setLikes] = useState<Record<string, boolean>>({});
   useEffect(() => {
     let mounted = true;
     async function load() {
@@ -94,7 +94,10 @@ export default function NewsGrid() {
           cards.map((c: any) => {
             const publishedAt = c.publishedAt || c.createdAt || '';
             const date = publishedAt ? new Date(publishedAt) : null;
+            const slug = c.slug || c.id;
             return {
+              id: c.id,
+              slug,
               title: c.title,
               excerpt: c.description || c.subtitle || '',
               image: c.imageUrl || c.media || '',
@@ -182,9 +185,10 @@ export default function NewsGrid() {
                     <button
                       type="button"
                       aria-label="Like"
-                      className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200 hover:text-emerald-600"
+                      onClick={() => setLikes((prev) => ({ ...prev, [n.id]: !prev[n.id] }))}
+                      className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${likes[n.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                     >
-                      <Heart size={16} />
+                      <Heart size={16} fill={likes[n.id] ? 'currentColor' : 'none'} />
                     </button>
                     <button
                       type="button"

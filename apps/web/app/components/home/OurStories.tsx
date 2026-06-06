@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
 
-type CardView = { id: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; color?: string };
+type CardView = { id: string; slug?: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; color?: string };
 
 function isVideoUrl(url: string) {
   return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
@@ -45,6 +45,8 @@ export default function OurStories() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [cards, setCards] = useState<CardView[]>(initialCards);
+  const [likes, setLikes] = useState<Record<string, boolean>>({});
+  const [follows, setFollows] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let mounted = true;
@@ -58,8 +60,10 @@ export default function OurStories() {
           const gallery = Array.isArray(c.metadata?.gallery) ? c.metadata.gallery : [];
           const heroImage = c.imageUrl || gallery.find((item: any) => item.type === 'image')?.url || '';
           const heroVideo = gallery.find((item: any) => item.type === 'video')?.url || (isVideoUrl(c.imageUrl || '') ? c.imageUrl : undefined);
+          const slug = c.slug || c.id;
           return {
-            id: c.id || c.slug || String(i),
+            id: c.id || String(i),
+            slug,
             text: c.description || c.subtitle || c.metadata?.summary || '',
             author: c.title,
             image: heroImage,
@@ -175,7 +179,7 @@ export default function OurStories() {
                     )}
                     <p className="mt-3 text-sm leading-7 text-slate-900 line-clamp-3 overflow-hidden">{truncateSentences(t.text || '', 2)}</p>
                     <div className="mt-auto border-t border-slate-200 pt-4 flex items-center justify-between gap-3">
-                      <a href={`/stories/${t.id}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
+                      <a href={`/stories/${t.slug}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
                         Read Full Story →
                       </a>
 
@@ -183,9 +187,10 @@ export default function OurStories() {
                         <button
                           type="button"
                           aria-label="Like"
-                          className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600 transition"
+                          onClick={() => setLikes((prev) => ({ ...prev, [t.id]: !prev[t.id] }))}
+                          className={`flex h-8 w-8 items-center justify-center rounded-md transition ${likes[t.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                         >
-                          <Heart size={16} />
+                          <Heart size={16} fill={likes[t.id] ? 'currentColor' : 'none'} />
                         </button>
 
                         <button
@@ -199,6 +204,15 @@ export default function OurStories() {
                         <button
                           type="button"
                           aria-label="Share"
+                          onClick={() => {
+                            if (navigator.share) {
+                              navigator.share({
+                                title: t.author,
+                                text: t.text,
+                                url: `/stories/${t.slug}`,
+                              }).catch(() => {});
+                            }
+                          }}
                           className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600 transition"
                         >
                           <Share2 size={16} />
