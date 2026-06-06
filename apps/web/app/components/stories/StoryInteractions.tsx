@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from 'react';
+import { useSession } from 'next-auth/react';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import {
   fetchComments,
@@ -10,6 +11,7 @@ import {
   subscribeToLikeCount,
   updateLikeCount,
 } from '../../../lib/supabaseContent';
+import AuthPromptModal from '../AuthPromptModal';
 
 type CommentItem = {
   id: string;
@@ -23,6 +25,7 @@ type Props = {
 };
 
 export default function StoryInteractions({ storyId, initialComments = [], initialLikes = 0 }: Props) {
+  const { status } = useSession();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(initialLikes);
   const [comments, setComments] = useState<CommentItem[]>(
@@ -30,6 +33,7 @@ export default function StoryInteractions({ storyId, initialComments = [], initi
   );
   const [text, setText] = useState('');
   const [copied, setCopied] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
     let cleanupLikes = () => {};
@@ -61,6 +65,11 @@ export default function StoryInteractions({ storyId, initialComments = [], initi
   }, [storyId]);
 
   async function handleToggleLike() {
+    if (status !== 'authenticated') {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     const next = !liked;
     setLiked(next);
     setLikes((previous) => Math.max(0, previous + (next ? 1 : -1)));
@@ -71,6 +80,12 @@ export default function StoryInteractions({ storyId, initialComments = [], initi
 
   async function handleAddComment(e?: FormEvent<HTMLFormElement>) {
     e?.preventDefault();
+
+    if (status !== 'authenticated') {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     const trimmed = text.trim();
     if (!trimmed) return;
 
@@ -130,6 +145,8 @@ export default function StoryInteractions({ storyId, initialComments = [], initi
           Comment
         </button>
       </form>
+
+      <AuthPromptModal isOpen={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
 
       {comments.length > 0 && (
         <div className="mt-4 space-y-3">

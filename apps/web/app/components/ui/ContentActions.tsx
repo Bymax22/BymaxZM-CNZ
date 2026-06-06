@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useSession } from 'next-auth/react';
 import { FaCommentAlt, FaHeart, FaShareAlt } from 'react-icons/fa';
 import {
   fetchComments,
@@ -10,6 +11,7 @@ import {
   subscribeToLikeCount,
   updateLikeCount,
 } from '../../../lib/supabaseContent';
+import AuthPromptModal from '../AuthPromptModal';
 
 type CommentItem = {
   id: string;
@@ -35,6 +37,8 @@ export function ContentActions({
   contextLabel = 'this content',
   shareUrl = '',
 }: ContentActionsProps) {
+  const { status } = useSession();
+  const commentInputRef = useRef<HTMLInputElement>(null);
   const [likes, setLikes] = useState(initialLikes);
   const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState(initialComments);
@@ -42,6 +46,7 @@ export function ContentActions({
   const [commentText, setCommentText] = useState('');
   const [commentList, setCommentList] = useState<CommentItem[]>([]);
   const [feedback, setFeedback] = useState('');
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
     let cleanupLikes = () => {};
@@ -75,6 +80,11 @@ export function ContentActions({
   }, [contentId, contentType]);
 
   const toggleLike = async () => {
+    if (status !== 'authenticated') {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     const nextLiked = !liked;
     setLiked(nextLiked);
     setLikes((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
@@ -106,6 +116,12 @@ export function ContentActions({
 
   const handleCommentSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (status !== 'authenticated') {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     const trimmed = commentText.trim();
     if (!trimmed) {
       return;
@@ -155,7 +171,13 @@ export function ContentActions({
           </button>
           <button
             type="button"
-            onClick={() => setFeedback('Share your thoughts in the comment box below.')}
+            onClick={() => {
+              if (status !== 'authenticated') {
+                setShowAuthPrompt(true);
+                return;
+              }
+              commentInputRef.current?.focus();
+            }}
             className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#029346] hover:text-[#029346]"
           >
             <FaCommentAlt className="h-4 w-4" />
@@ -193,6 +215,7 @@ export function ContentActions({
         </label>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
+            ref={commentInputRef}
             id="comment"
             value={commentText}
             onChange={(event) => setCommentText(event.target.value)}
@@ -212,6 +235,8 @@ export function ContentActions({
           <p className="text-sm text-slate-500">Your comments appear instantly in this preview area.</p>
         )}
       </form>
+
+      <AuthPromptModal isOpen={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
 
       {commentList.length > 0 && (
         <div className="mt-6 space-y-3">

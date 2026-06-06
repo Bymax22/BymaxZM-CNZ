@@ -13,7 +13,8 @@ const NEWS = [
     type: 'News',
     excerpt:
       'Government says children remain among the most vulnerable groups affected by climate change.',
-    video: 'https://res.cloudinary.com/dwxlzl5us/video/upload/q_auto/f_auto/v1779063895/vid_w3flah.mp4',
+    image:
+      'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779063895/vid_w3flah.mp4',
   },
   {
     title: 'EnviroMentors Program Launch',
@@ -26,7 +27,6 @@ const NEWS = [
     image:
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/689842600_1446768710815731_6105767634409331045_n_pnlc30.jpg',
   },
-
   {
     title: 'EnviroMentors Program Launch',
     date: 'May 08',
@@ -38,7 +38,6 @@ const NEWS = [
     image:
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/689842600_1446768710815731_6105767634409331045_n_pnlc30.jpg',
   },
-
   {
     title: 'EnviroMentors Program Launch',
     date: 'May 08',
@@ -50,12 +49,37 @@ const NEWS = [
     image:
       'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053938/689842600_1446768710815731_6105767634409331045_n_pnlc30.jpg',
   },
-  
-
 ];
+
+function formatRelativePublishedTime(publishedAt: string, now: number) {
+  const date = new Date(publishedAt);
+  if (Number.isNaN(date.getTime())) return '';
+
+  const seconds = Math.round((date.getTime() - now) / 1000);
+  const absSeconds = Math.abs(seconds);
+
+  const formatter = new Intl.RelativeTimeFormat('en-US', { numeric: 'auto' });
+  if (absSeconds < 60) {
+    return formatter.format(seconds, 'second');
+  }
+  if (absSeconds < 3600) {
+    return formatter.format(Math.round(seconds / 60), 'minute');
+  }
+  if (absSeconds < 86400) {
+    return formatter.format(Math.round(seconds / 3600), 'hour');
+  }
+  if (absSeconds < 2592000) {
+    return formatter.format(Math.round(seconds / 86400), 'day');
+  }
+  if (absSeconds < 31536000) {
+    return formatter.format(Math.round(seconds / 2592000), 'month');
+  }
+  return formatter.format(Math.round(seconds / 31536000), 'year');
+}
 
 export default function NewsGrid() {
   const [items, setItems] = useState<any[]>(NEWS);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     let mounted = true;
@@ -67,22 +91,35 @@ export default function NewsGrid() {
         const cards = data.cards || data.contentCards || [];
         if (!mounted) return;
         setItems(
-          cards.map((c: any) => ({
-            title: c.title,
-            excerpt: c.description || c.subtitle || '',
-            image: c.imageUrl || c.media || '',
-            date: c.publishedAt ? new Date(c.publishedAt).toLocaleDateString() : '',
-            month: c.publishedAt ? new Date(c.publishedAt).toLocaleString('en-US', { month: 'short' }) : '',
-            day: c.publishedAt ? new Date(c.publishedAt).getDate().toString().padStart(2, '0') : '',
-            type: c.cardType || 'News',
-          }))
+          cards.map((c: any) => {
+            const publishedAt = c.publishedAt || c.createdAt || '';
+            const date = publishedAt ? new Date(publishedAt) : null;
+            return {
+              title: c.title,
+              excerpt: c.description || c.subtitle || '',
+              image: c.imageUrl || c.media || '',
+              publishedAt: publishedAt || undefined,
+              month: date ? date.toLocaleString('en-US', { month: 'short' }) : '',
+              day: date ? date.getDate().toString().padStart(2, '0') : '',
+              type: c.cardType || 'News',
+            };
+          })
         );
       } catch (e) {
-        // keep static
+        // keep static fallback
       }
     }
+
     void load();
     return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setNow(Date.now());
+    }, 30000);
+
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
@@ -96,9 +133,9 @@ export default function NewsGrid() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {NEWS.map((n) => (
+          {items.map((n, index) => (
             <div
-              key={n.title}
+              key={`${n.title}-${index}`}
               className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
             >
               <div className="relative overflow-hidden">
@@ -131,6 +168,9 @@ export default function NewsGrid() {
               <div className="p-3">
                 <h4 className="mt-2 text-sm font-semibold text-slate-900">{n.title}</h4>
                 <p className="mt-1 text-xs leading-5 text-slate-600 line-clamp-2 overflow-hidden">{n.excerpt}</p>
+                <p className="mt-2 text-[11px] text-slate-500">
+                  {n.publishedAt ? formatRelativePublishedTime(n.publishedAt, now) : 'Date not available'}
+                </p>
                 <div className="mt-2 flex items-center justify-between gap-3">
                   <Link
                     href="/news"
