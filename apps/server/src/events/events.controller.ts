@@ -32,6 +32,21 @@ export class EventsController {
     }
   }
 
+  @Post('register')
+  async registerEvent(@Body() body: any) {
+    try {
+      if (!body?.eventId || !body?.email) {
+        throw new HttpException({ error: 'eventId and email are required' }, HttpStatus.BAD_REQUEST);
+      }
+
+      const result = await this.eventsService.registerForEvent(body);
+      return result;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Post()
   async createEvent(@Body() body: any) {
     try {

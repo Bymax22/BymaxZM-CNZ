@@ -92,17 +92,48 @@ function formatDate(dateString: string) {
   });
 }
 
-function combineDateAndTime(dateString: string, timeString: string) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  const hasTime = dateString.includes('T') || /\b(AM|PM)\b/i.test(timeString);
-  if (!Number.isNaN(date.getTime()) && hasTime) {
-    return dateString;
+function normalizeTimeString(timeString: string) {
+  const value = (timeString || '00:00').trim();
+  if (!value) return '00:00';
+
+  const ampmMatch = value.match(/^([0-9]{1,2})(?::([0-9]{2}))?\s*(AM|PM)$/i);
+  if (ampmMatch) {
+    let hour = Number(ampmMatch[1]);
+    const minute = Number(ampmMatch[2] ?? '0');
+    const period = (ampmMatch[3] ?? '').toUpperCase();
+
+    if (!period) {
+      return '00:00';
+    }
+
+    if (hour === 12) {
+      hour = period === 'AM' ? 0 : 12;
+    } else if (period === 'PM') {
+      hour += 12;
+    }
+
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   }
 
+  const hmsMatch = value.match(/^([0-9]{1,2}):([0-9]{2})(?::([0-9]{2}))?$/);
+  if (hmsMatch) {
+    return `${String(Number(hmsMatch[1])).padStart(2, '0')}:${String(Number(hmsMatch[2])).padStart(2, '0')}`;
+  }
+
+  const hourOnlyMatch = value.match(/^([0-9]{1,2})$/);
+  if (hourOnlyMatch) {
+    return `${String(Number(hourOnlyMatch[1])).padStart(2, '0')}:00`;
+  }
+
+  return '00:00';
+}
+
+function combineDateAndTime(dateString: string, timeString: string) {
+  if (!dateString) return '';
+
   const datePart = dateString.split('T')[0] || dateString;
-  const timePart = timeString || '00:00';
-  return `${datePart}T${timePart}`;
+  const normalizedTime = normalizeTimeString(timeString || '00:00');
+  return `${datePart}T${normalizedTime}`;
 }
 
 function getEventStatus(event: UpcomingEvent, now: number) {
@@ -265,7 +296,7 @@ export default function UpcomingEventsSection() {
   }
 
   return (
-    <section className="relative overflow-hidden py-12">
+    <section className="relative overflow-hidden py-8">
       <div className="absolute inset-0">
         <div
           className="absolute inset-y-0 right-0 w-full lg:w-3/5 bg-cover bg-right-center bg-no-repeat opacity-100"
@@ -275,17 +306,17 @@ export default function UpcomingEventsSection() {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-white">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-end">
-          <div className="max-w-[360px] lg:self-start">
-            <p className="text-sm uppercase tracking-[0.25em] text-[#bfe8c9]">Upcoming Events</p>
-            <h3 className="text-2xl font-bold leading-tight mt-4">{selectedEvent.title}</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-end">
+          <div className="max-w-[320px] lg:self-start">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-[#bfe8c9]">Upcoming Events</p>
+            <h3 className="text-xl lg:text-2xl font-bold leading-tight mt-3">{selectedEvent.title}</h3>
             {selectedStatus && (
               <div className="mt-3 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#bfe8c9]">
                 {selectedStatus.label}
               </div>
             )}
 
-            <div className="space-y-2 mt-4 text-sm">
+            <div className="space-y-1.5 mt-3 text-xs sm:text-sm">
               <div className="flex items-center gap-2">
                 <Calendar size={16} className="text-[#bfe8c9]" />
                 <span>{formatDate(selectedEvent.date)}</span>
@@ -300,8 +331,8 @@ export default function UpcomingEventsSection() {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/20">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#bfe8c9] mb-2">{countdownLabel}</p>
+            <div className="mt-3 pt-2 border-t border-white/20">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#bfe8c9] mb-2">{countdownLabel}</p>
               <CountdownTimer targetDate={countdownTarget} />
             </div>
 
@@ -309,13 +340,13 @@ export default function UpcomingEventsSection() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleJoinEvent}
-                  className="inline-flex items-center px-4 py-2 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 transition hover:bg-slate-50"
+                  className="inline-flex items-center px-3 py-1.5 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 text-sm transition hover:bg-slate-50"
                 >
                   Join Event
                 </button>
                 <button
                   onClick={() => setLiked(!liked)}
-                  className="inline-flex items-center justify-center p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition"
+                  className="inline-flex items-center justify-center p-1.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition"
                 >
                   <Heart size={18} fill={liked ? 'white' : 'none'} />
                 </button>
@@ -327,14 +358,14 @@ export default function UpcomingEventsSection() {
           </div>
 
           <div>
-            <h4 className="text-lg font-semibold mb-4">Other Upcoming Events</h4>
-            <div className="bg-white/10 p-2 rounded-2xl">
+            <h4 className="text-base font-semibold mb-3">Other Upcoming Events</h4>
+            <div className="bg-white/10 p-1.5 rounded-2xl">
               <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/20">
                 {activeEvents.map((event) => (
                   <button
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
-                    className={`p-3 text-left transition ${
+                    className={`p-2 text-left transition ${
                       selectedEvent.id === event.id ? 'bg-white/20' : 'hover:bg-white/10'
                     }`}
                   >
@@ -352,9 +383,9 @@ export default function UpcomingEventsSection() {
                   </button>
                 ))}
               </div>
-              <div className="p-2 border-t border-white/20">
+              <div className="p-1.5 border-t border-white/20">
                 <Link href="/events">
-                  <button className="w-full text-center py-2 text-sm font-semibold text-white hover:bg-white/10 rounded transition">
+                  <button className="w-full text-center py-1.5 text-xs font-semibold text-white hover:bg-white/10 rounded transition">
                     View All Events
                   </button>
                 </Link>

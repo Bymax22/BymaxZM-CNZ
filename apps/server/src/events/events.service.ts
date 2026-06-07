@@ -1,6 +1,7 @@
 import { EventType } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class EventsService {
@@ -81,5 +82,87 @@ export class EventsService {
       where: { id },
       data,
     });
+  }
+
+  async registerForEvent(data: {
+    eventId: string;
+    email: string;
+    fullName?: string;
+    phone?: string;
+    registrationType?: string;
+    organizationName?: string;
+    position?: string;
+    companyName?: string;
+    industry?: string;
+  }) {
+    const event = await this.prisma.event.findUnique({
+      where: { id: data.eventId },
+    });
+
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    const email = data.email.toLowerCase().trim();
+    let user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      const fullName = data.fullName?.trim() || email.split('@')[0];
+      const [firstName, ...rest] = fullName.split(' ');
+      const lastName = rest.join(' ') || '';
+
+      user = await this.prisma.user.create({
+        data: {
+          firstName: firstName || 'Guest',
+          lastName,
+          email,
+          phone: data.phone,
+          password: randomUUID(),
+          profile: {
+            create: { bio: '' },
+          },
+        },
+      });
+    }
+
+    const existingRegistration = await this.prisma.eventRegistration.findUnique({
+      where: {
+        eventId_userId: {
+          eventId: data.eventId,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (existingRegistration) {
+      return {
+        message: 'User is already registered for this event',
+        alreadyRegistered: true,
+      };
+    }
+
+    const notes = [
+      data.registrationType && `Type: ${data.registrationType}`,
+      data.organizationName && `Organization: ${data.organizationName}`,
+      data.companyName && `Company: ${data.companyName}`,
+      data.position && `Position: ${data.position}`,
+      data.industry && `Industry: ${data.industry}`,
+      data.phone && `Phone: ${data.phone}`,
+    ]
+      .filter(Boolean)
+      .join(' | ');
+
+    await this.prisma.eventRegistration.create({
+      data: {
+        eventId: data.eventId,
+        userId: user.id,
+        notes: notes || undefined,
+      },
+    });
+
+    return {
+      message: 'Successfully registered for the event',
+      alreadyRegistered: false,
+    };
   }
 }
