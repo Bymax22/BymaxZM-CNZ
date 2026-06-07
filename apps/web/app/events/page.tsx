@@ -136,8 +136,8 @@ export default function EventsPage() {
         const mapped = eventsData
           .map(mapBackendEventToUpcomingEvent)
           .sort((a: UpcomingEvent, b: UpcomingEvent) => {
-            const dateA = new Date(a.startDateTime).getTime() || 0;
-            const dateB = new Date(b.startDateTime).getTime() || 0;
+            const dateA = new Date(a.startDateTime || a.date || '').getTime() || 0;
+            const dateB = new Date(b.startDateTime || b.date || '').getTime() || 0;
             return dateA - dateB;
           });
 
