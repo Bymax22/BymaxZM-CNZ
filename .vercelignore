@@ -1,0 +1,44 @@
+# Ignore version control and editor files
+.git
+.vscode
+.idea
+.DS_Store
+
+# Node and build artifacts
+node_modules
+**/node_modules
+.next
+.dist
+build
+out
+.turbo
+.turbo/**
+
+# Vercel/local output
+.vercel
+.vercel/**
+
+# Backups, DB dumps, and large media
+apps/server/backups/**
+backups/**
+**/backups/**
+*.dump
+*.sql
+*.sqlite
+*.bak
+*.tar.gz
+*.tgz
+
+# Logs and coverage
+*.log
+coverage/**
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Misc
+public/uploads/**
+
+# Allow list: if you actually need to deploy some of these, remove them above
