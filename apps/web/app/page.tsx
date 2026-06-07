@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Hero from './components/home/Hero';
+import UpcomingEventsSection from './components/home/UpcomingEventsSection';
 import Programs from './components/home/Programs';
 import ImpactBand from './components/home/ImpactBand';
 
@@ -34,6 +35,7 @@ export default function HomePage() {
   return (
     <div>
       <Hero />
+      <UpcomingEventsSection />
       <Programs />
       <ImpactBand />
      
