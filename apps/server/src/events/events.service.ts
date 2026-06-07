@@ -85,6 +85,12 @@ export class EventsService {
     });
   }
 
+  async deleteEvent(id: string) {
+    return this.prisma.event.delete({
+      where: { id },
+    });
+  }
+
   async registerForEvent(data: {
     eventId: string;
     email: string;

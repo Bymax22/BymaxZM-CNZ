@@ -123,6 +123,32 @@ export default function AdminEventsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  const handleDelete = async (eventId: string) => {
+    if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) return;
+    
+    setSaving(true);
+    setMessage(null);
+    try {
+      const res = await fetch(`/api/admin/events/${eventId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (res.ok) {
+        setEvents((prev) => prev.filter((e) => e.id !== eventId));
+        setMessage('Event deleted');
+      } else {
+        const data = await res.json();
+        setMessage(data.error || 'Delete failed');
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('Delete failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -140,6 +166,7 @@ export default function AdminEventsPage() {
         type: eventType,
         isPublic: status === 'PUBLISHED',
         organizerId: session?.user?.id,
+        imageUrl: imageUrl || undefined,
       };
 
       const method = editingId ? 'PUT' : 'POST';
@@ -327,6 +354,14 @@ export default function AdminEventsPage() {
                       </button>
                       <button onClick={() => startEdit(evt)} className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                         Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(evt.id)}
+                        disabled={saving}
+                        className="text-sm text-red-600 hover:text-red-700 font-medium disabled:opacity-50"
+                        title="Delete event"
+                      >
+                        ✕ Delete
                       </button>
                     </div>
                   </div>

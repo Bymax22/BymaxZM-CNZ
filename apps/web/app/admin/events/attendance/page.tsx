@@ -39,8 +39,15 @@ export default function EventAttendancePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<'all' | 'individual' | 'organization' | 'company'>('all');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     if (!eventId) {
       setError('Event ID is required');
       setLoading(false);
@@ -70,7 +77,7 @@ export default function EventAttendancePage() {
     }
 
     loadEvent();
-  }, [eventId]);
+  }, [eventId, mounted]);
 
   const filteredRegistrations = event
     ? event.registrations.filter(

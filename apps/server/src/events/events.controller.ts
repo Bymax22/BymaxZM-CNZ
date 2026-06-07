@@ -89,4 +89,13 @@ export class EventsController {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Delete(':id')
+  async deleteEvent(@Param('id') id: string) {
+    try {
+      return await this.eventsService.deleteEvent(id);
+    } catch (error) {
+      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
