@@ -77,7 +77,14 @@ export class EventsController {
   @Put(':id')
   async updateEvent(@Param('id') id: string, @Body() body: any) {
     try {
-      return await this.eventsService.updateEvent(id, body);
+      const updateData: any = { ...body };
+      if (body?.startDate) {
+        updateData.startDate = new Date(body.startDate);
+      }
+      if (body?.endDate) {
+        updateData.endDate = new Date(body.endDate);
+      }
+      return await this.eventsService.updateEvent(id, updateData);
     } catch (error) {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }

@@ -20,7 +20,7 @@ async function proxyToBackend(request: NextRequest, session?: any) {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     let bodyText = await request.text();
 
-    if (request.method === 'POST' && bodyText) {
+    if ((request.method === 'POST' || request.method === 'PUT') && bodyText) {
       try {
         const body = JSON.parse(bodyText);
         if (!body.organizerId && session?.user?.id) {
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    return await proxyToBackend(request);
+    return await proxyToBackend(request, session);
   } catch (error) {
     console.error('Admin events proxy PUT error:', error);
     return NextResponse.json({ error: 'Failed to proxy events' }, { status: 500 });
