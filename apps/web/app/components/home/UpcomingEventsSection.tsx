@@ -216,23 +216,58 @@ export default function UpcomingEventsSection() {
 
     async function loadEvents() {
       try {
+        console.log('📡 Fetching events from /api/communications/cards?cardType=EVENT&take=6');
         const res = await fetch('/api/communications/cards?cardType=EVENT&take=6');
         const data = await res.json();
+        console.log('✅ Raw API response:', data);
+        
         const cards = Array.isArray(data) ? data : data.cards || data.contentCards || [];
+        console.log('📋 Total cards received:', cards.length);
 
-        const mapped = cards
-          .filter(
-            (card: any) =>
-              card &&
-              (card.cardType === 'EVENT' || card.category === 'event' || card.category === 'EVENT') &&
-              (card.status === 'PUBLISHED' || Boolean(card.publishedAt))
-          )
+        const filtered = cards.filter(
+          (card: any) =>
+            card &&
+            (card.cardType === 'EVENT' || card.category === 'event' || card.category === 'EVENT') &&
+            (card.status === 'PUBLISHED' || Boolean(card.publishedAt))
+        );
+        console.log('🔍 Filtered by EVENT type and PUBLISHED status:', filtered.length);
+        filtered.forEach((card: any, idx: number) => {
+          console.log(`  [${idx}]`, {
+            id: card.id,
+            title: card.title,
+            cardType: card.cardType,
+            category: card.category,
+            status: card.status,
+            date: card.metadata?.date || card.publishedAt,
+            time: card.metadata?.time,
+          });
+        });
+
+        const mapped = filtered
           .map(mapCardToEvent)
           .sort((a: UpcomingEvent, b: UpcomingEvent) => {
             const startA = new Date(a.startDateTime || combineDateAndTime(a.date, a.time)).getTime() || 0;
             const startB = new Date(b.startDateTime || combineDateAndTime(b.date, b.time)).getTime() || 0;
             return startA - startB;
           });
+        
+        console.log('✨ Mapped events:', mapped.length);
+        mapped.forEach((event: any, idx: number) => {
+          const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
+          const durationMs = (event.durationMinutes || 60) * 60 * 1000;
+          const end = start + durationMs;
+          const isActive = !Number.isNaN(start) && end > Date.now();
+          console.log(`  [${idx}] ${event.title}`, {
+            id: event.id,
+            startDateTime: event.startDateTime,
+            date: event.date,
+            time: event.time,
+            startTime: new Date(start).toISOString(),
+            endTime: new Date(end).toISOString(),
+            isActive,
+            isValidDate: !Number.isNaN(start),
+          });
+        });
 
         if (!mounted) return;
         setEvents(mapped);
@@ -242,10 +277,11 @@ export default function UpcomingEventsSection() {
             const durationMs = (event.durationMinutes || 60) * 60 * 1000;
             return !Number.isNaN(start) && start + durationMs > Date.now();
           });
+          console.log('📌 Selected first active event:', nextActive?.title || 'none found, using first');
           setSelectedEvent(nextActive || mapped[0]);
         }
       } catch (err) {
-        console.error('Failed to load upcoming events', err);
+        console.error('❌ Failed to load upcoming events', err);
         if (!mounted) return;
         setError('Unable to load upcoming events.');
       } finally {

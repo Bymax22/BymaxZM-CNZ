@@ -295,6 +295,8 @@ export class CommunicationsService {
     }
     if (featured !== undefined) where.featured = featured;
 
+    console.log('📡 listCards query:', { skip, take, cardType, featured, where });
+
     const [cards, total] = await Promise.all([
       this.prisma.contentCard.findMany({
         where,
@@ -304,6 +306,19 @@ export class CommunicationsService {
       }),
       this.prisma.contentCard.count({ where }),
     ]);
+
+    console.log('✅ Found cards:', total, '| Returned:', cards.length);
+    cards.forEach((card: any, idx: number) => {
+      console.log(`  [${idx}]`, {
+        id: card.id,
+        title: card.title,
+        cardType: card.cardType,
+        status: card.status,
+        publishedAt: card.publishedAt,
+        featured: card.featured,
+        metadata: card.metadata,
+      });
+    });
 
     return { cards, total };
   }
