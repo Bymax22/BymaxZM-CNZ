@@ -4,10 +4,11 @@ import { getServerSession } from 'next-auth';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
-export async function PATCH(request: NextRequest, { params }: { params: { notificationId: string }}) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ notificationId: string }> }) {
   try {
+    const { notificationId } = await params;
     await getServerSession(authOptions);
-    const backendUrl = `${BACKEND}/communications/notifications/${params.notificationId}/read${new URL(request.url).search}`;
+    const backendUrl = `${BACKEND}/communications/notifications/${notificationId}/read${new URL(request.url).search}`;
     const res = await fetch(backendUrl, {
       method: 'PATCH',
       headers: {
