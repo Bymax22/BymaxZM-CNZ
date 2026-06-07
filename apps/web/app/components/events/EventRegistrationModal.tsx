@@ -121,6 +121,9 @@ export default function EventRegistrationModal({
         }),
       };
 
+      console.log('📤 Registering for event:', { eventId, email: payload.email, registrationType });
+      console.log('📋 Full payload:', payload);
+
       const response = await fetch('/api/events/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -128,6 +131,8 @@ export default function EventRegistrationModal({
       });
 
       const data = await response.json();
+      
+      console.log('📥 Registration response:', { status: response.status, ok: response.ok, data });
 
       if (response.ok) {
         setStatus({
@@ -152,15 +157,20 @@ export default function EventRegistrationModal({
           handleClose();
         }, 3000);
       } else {
+        console.error('❌ Registration failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData: data,
+        });
         setStatus({
           type: 'error',
           message:
             data.error ||
-            'Registration failed. Please try again or contact support.',
+            `Registration failed (${response.status}). Please try again or contact support.`,
         });
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('❌ Registration request error:', error);
       setStatus({
         type: 'error',
         message: 'Unable to register at this time. Please try again later.',

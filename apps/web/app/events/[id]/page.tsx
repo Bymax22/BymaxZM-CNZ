@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, Users, Heart, Share2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import EventRegistrationModal from '../../components/events/EventRegistrationModal';
 
 interface UpcomingEvent {
   id: string;
@@ -120,8 +121,7 @@ export default function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [liked, setLiked] = useState(false);
-  const [registering, setRegistering] = useState(false);
-  const [registerStatus, setRegisterStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' });
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -142,7 +142,9 @@ export default function EventDetailPage() {
         }
 
         if (!mounted) return;
-        setEvent(mapCardToEvent(card));
+        const mappedEvent = mapCardToEvent(card);
+        console.log('Loaded event:', { eventId: mappedEvent.id, cardRelatedId: card.relatedId, cardId: card.id, cardSlug: card.slug });
+        setEvent(mappedEvent);
       } catch (err) {
         console.error('Failed to load event', err);
         if (!mounted) return;
@@ -158,30 +160,14 @@ export default function EventDetailPage() {
     };
   }, [eventId]);
 
-  const handleJoinEvent = async () => {
-    if (!event) return;
-    setRegistering(true);
-    setRegisterStatus({ type: 'idle', message: '' });
+  const handleOpenRegistration = () => {
+    console.log('Opening registration modal for event:', event?.id);
+    setIsRegistrationModalOpen(true);
+  };
 
-    try {
-      const res = await fetch('/api/events/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId: event.id, email: 'user@example.com' }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setRegisterStatus({ type: 'success', message: 'Successfully registered for the event!' });
-      } else {
-        setRegisterStatus({ type: 'error', message: data.error || 'Failed to register.' });
-      }
-    } catch (err) {
-      setRegisterStatus({ type: 'error', message: 'Failed to register for event.' });
-    } finally {
-      setRegistering(false);
-      setTimeout(() => setRegisterStatus({ type: 'idle', message: '' }), 5000);
-    }
+  const handleRegistrationSuccess = () => {
+    console.log('Registration successful');
+    setIsRegistrationModalOpen(false);
   };
 
   if (loading) {
@@ -294,21 +280,11 @@ export default function EventDetailPage() {
 
             <div className="space-y-3">
               <button
-                onClick={handleJoinEvent}
-                disabled={registering}
-                className="w-full px-6 py-3 bg-[#008000] text-white rounded-lg font-semibold hover:bg-[#006400] transition disabled:opacity-50"
+                onClick={handleOpenRegistration}
+                className="w-full px-6 py-3 bg-[#008000] text-white rounded-lg font-semibold hover:bg-[#006400] transition"
               >
-                {registering ? 'Registering...' : 'Join Event'}
+                Register Event
               </button>
-              {registerStatus.message && (
-                <div
-                  className={`text-sm p-3 rounded-lg ${
-                    registerStatus.type === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
-                  }`}
-                >
-                  {registerStatus.message}
-                </div>
-              )}
               <div className="flex gap-3">
                 <button
                   onClick={() => setLiked(!liked)}
@@ -330,6 +306,17 @@ export default function EventDetailPage() {
           </div>
         </div>
       </div>
+
+      {event && (
+        <EventRegistrationModal
+          isOpen={isRegistrationModalOpen}
+          onClose={() => setIsRegistrationModalOpen(false)}
+          eventId={event.id}
+          eventTitle={event.title}
+          eventDate={event.date}
+          onSuccess={handleRegistrationSuccess}
+        />
+      )}
     </main>
   );
 }
