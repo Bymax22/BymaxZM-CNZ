@@ -16,6 +16,7 @@ interface AdminEvent {
   type?: string;
   isPublic?: boolean;
   isOnline?: boolean;
+  status?: string;
   imageUrl?: string;
   createdAt?: string;
   updatedAt?: string;
