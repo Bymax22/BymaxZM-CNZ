@@ -142,6 +142,31 @@ export default function EventDetailPage() {
   
   const event = ALL_EVENTS.find(e => e.id === eventId);
   const [liked, setLiked] = useState(false);
+  const [registering, setRegistering] = useState(false);
+  const [registerStatus, setRegisterStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' });
+
+  const handleJoinEvent = async () => {
+    setRegistering(true);
+    setRegisterStatus({ type: 'idle', message: '' });
+    try {
+      const res = await fetch('/api/events/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: event?.id, email: 'user@example.com' }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRegisterStatus({ type: 'success', message: 'Successfully registered for the event!' });
+      } else {
+        setRegisterStatus({ type: 'error', message: data.error || 'Failed to register' });
+      }
+    } catch (err) {
+      setRegisterStatus({ type: 'error', message: 'Failed to register for event' });
+    } finally {
+      setRegistering(false);
+      setTimeout(() => setRegisterStatus({ type: 'idle', message: '' }), 5000);
+    }
+  };
 
   if (!event) {
     return (
@@ -263,9 +288,20 @@ export default function EventDetailPage() {
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button className="w-full px-6 py-3 bg-[#008000] text-white rounded-lg font-semibold hover:bg-[#006400] transition">
-                Join Event
+              <button
+                onClick={handleJoinEvent}
+                disabled={registering}
+                className="w-full px-6 py-3 bg-[#008000] text-white rounded-lg font-semibold hover:bg-[#006400] transition disabled:opacity-50"
+              >
+                {registering ? 'Registering...' : 'Join Event'}
               </button>
+              {registerStatus.message && (
+                <div className={`text-sm p-3 rounded-lg ${
+                  registerStatus.type === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {registerStatus.message}
+                </div>
+              )}
               <div className="flex gap-3">
                 <button
                   onClick={() => setLiked(!liked)}

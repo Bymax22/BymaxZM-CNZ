@@ -14,7 +14,6 @@ import {
   FaPhone,
   FaMapMarkerAlt,
 } from 'react-icons/fa';
-import { subscribeNewsletter } from '../../../lib/supabaseContent';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -29,13 +28,23 @@ export const Footer = () => {
     const trimmedEmail = email.trim();
     if (!trimmedEmail) return;
 
-    const { error } = await subscribeNewsletter(trimmedEmail.toLowerCase());
+    setStatus({ type: 'idle', message: '' });
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail.toLowerCase() }),
+      });
 
-    if (error) {
-      setStatus({ type: 'error', message: error.message || 'Unable to subscribe. Please try again.' });
-    } else {
-      setStatus({ type: 'success', message: 'Thank you! You are subscribed.' });
-      setEmail('');
+      const data = await response.json();
+      if (response.ok) {
+        setStatus({ type: 'success', message: 'Thank you! You are subscribed.' });
+        setEmail('');
+      } else {
+        setStatus({ type: 'error', message: data.error || 'Unable to subscribe. Please try again.' });
+      }
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Unable to subscribe. Please try again.' });
     }
 
     window.setTimeout(() => setStatus({ type: 'idle', message: '' }), 5000);

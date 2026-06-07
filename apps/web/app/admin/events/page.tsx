@@ -13,7 +13,16 @@ interface AdminEvent {
   imageUrl?: string;
   publishedAt?: string | null;
   status?: string;
+  partnerLogos?: string[];
 }
+
+function parseMediaUrls(value: string) {
+  return value
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 
 function toDateTimeLocalString(iso?: string | null) {
   if (!iso) return '';
@@ -41,6 +50,7 @@ export default function AdminEventsPage() {
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState('DRAFT');
   const [publishedAtInput, setPublishedAtInput] = useState('');
+  const [partnerLogosInput, setPartnerLogosInput] = useState('');
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -62,6 +72,7 @@ export default function AdminEventsPage() {
             imageUrl: c.imageUrl,
             publishedAt: c.publishedAt,
             status: c.status,
+            partnerLogos: c.metadata?.partnerLogos || [],
           })));
         }
       } catch (err) {
@@ -82,6 +93,7 @@ export default function AdminEventsPage() {
     setTimeInput(evt.time || '09:00');
     setLocation(evt.location || '');
     setStatus(evt.status || 'DRAFT');
+    setPartnerLogosInput((evt.partnerLogos || []).join('\n'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -104,6 +116,12 @@ export default function AdminEventsPage() {
         metadata: { date: dateInput || undefined, time: timeInput, location },
         publishedAt: finalPublishedAt,
       };
+
+      const partnerLogos = parseMediaUrls(partnerLogosInput);
+      if (partnerLogos.length) {
+        payload.metadata = payload.metadata || {};
+        payload.metadata.partnerLogos = partnerLogos;
+      }
 
       const method = editingId ? 'PUT' : 'POST';
       if (editingId) payload.id = editingId;
@@ -134,6 +152,7 @@ export default function AdminEventsPage() {
         setLocation('');
         setStatus('DRAFT');
         setPublishedAtInput('');
+        setPartnerLogosInput('');
       } else {
         setMessage(data.error || 'Save failed');
       }
@@ -208,6 +227,12 @@ export default function AdminEventsPage() {
             <div>
               <label className="block text-sm font-medium text-slate-700">Description</label>
               <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={4} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Partner logos (one URL per line)</label>
+              <textarea value={partnerLogosInput} onChange={(e) => setPartnerLogosInput(e.target.value)} rows={3} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" placeholder="https://.../logo1.png\nhttps://.../logo2.png" />
+              <p className="mt-2 text-xs text-slate-500">Optional logo URLs for partners or sponsors used on event cards.</p>
             </div>
 
             <div className="flex items-center gap-4">

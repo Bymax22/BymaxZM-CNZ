@@ -25,38 +25,8 @@ interface CountdownTime {
   seconds: number;
 }
 
-// Sample upcoming events data
-const UPCOMING_EVENTS: UpcomingEvent[] = [
-  {
-    id: '1',
-    title: 'Forest Conservation Summit 2026',
-    date: '2026-07-15',
-    time: '09:00 AM',
-    location: 'Lusaka, Zambia',
-    description: 'Join us for an intensive summit on forest conservation strategies and climate resilience initiatives.',
-    imageUrl: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779726699/410798998_750008060491803_5601703772940240462_n_q1t08s.jpg',
-    partnerLogos: [
-      'https://res.cloudinary.com/dwxlzl5us/image/upload/v1779726699/logo_placeholder1_abc123.png',
-      'https://res.cloudinary.com/dwxlzl5us/image/upload/v1779726699/logo_placeholder2_def456.png',
-    ],
-    category: 'SUMMIT',
-    attendees: 250,
-    featured: true,
-  },
-  {
-    id: '2',
-    title: 'Children\'s Climate Action Workshop',
-    date: '2026-08-10',
-    time: '02:00 PM',
-    location: 'Livingstone, Zambia',
-    description: 'An interactive workshop empowering children to lead climate action in their communities.',
-    imageUrl: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779726699/410798998_750008060491803_5601703772940240462_n_q1t08s.jpg',
-    partnerLogos: [],
-    category: 'WORKSHOP',
-    attendees: 100,
-    featured: false,
-  },
-];
+// Events are loaded from the backend API at runtime
+
 
 function CountdownTimer({ targetDate }: { targetDate: string }) {
   const [countdown, setCountdown] = useState<CountdownTime>({
@@ -110,9 +80,69 @@ function formatDate(dateString: string) {
 }
 
 export default function UpcomingEventsSection() {
-  const [events, setEvents] = useState<UpcomingEvent[]>(UPCOMING_EVENTS);
-  const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent>(UPCOMING_EVENTS[0]!);
+  const [events, setEvents] = useState<UpcomingEvent[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null);
   const [liked, setLiked] = useState(false);
+  const [registering, setRegistering] = useState(false);
+  const [registerStatus, setRegisterStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({ type: 'idle', message: '' });
+
+  const handleJoinEvent = async () => {
+    if (!selectedEvent) return;
+    setRegistering(true);
+    setRegisterStatus({ type: 'idle', message: '' });
+    try {
+      const res = await fetch('/api/events/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: selectedEvent.id, email: 'user@example.com' }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setRegisterStatus({ type: 'success', message: 'Successfully registered!' });
+      } else {
+        setRegisterStatus({ type: 'error', message: data.error || 'Failed to register' });
+      }
+    } catch (err) {
+      setRegisterStatus({ type: 'error', message: 'Failed to register' });
+    } finally {
+      setRegistering(false);
+      setTimeout(() => setRegisterStatus({ type: 'idle', message: '' }), 5000);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadEvents() {
+      try {
+        const res = await fetch('/api/events?limit=6&upcoming=true');
+        const data = await res.json();
+        const items = Array.isArray(data) ? data : data.events || data.items || data.data || [];
+        const mapped = items.map((it: any) => ({
+          id: it.id,
+          title: it.title || it.name || '',
+          date: it.date || it.publishedAt || it.startDate || it.metadata?.date || '',
+          time: it.time || it.metadata?.time || '',
+          location: it.location || it.venue || it.metadata?.location || '',
+          description: it.description || it.body || '',
+          imageUrl: it.imageUrl || it.image || (it.media?.[0]?.url) || '',
+          partnerLogos: it.partnerLogos || it.metadata?.partnerLogos || [],
+          category: it.category || it.type || '',
+          attendees: it.attendees || it.metadata?.attendees || 0,
+          featured: Boolean(it.featured),
+        }));
+        if (!mounted) return;
+        setEvents(mapped);
+        if (mapped.length > 0) setSelectedEvent(mapped[0]);
+      } catch (err) {
+        console.error('Failed to load events', err);
+      }
+    }
+
+    loadEvents();
+    return () => { mounted = false; };
+  }, []);
+
+  if (!selectedEvent) return null;
 
   return (
     <section className="relative overflow-hidden py-12">
@@ -153,16 +183,32 @@ export default function UpcomingEventsSection() {
             </div>
 
             {/* Action Buttons */}
-            <div className="mt-6 flex items-center gap-3">
-              <button className="inline-flex items-center px-4 py-2 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 transition hover:bg-slate-50">
-                Join Event
-              </button>
-              <button className="inline-flex items-center justify-center p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">
-                <Heart size={18} />
-              </button>
-              <button className="inline-flex items-center justify-center p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">
-                <Share2 size={18} />
-              </button>
+            <div className="mt-6 flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleJoinEvent}
+                  disabled={registering}
+                  className="inline-flex items-center px-4 py-2 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 transition hover:bg-slate-50 disabled:opacity-50"
+                >
+                  {registering ? 'Registering...' : 'Join Event'}
+                </button>
+                <button
+                  onClick={() => setLiked(!liked)}
+                  className="inline-flex items-center justify-center p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition"
+                >
+                  <Heart size={18} fill={liked ? 'white' : 'none'} />
+                </button>
+                <button className="inline-flex items-center justify-center p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">
+                  <Share2 size={18} />
+                </button>
+              </div>
+              {registerStatus.message && (
+                <div className={`text-xs p-2 rounded-lg text-center ${
+                  registerStatus.type === 'success' ? 'bg-emerald-400/20 text-emerald-100' : 'bg-red-400/20 text-red-100'
+                }`}>
+                  {registerStatus.message}
+                </div>
+              )}
             </div>
           </div>
 
