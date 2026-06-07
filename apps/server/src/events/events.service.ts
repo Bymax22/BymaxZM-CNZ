@@ -25,9 +25,10 @@ export class EventsService {
     });
   }
 
-  async getEventById(id: string) {
+  async getEventById(id: string, includeRegistrations = false) {
     return this.prisma.event.findUnique({
       where: { id },
+      include: includeRegistrations ? { registrations: true } : undefined,
     });
   }
 

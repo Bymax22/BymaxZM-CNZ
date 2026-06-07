@@ -19,9 +19,13 @@ export class EventsController {
   }
 
   @Get(':id')
-  async getEventById(@Param('id') id: string) {
+  async getEventById(
+    @Param('id') id: string,
+    @Query('includeRegistrations') includeRegistrations = 'false',
+  ) {
     try {
-      const event = await this.eventsService.getEventById(id);
+      const includeRegs = includeRegistrations === 'true';
+      const event = await this.eventsService.getEventById(id, includeRegs);
       if (!event) {
         throw new HttpException({ error: 'Event not found' }, HttpStatus.NOT_FOUND);
       }

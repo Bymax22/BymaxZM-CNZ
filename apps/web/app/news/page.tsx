@@ -1,102 +1,104 @@
 ﻿"use client";
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Heart, MessageCircle, Search, Share2, Sparkles } from 'lucide-react';
-import { news as newsData, type NewsItem } from '../components/sections/newsData';
 
-type NewsEventItem = NewsItem & {
+type NewsEventItem = {
+  id: string;
+  title: string;
+  excerpt: string;
+  image?: string;
+  category?: string;
+  date?: string;
+  href: string;
   itemType: 'News' | 'Event';
   comments: string[];
 };
 
-const EVENTS: NewsEventItem[] = [
-  {
-    id: 101,
-    title: 'XXXXXXXXXXXXXXX',
-    excerpt: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    content: [
-      'xxxxxxxxxxxxxxxxxxxxxx',
-      
-    ],
-    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/c_fill,h_400,w_700/v1779731230/486959969_1068853805273892_8836352372438584646_n_v9vwz0.jpg',
-    category: 'Community',
-    date: '2026-06-12',
-    author: 'Care For Nature Zambia',
-    readTime: '2 min',
-    icon: Sparkles,
-    color: 'from-[#029346] to-[#0C4726]',
-    bgColor: 'bg-gradient-to-br from-[#029346]/10 to-[#0C4726]/10',
-    tags: ['Community', 'Action', 'Volunteer'],
-    slug: 'community-clean-up-drive',
-    href: '/news',
-    itemType: 'Event',
-    comments: ['Looking forward to this event!', 'Great initiative for our community.'],
-  },
-  {
-    id: 102,
-    title: 'xxxxxxxxxxxxxxxxxxxx',
-    excerpt: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    content: [
-      'xxxxxxxxxxxx',
-      'xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    ],
-    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/c_fill,h_400,w_700/v1779731230/486959969_1068853805273892_8836352372438584646_n_v9vwz0.jpg',
-    category: 'Empowerment',
-    date: '2026-06-20',
-    author: 'Care For Nature Zambia',
-    readTime: '3 min',
-    icon: Sparkles,
-    color: 'from-[#F79021] to-[#AA5D26]',
-    bgColor: 'bg-gradient-to-br from-[#F79021]/10 to-[#AA5D26]/10',
-    tags: ['Women', 'Training', 'Skills'],
-    slug: 'women-skills-workshop',
-    href: '/news',
-    itemType: 'Event',
-    comments: ['Important chance for women entrepreneurs.', 'Would love to attend this workshop.'],
-  },
-];
-
-const formatDate = (date: string) =>
-  new Date(date).toLocaleDateString('en-US', {
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+function normalizeCardToItem(card: any, index: number): NewsEventItem {
+  const publishedAt = card.publishedAt || card.createdAt || card.metadata?.publishedAt || '';
+  const dateValue = publishedAt || card.metadata?.date || card.date || card.eventDate || '';
+  const slug = card.slug || card.id || `news-item-${index}`;
+
+  return {
+    id: String(card.id ?? slug ?? index),
+    title: card.title || card.name || 'Untitled story',
+    excerpt: card.description || card.subtitle || card.body || '',
+    image: card.imageUrl || card.media?.url || card.image || '',
+    category: card.category || card.cardType || 'News',
+    date: dateValue,
+    href: `/news/${slug}`,
+    itemType: card.cardType === 'EVENT' || card.type === 'Event' ? 'Event' : 'News',
+    comments: card.comments || ['Nice story.'],
+  };
+}
 
 export default function NewsPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'news' | 'events'>('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCommentItem, setActiveCommentItem] = useState<number | null>(null);
+  const [activeCommentItem, setActiveCommentItem] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
-  const [likes, setLikes] = useState<Record<number, number>>(() => {
-    const initialLikes: Record<number, number> = {};
-    [...newsData, ...EVENTS].forEach((item, index) => {
-      initialLikes[item.id] = 12 + index * 2;
-    });
-    return initialLikes;
-  });
-  const [likedItems, setLikedItems] = useState<Record<number, boolean>>({});
-  const [comments, setComments] = useState<Record<number, string[]>>(() => {
-    const commentMap: Record<number, string[]> = {};
-    [...newsData, ...EVENTS].forEach((item) => {
-      commentMap[item.id] = item.comments ?? ['Nice story.'];
-    });
-    return commentMap;
-  });
-  const [shareMessages, setShareMessages] = useState<Record<number, string>>({});
+  const [likes, setLikes] = useState<Record<string, number>>({});
+  const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
+  const [comments, setComments] = useState<Record<string, string[]>>({});
+  const [shareMessages, setShareMessages] = useState<Record<string, string>>({});
+  const [items, setItems] = useState<NewsEventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadItems() {
+      try {
+        const res = await fetch('/api/communications/cards?cardType=NEWS&cardType=EVENT&take=30');
+        if (!res.ok) {
+          throw new Error(`Failed to load cards: ${res.status}`);
+        }
+
+        const data = await res.json();
+        const cards = Array.isArray(data) ? data : data.cards || data.contentCards || [];
+        const parsedItems = cards.map(normalizeCardToItem);
+
+        if (!mounted) return;
+
+        setItems(parsedItems);
+        setLikes(
+          parsedItems.reduce((acc: Record<string, number>, item: NewsEventItem, index: number) => {
+            acc[item.id] = 12 + index * 2;
+            return acc;
+          }, {})
+        );
+        setComments(
+          parsedItems.reduce((acc: Record<string, string[]>, item: NewsEventItem) => {
+            acc[item.id] = item.comments;
+            return acc;
+          }, {})
+        );
+      } catch (error) {
+        console.error('Unable to load /news cards:', error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    void loadItems();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const allItems = useMemo(
-    () =>
-      [
-        ...newsData.map((item) => ({
-          ...item,
-          itemType: 'News' as const,
-          comments: item.comments ?? ['Great update!'],
-        })),
-        ...EVENTS,
-      ],
-    []
+    () => items,
+    [items]
   );
 
   const filteredItems = useMemo(
@@ -112,14 +114,14 @@ export default function NewsPage() {
           !query ||
           item.title.toLowerCase().includes(query) ||
           item.excerpt.toLowerCase().includes(query) ||
-          item.category.toLowerCase().includes(query);
+          item.category?.toLowerCase().includes(query);
 
         return matchesTab && matchesSearch;
       }),
     [activeTab, searchTerm, allItems]
   );
 
-  const handleToggleLike = (itemId: number) => {
+  const handleToggleLike = (itemId: string) => {
     setLikedItems((prev) => {
       const isLiked = !prev[itemId];
       setLikes((current) => ({
@@ -130,7 +132,7 @@ export default function NewsPage() {
     });
   };
 
-  const handleAddComment = (itemId: number) => {
+  const handleAddComment = (itemId: string) => {
     const trimmed = commentText.trim();
     if (!trimmed) return;
 
@@ -141,7 +143,7 @@ export default function NewsPage() {
     setCommentText('');
   };
 
-  const handleShare = async (itemId: number, href: string) => {
+  const handleShare = async (itemId: string, href: string) => {
     const shareText = `${typeof window !== 'undefined' ? window.location.origin : ''}${href}`;
 
     try {
@@ -295,7 +297,7 @@ export default function NewsPage() {
                 <div className="p-6">
                   <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.28em] text-slate-500">
                     <span>{item.category}</span>
-                    <span>{formatDate(item.date)}</span>
+                    <span>{item.date ? formatDate(item.date) : 'Date not available'}</span>
                   </div>
 
                   <h2 className="mt-4 text-2xl font-semibold text-slate-900">{item.title}</h2>

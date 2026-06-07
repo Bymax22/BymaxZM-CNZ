@@ -156,32 +156,29 @@ function getEventStatus(event: UpcomingEvent, now: number) {
   return { status: 'ended' as const, label: 'Ended', targetTime: end };
 }
 
-function mapCardToEvent(card: any): UpcomingEvent {
-  const gallery = Array.isArray(card.metadata?.gallery) ? card.metadata.gallery : [];
-  const imageUrl =
-    card.imageUrl ||
-    gallery.find((item: any) => item.type === 'image')?.url ||
-    gallery[0]?.url ||
-    '';
-  const eventDate = card.metadata?.date || card.publishedAt || '';
-  const eventTime = card.metadata?.time || card.time || '';
+function mapBackendEventToUpcomingEvent(event: any): UpcomingEvent {
+  const startDate = event.startDate || event.date || '';
+  const endDate = event.endDate || '';
+  const durationMinutes = event.durationMinutes
+    || Math.max(60, Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60)))
+    || 60;
 
   return {
-    id: card.relatedId || card.id || card.slug || '',
-    title: card.title || card.name || '',
-    description: card.description || card.body || '',
-    date: eventDate,
-    time: eventTime,
-    startDateTime: combineDateAndTime(eventDate, eventTime),
-    location: card.metadata?.location || card.venue || card.category || '',
-    imageUrl,
-    partnerLogos: card.metadata?.partnerLogos || [],
-    category: (card.cardType === 'EVENT' ? 'EVENT' : (card.category || 'EVENT')).toString().toUpperCase(),
-    attendees: card.metadata?.attendees || card.attendees || 0,
-    featured: Boolean(card.featured || card.metadata?.featured),
-    publishedAt: card.publishedAt,
-    status: card.status,
-    durationMinutes: card.metadata?.durationMinutes || card.metadata?.duration || 60,
+    id: event.id || event.slug || '',
+    title: event.title || event.name || '',
+    description: event.description || event.body || '',
+    date: startDate,
+    time: '',
+    location: event.location || event.venue || '',
+    imageUrl: event.imageUrl || '',
+    partnerLogos: event.partnerLogos || [],
+    category: (event.type || event.category || 'EVENT').toString().toUpperCase(),
+    attendees: event.maxAttendees || event.attendees || 0,
+    featured: Boolean(event.isPublic ?? event.featured),
+    publishedAt: event.publishedAt || event.createdAt || '',
+    status: event.status || (event.isOnline ? 'ONLINE' : 'UPCOMING'),
+    durationMinutes,
+    startDateTime: startDate,
   };
 }
 
@@ -216,58 +213,18 @@ export default function UpcomingEventsSection() {
 
     async function loadEvents() {
       try {
-        console.log('📡 Fetching events from /api/communications/cards?cardType=EVENT&take=6');
-        const res = await fetch('/api/communications/cards?cardType=EVENT&take=6');
+        console.log('📡 Fetching upcoming events from /api/events?limit=6&upcoming=true');
+        const res = await fetch('/api/events?limit=6&upcoming=true');
         const data = await res.json();
-        console.log('✅ Raw API response:', data);
-        
-        const cards = Array.isArray(data) ? data : data.cards || data.contentCards || [];
-        console.log('📋 Total cards received:', cards.length);
+        const eventsData = Array.isArray(data) ? data : data.events || [];
 
-        const filtered = cards.filter(
-          (card: any) =>
-            card &&
-            (card.cardType === 'EVENT' || card.category === 'event' || card.category === 'EVENT') &&
-            (card.status === 'PUBLISHED' || Boolean(card.publishedAt))
-        );
-        console.log('🔍 Filtered by EVENT type and PUBLISHED status:', filtered.length);
-        filtered.forEach((card: any, idx: number) => {
-          console.log(`  [${idx}]`, {
-            id: card.id,
-            title: card.title,
-            cardType: card.cardType,
-            category: card.category,
-            status: card.status,
-            date: card.metadata?.date || card.publishedAt,
-            time: card.metadata?.time,
-          });
-        });
-
-        const mapped = filtered
-          .map(mapCardToEvent)
+        const mapped = eventsData
+          .map(mapBackendEventToUpcomingEvent)
           .sort((a: UpcomingEvent, b: UpcomingEvent) => {
             const startA = new Date(a.startDateTime || combineDateAndTime(a.date, a.time)).getTime() || 0;
             const startB = new Date(b.startDateTime || combineDateAndTime(b.date, b.time)).getTime() || 0;
             return startA - startB;
           });
-        
-        console.log('✨ Mapped events:', mapped.length);
-        mapped.forEach((event: any, idx: number) => {
-          const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
-          const durationMs = (event.durationMinutes || 60) * 60 * 1000;
-          const end = start + durationMs;
-          const isActive = !Number.isNaN(start) && end > Date.now();
-          console.log(`  [${idx}] ${event.title}`, {
-            id: event.id,
-            startDateTime: event.startDateTime,
-            date: event.date,
-            time: event.time,
-            startTime: new Date(start).toISOString(),
-            endTime: new Date(end).toISOString(),
-            isActive,
-            isValidDate: !Number.isNaN(start),
-          });
-        });
 
         if (!mounted) return;
         setEvents(mapped);
@@ -277,7 +234,6 @@ export default function UpcomingEventsSection() {
             const durationMs = (event.durationMinutes || 60) * 60 * 1000;
             return !Number.isNaN(start) && start + durationMs > Date.now();
           });
-          console.log('📌 Selected first active event:', nextActive?.title || 'none found, using first');
           setSelectedEvent(nextActive || mapped[0]);
         }
       } catch (err) {

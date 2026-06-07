@@ -90,34 +90,30 @@ function getEventStatus(event: UpcomingEvent) {
   return getRelativeTime(start, end, now);
 }
 
-function mapCardToEvent(card: any): UpcomingEvent {
-  const gallery = Array.isArray(card.metadata?.gallery) ? card.metadata.gallery : [];
-  const imageUrl =
-    card.imageUrl ||
-    gallery.find((item: any) => item.type === 'image')?.url ||
-    gallery[0]?.url ||
-    '';
-
-  const date = card.metadata?.date || card.publishedAt || '';
-  const time = card.metadata?.time || card.time || '';
-  const startDateTime = combineDateAndTime(date, time);
+function mapBackendEventToUpcomingEvent(event: any): UpcomingEvent {
+  const startDate = event.startDate || event.date || '';
+  const endDate = event.endDate || '';
+  const durationMinutes =
+    event.durationMinutes ||
+    Math.max(60, Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60))) ||
+    60;
 
   return {
-    id: card.relatedId || card.id || card.slug || '',
-    title: card.title || card.name || '',
-    description: card.description || card.body || '',
-    date,
-    time,
-    location: card.metadata?.location || card.venue || card.category || '',
-    imageUrl,
-    partnerLogos: card.metadata?.partnerLogos || [],
-    category: (card.cardType === 'EVENT' ? 'EVENT' : (card.category || 'EVENT')).toString().toUpperCase(),
-    attendees: card.metadata?.attendees || card.attendees || 0,
-    featured: Boolean(card.featured || card.metadata?.featured),
-    publishedAt: card.publishedAt,
-    status: card.status,
-    durationMinutes: card.metadata?.durationMinutes || card.metadata?.duration || 60,
-    startDateTime,
+    id: event.id || event.slug || '',
+    title: event.title || event.name || '',
+    description: event.description || event.body || '',
+    date: startDate,
+    time: '',
+    location: event.location || event.venue || '',
+    imageUrl: event.imageUrl || '',
+    partnerLogos: event.partnerLogos || [],
+    category: (event.type || event.category || 'EVENT').toString().toUpperCase(),
+    attendees: event.maxAttendees || event.attendees || 0,
+    featured: Boolean(event.isPublic ?? event.featured),
+    publishedAt: event.publishedAt || event.createdAt || '',
+    status: event.status || (event.isOnline ? 'ONLINE' : 'UPCOMING'),
+    durationMinutes,
+    startDateTime: startDate,
   };
 }
 
@@ -133,21 +129,15 @@ export default function EventsPage() {
 
     async function loadEvents() {
       try {
-        const res = await fetch('/api/communications/cards?cardType=EVENT&take=50');
+        const res = await fetch('/api/events?limit=50&upcoming=true');
         const data = await res.json();
-        const cards = Array.isArray(data) ? data : data.cards || data.contentCards || [];
+        const eventsData = Array.isArray(data) ? data : data.events || [];
 
-        const mapped = cards
-          .filter(
-            (card: any) =>
-              card &&
-              (card.cardType === 'EVENT' || card.category === 'event' || card.category === 'EVENT') &&
-              (card.status === 'PUBLISHED' || Boolean(card.publishedAt))
-          )
-          .map(mapCardToEvent)
+        const mapped = eventsData
+          .map(mapBackendEventToUpcomingEvent)
           .sort((a: UpcomingEvent, b: UpcomingEvent) => {
-            const dateA = new Date(a.date).getTime() || 0;
-            const dateB = new Date(b.date).getTime() || 0;
+            const dateA = new Date(a.startDateTime).getTime() || 0;
+            const dateB = new Date(b.startDateTime).getTime() || 0;
             return dateA - dateB;
           });
 

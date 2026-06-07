@@ -8,14 +8,17 @@ interface AdminEvent {
   id: string;
   title: string;
   description?: string;
-  date?: string;
+  startDate?: string;
+  endDate?: string;
   time?: string;
   location?: string;
   durationMinutes?: number;
+  type?: string;
+  isPublic?: boolean;
+  isOnline?: boolean;
   imageUrl?: string;
-  publishedAt?: string | null;
-  status?: string;
-  partnerLogos?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 function parseMediaUrls(value: string) {
@@ -25,6 +28,13 @@ function parseMediaUrls(value: string) {
     .filter(Boolean);
 }
 
+function combineDateAndTime(dateString: string, timeString: string) {
+  if (!dateString) return '';
+
+  const datePart = dateString.split('T')[0] || dateString;
+  const normalizedTime = timeString || '00:00';
+  return `${datePart}T${normalizedTime}`;
+}
 
 function toDateTimeLocalString(iso?: string | null) {
   if (!iso) return '';
@@ -52,6 +62,7 @@ export default function AdminEventsPage() {
   const [timeInput, setTimeInput] = useState('09:00');
   const [durationInput, setDurationInput] = useState('60');
   const [location, setLocation] = useState('');
+  const [eventType, setEventType] = useState('AWARENESS');
   const [status, setStatus] = useState('DRAFT');
   const [publishedAtInput, setPublishedAtInput] = useState('');
   const [partnerLogosInput, setPartnerLogosInput] = useState('');
@@ -61,23 +72,28 @@ export default function AdminEventsPage() {
     async function loadEvents() {
       setLoading(true);
       try {
-        const res = await fetch('/api/admin/content');
+        const res = await fetch('/api/admin/events?limit=50');
         const data = await res.json();
         if (res.ok) {
-          const cards = data.cards || data.contentCards || [];
-          const evts = cards.filter((c: any) => (c.cardType || c.cardType === 'EVENT') ? (c.cardType === 'EVENT' || c.category === 'event') : (c.category === 'event' || c.cardType === 'EVENT'));
-          setEvents(evts.map((c: any) => ({
-            id: c.id,
-            title: c.title,
-            description: c.description || c.body,
-            date: c.publishedAt || c.metadata?.date,
-            time: c.metadata?.time,
-            location: c.metadata?.location || c.category,
-            durationMinutes: c.metadata?.durationMinutes || c.metadata?.duration,
-            imageUrl: c.imageUrl,
-            publishedAt: c.publishedAt,
-            status: c.status,
-            partnerLogos: c.metadata?.partnerLogos || [],
+          const eventsData = Array.isArray(data)
+            ? data
+            : data.events || data.items || [];
+          setEvents(eventsData.map((evt: any) => ({
+            id: evt.id,
+            title: evt.title,
+            description: evt.description,
+            startDate: evt.startDate,
+            endDate: evt.endDate,
+            time: evt.time,
+            location: evt.location,
+            durationMinutes: evt.durationMinutes,
+            type: evt.type,
+            isPublic: evt.isPublic,
+            isOnline: evt.isOnline,
+            imageUrl: evt.imageUrl,
+            createdAt: evt.createdAt,
+            updatedAt: evt.updatedAt,
+            status: evt.isPublic ? 'PUBLISHED' : 'DRAFT',
           })));
         }
       } catch (err) {
@@ -94,12 +110,13 @@ export default function AdminEventsPage() {
     setEditingId(evt.id);
     setForm({ title: evt.title || '', description: evt.description || '' });
     setImageUrl(evt.imageUrl || '');
-    setDateInput(toDateTimeLocalString(evt.publishedAt));
+    setDateInput(toDateTimeLocalString(evt.startDate || evt.createdAt || null));
     setTimeInput(evt.time || '09:00');
     setDurationInput(evt.durationMinutes?.toString() || '60');
     setLocation(evt.location || '');
-    setStatus(evt.status || 'DRAFT');
-    setPartnerLogosInput((evt.partnerLogos || []).join('\n'));
+    setEventType(evt.type || 'AWARENESS');
+    setStatus(evt.isPublic ? 'PUBLISHED' : 'DRAFT');
+    setPartnerLogosInput('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -108,31 +125,23 @@ export default function AdminEventsPage() {
     setSaving(true);
     setMessage(null);
     try {
-      const providedPublishedAt = publishedAtInput ? new Date(publishedAtInput).toISOString() : undefined;
-      const finalPublishedAt = providedPublishedAt || (status === 'PUBLISHED' ? new Date().toISOString() : undefined);
+      const startDateValue = dateInput ? new Date(combineDateAndTime(dateInput, timeInput)).toISOString() : new Date().toISOString();
+      const endDateValue = new Date(new Date(startDateValue).getTime() + (Number(durationInput) || 60) * 60 * 1000).toISOString();
 
       const payload: any = {
         title: form.title,
-        slug: form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
         description: form.description,
-        imageUrl: imageUrl || undefined,
-        cardType: 'EVENT',
-        category: 'event',
-        status,
-        metadata: { date: dateInput || undefined, time: timeInput, durationMinutes: Number(durationInput) || 60, location },
-        publishedAt: finalPublishedAt,
+        startDate: startDateValue,
+        endDate: endDateValue,
+        location,
+        type: eventType,
+        isPublic: status === 'PUBLISHED',
       };
 
-      const partnerLogos = parseMediaUrls(partnerLogosInput);
-      if (partnerLogos.length) {
-        payload.metadata = payload.metadata || {};
-        payload.metadata.partnerLogos = partnerLogos;
-      }
-
       const method = editingId ? 'PUT' : 'POST';
-      if (editingId) payload.id = editingId;
+      const endpoint = editingId ? `/api/admin/events/${editingId}` : '/api/admin/events';
 
-      const res = await fetch('/api/admin/content', {
+      const res = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -140,12 +149,12 @@ export default function AdminEventsPage() {
 
       const data = await res.json();
       if (res.ok) {
-        const saved = data?.contentCard || data?.card || data;
+        const saved = data;
         if (editingId) {
-          setEvents((prev) => prev.map((p) => (p.id === saved.id ? { ...p, ...saved } : p)));
+          setEvents((prev) => prev.map((p) => (p.id === saved.id ? { ...p, ...saved, status: saved.isPublic ? 'PUBLISHED' : 'DRAFT' } : p)));
           setMessage('Event updated');
         } else {
-          setEvents((prev) => [saved, ...prev]);
+          setEvents((prev) => [{ ...saved, status: saved.isPublic ? 'PUBLISHED' : 'DRAFT' }, ...prev]);
           setMessage('Event created');
         }
 
@@ -157,6 +166,7 @@ export default function AdminEventsPage() {
         setTimeInput('09:00');
         setDurationInput('60');
         setLocation('');
+        setEventType('AWARENESS');
         setStatus('DRAFT');
         setPublishedAtInput('');
         setPartnerLogosInput('');
@@ -213,6 +223,20 @@ export default function AdminEventsPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700">Location</label>
                 <input value={location} onChange={(e) => setLocation(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" placeholder="Location" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Type</label>
+                <select value={eventType} onChange={(e) => setEventType(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3">
+                  <option value="VOLUNTEERING">Volunteering</option>
+                  <option value="TRAINING">Training</option>
+                  <option value="MEETING">Meeting</option>
+                  <option value="FUNDRAISER">Fundraiser</option>
+                  <option value="AWARENESS">Awareness</option>
+                  <option value="TREE_PLANTING">Tree Planting</option>
+                  <option value="CLEANUP">Cleanup</option>
+                  <option value="WORKSHOP">Workshop</option>
+                </select>
               </div>
             </div>
 
@@ -286,7 +310,7 @@ export default function AdminEventsPage() {
                       )}
                       <div>
                         <h3 className="text-lg font-semibold text-slate-900">{evt.title}</h3>
-                        <p className="text-sm text-slate-500">{evt.status === 'PUBLISHED' ? 'Published' : 'Draft'} • {evt.publishedAt ? new Date(evt.publishedAt).toLocaleString() : 'Not scheduled'}</p>
+                        <p className="text-sm text-slate-500">{evt.status === 'PUBLISHED' ? 'Published' : 'Draft'} • {evt.startDate ? new Date(evt.startDate).toLocaleString() : 'Not scheduled'}</p>
                       </div>
                     </div>
 

@@ -21,11 +21,13 @@ interface EventDetails {
   id: string;
   title: string;
   description: string;
-  date: string;
-  time: string;
-  location: string;
+  date?: string;
+  startDate?: string;
+  endDate?: string;
+  time?: string;
+  location?: string;
   registrations: Registration[];
-  totalRegistrations: number;
+  totalRegistrations?: number;
 }
 
 export default function EventAttendancePage() {
@@ -52,7 +54,13 @@ export default function EventAttendancePage() {
           throw new Error('Failed to load event');
         }
         const data = await res.json();
-        setEvent(data);
+        setEvent({
+          ...data,
+          totalRegistrations: data.totalRegistrations ?? data.registrations?.length ?? 0,
+          date: data.date || data.startDate || '',
+          time: data.time || '',
+          location: data.location || '',
+        });
       } catch (err) {
         console.error('Error loading event:', err);
         setError('Unable to load event details');
@@ -149,7 +157,7 @@ export default function EventAttendancePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <Calendar size={18} className="text-[#008000]" />
-              {event.date} {event.time && `at ${event.time}`}
+              {event.startDate ? new Date(event.startDate).toLocaleString() : `${event.date} ${event.time ? `at ${event.time}` : ''}`}
             </div>
             <div className="flex items-center gap-2">
               <MapPin size={18} className="text-[#008000]" />
