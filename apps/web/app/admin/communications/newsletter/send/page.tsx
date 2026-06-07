@@ -16,14 +16,18 @@ export default function AdminNewsletterSendPage() {
     setMessage(null);
 
     try {
+      if (sendTo === 'TEST' && !testEmail.trim()) {
+        setMessage('Please provide a test email address to send a test newsletter.');
+        return;
+      }
+
       const res = await fetch('/api/admin/communications/newsletter/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           subject,
-          body,
-          sendTo,
-          testEmail: testEmail || undefined,
+          content: body,
+          emails: sendTo === 'TEST' && testEmail.trim() ? [testEmail.trim()] : undefined,
         }),
       });
       const data = await res.json();

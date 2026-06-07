@@ -55,6 +55,11 @@ export default function AdminNotificationsPage() {
     setMessage(null);
 
     try {
+      if (!form.title.trim() || !form.content.trim() || !form.userId.trim()) {
+        setMessage('Title, content, and user ID are required.');
+        return;
+      }
+
       const res = await fetch('/api/admin/communications/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

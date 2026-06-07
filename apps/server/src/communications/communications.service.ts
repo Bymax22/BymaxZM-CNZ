@@ -12,17 +12,27 @@ export class CommunicationsService {
 
   async subscribeNewsletter(email: string, firstName?: string, lastName?: string, source?: string) {
     const existing = await this.prisma.newsletterSubscriber.findUnique({ where: { email } });
+    const subscriberPayload = {
+      email,
+      firstName,
+      lastName,
+      source,
+    };
 
+    let subscriber;
     if (existing) {
-      return await this.prisma.newsletterSubscriber.update({
+      subscriber = await this.prisma.newsletterSubscriber.update({
         where: { email },
         data: { isActive: true, unsubscribedAt: null, lastSentAt: null, updatedAt: new Date() },
       });
+    } else {
+      subscriber = await this.prisma.newsletterSubscriber.create({
+        data: subscriberPayload,
+      });
     }
 
-    return await this.prisma.newsletterSubscriber.create({
-      data: { email, firstName, lastName, source },
-    });
+    const emailSent = await this.emailService.sendSubscriptionConfirmationEmail(email, firstName);
+    return { ...subscriber, emailSent };
   }
 
   async listNewsletterSubscribers(skip = 0, take = 50) {
@@ -81,15 +91,18 @@ export class CommunicationsService {
     });
   }
 
-  async getNotifications(userId: string, skip = 0, take = 50) {
+  async getNotifications(userId?: string, skip = 0, take = 50) {
+    const where: any = {};
+    if (userId) where.userId = userId;
+
     const [notifications, total] = await Promise.all([
       this.prisma.notification.findMany({
-        where: { userId },
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take,
       }),
-      this.prisma.notification.count({ where: { userId } }),
+      this.prisma.notification.count({ where }),
     ]);
 
     return { notifications, total };

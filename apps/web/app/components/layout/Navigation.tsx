@@ -1,7 +1,7 @@
 // app/components/layout/Navigation.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -9,12 +9,27 @@ import { useSession } from 'next-auth/react';
 import { FaSearch, FaFacebookF, FaWhatsapp, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { FiBell, FiUser } from 'react-icons/fi';
 
+interface NotificationItem {
+  id: string;
+  title: string;
+  content: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
 export const Navigation = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [secondaryHidden, setSecondaryHidden] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
   const { data: session } = useSession();
   const router = useRouter();
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const getDashboardHref = (role?: string) => {
     switch (role) {
@@ -37,6 +52,8 @@ export const Navigation = () => {
   };
 
   const dashboardHref = getDashboardHref(session?.user?.role);
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
+  const selectedNotification = notifications.find((item) => item.id === selectedNotificationId) || notifications[0] || null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,6 +62,67 @@ export const Navigation = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    async function loadNotifications() {
+      setNotificationsLoading(true);
+      try {
+        const res = await fetch('/api/communications/notifications?take=5');
+        const data = await res.json();
+        if (res.ok) {
+          setNotifications(data.notifications || []);
+          if (!selectedNotificationId && Array.isArray(data.notifications) && data.notifications.length > 0) {
+            setSelectedNotificationId(data.notifications[0].id);
+          }
+        } else {
+          console.error('Notifications load error:', data.error || 'Unable to load notifications');
+        }
+      } catch (error) {
+        console.error('Notifications load failed:', error);
+      } finally {
+        setNotificationsLoading(false);
+      }
+    }
+
+    loadNotifications();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        isNotificationsOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(target)
+      ) {
+        setIsNotificationsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isNotificationsOpen]);
+
+  const handleSelectNotification = async (notification: NotificationItem) => {
+    setSelectedNotificationId(notification.id);
+
+    if (!notification.isRead) {
+      try {
+        const res = await fetch(`/api/communications/notifications/${notification.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (res.ok) {
+          setNotifications((prev) => prev.map((item) => (item.id === notification.id ? { ...item, isRead: true } : item)));
+        }
+      } catch (error) {
+        console.error('Failed to mark notification read:', error);
+      }
+    }
+  };
 
   const navMenus = [
     {
@@ -178,13 +256,73 @@ export const Navigation = () => {
               </Link>
             )}
 
-            <button
-              type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346] md:h-12 md:w-12"
-              aria-label="Notifications"
-            >
-              <FiBell className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                ref={buttonRef}
+                onClick={() => setIsNotificationsOpen((open) => !open)}
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-shadow duration-200 hover:shadow-sm hover:border-[#029346] hover:text-[#029346] md:h-12 md:w-12"
+                aria-label="Notifications"
+                aria-expanded={isNotificationsOpen}
+              >
+                <FiBell className="w-5 h-5 md:w-6 md:h-6" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-emerald-600 px-1.5 text-[0.65rem] font-semibold text-white">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {isNotificationsOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 top-full z-50 mt-3 w-96 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_25px_70px_-30px_rgba(15,23,42,0.35)]"
+                >
+                  <div className="border-b border-slate-200 px-5 py-4 bg-slate-50">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">Notifications</p>
+                        <p className="text-xs text-slate-500">{unreadCount} unread</p>
+                      </div>
+                      <Link href="/notifications" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                        View all
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="max-h-[28rem] overflow-y-auto p-4">
+                    {notificationsLoading ? (
+                      <p className="text-sm text-slate-500">Loading notifications…</p>
+                    ) : notifications.length === 0 ? (
+                      <div className="space-y-2 text-sm text-slate-500">
+                        <p>No notifications yet.</p>
+                        <p>Check back for new announcements and important updates.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {notifications.map((notification) => (
+                          <button
+                            key={notification.id}
+                            type="button"
+                            onClick={() => handleSelectNotification(notification)}
+                            className={`w-full rounded-3xl border px-4 py-3 text-left transition ${notification.id === selectedNotification?.id ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-white hover:border-emerald-200 hover:bg-slate-50'}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div>
+                                <p className="text-sm font-semibold text-slate-900">{notification.title}</p>
+                                <p className="mt-1 text-xs uppercase tracking-[0.24em] text-slate-500">{notification.type.replace(/_/g, ' ')}</p>
+                              </div>
+                              {!notification.isRead && <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" />}
+                            </div>
+                            <p className="mt-2 line-clamp-2 text-sm text-slate-600">{notification.content}</p>
+                            <p className="mt-3 text-xs text-slate-400">{new Date(notification.createdAt).toLocaleString()}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <Link
               href="/get-involved/donate"
@@ -204,10 +342,19 @@ export const Navigation = () => {
             </Link>
 
             <button
-              className="h-10 w-10 flex items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
+              type="button"
+              ref={buttonRef}
+              onClick={() => setIsNotificationsOpen((open) => !open)}
+              className="relative h-10 w-10 flex items-center justify-center rounded-full bg-white/10 text-slate-700 hover:bg-white/20 transition-colors"
               aria-label="Notifications"
+              aria-expanded={isNotificationsOpen}
             >
               <FiBell className="w-5 h-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-emerald-600 px-1 text-[0.6rem] font-semibold text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
           </div>
         </div>

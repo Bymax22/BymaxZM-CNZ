@@ -148,6 +148,28 @@ export class EmailService {
     }
   }
 
+  async sendSubscriptionConfirmationEmail(email: string, firstName?: string): Promise<boolean> {
+    try {
+      const templateId = parseInt(process.env.BREVO_TEMPLATE_NEWSLETTER_SUBSCRIPTION || '0');
+      if (templateId === 0) {
+        this.logger.warn('BREVO_TEMPLATE_NEWSLETTER_SUBSCRIPTION not configured');
+        return false;
+      }
+
+      return await this.sendTemplatedEmail({
+        to: email,
+        templateId,
+        params: {
+          user_name: firstName || email,
+          user_email: email,
+        }
+      });
+    } catch (error) {
+      this.logger.error('Failed to send subscription confirmation email:', error);
+      return false;
+    }
+  }
+
   async sendNewsletterEmail(emails: string[], content: string, subject: string): Promise<boolean> {
     try {
       const templateId = parseInt(process.env.BREVO_TEMPLATE_NEWSLETTER || '0');

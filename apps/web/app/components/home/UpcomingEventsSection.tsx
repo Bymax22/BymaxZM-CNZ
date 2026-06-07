@@ -62,16 +62,16 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
   }, [targetDate]);
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-4 gap-2">
       {[
         { value: countdown.days, label: 'Days' },
         { value: countdown.hours, label: 'Hours' },
         { value: countdown.minutes, label: 'Mins' },
         { value: countdown.seconds, label: 'Secs' },
       ].map((unit, idx) => (
-        <div key={idx} className="bg-[#008000]/10 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-[#008000]">{String(unit.value).padStart(2, '0')}</div>
-          <div className="text-xs text-gray-600 mt-1">{unit.label}</div>
+        <div key={idx} className="bg-[#ff8c00] rounded-lg p-2 text-center">
+          <div className="text-xl font-bold text-white">{String(unit.value).padStart(2, '0')}</div>
+          <div className="text-[10px] text-white/80 mt-1">{unit.label}</div>
         </div>
       ))}
     </div>
@@ -189,6 +189,8 @@ export default function UpcomingEventsSection() {
   const [events, setEvents] = useState<UpcomingEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null);
   const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(1);
+  const [shareCount, setShareCount] = useState(4);
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [loading, setLoading] = useState(true);
@@ -275,6 +277,17 @@ export default function UpcomingEventsSection() {
     setIsRegistrationModalOpen(true);
   };
 
+  const handleLike = () => {
+    setLiked((current) => {
+      setLikeCount((count) => count + (current ? -1 : 1));
+      return !current;
+    });
+  };
+
+  const handleShare = () => {
+    setShareCount((count) => count + 1);
+  };
+
   if (loading) {
     return (
       <section className="relative overflow-hidden py-12">
@@ -307,28 +320,30 @@ export default function UpcomingEventsSection() {
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-white">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-end">
-          <div className="max-w-[320px] lg:self-start">
+          <div className="max-w-[520px] lg:self-start">
             <p className="text-[10px] uppercase tracking-[0.25em] text-[#bfe8c9]">Upcoming Events</p>
-            <h3 className="text-xl lg:text-2xl font-bold leading-tight mt-3">{selectedEvent.title}</h3>
+            <h3 className="text-xl lg:text-2xl font-semibold leading-tight mt-3">{selectedEvent.title}</h3>
             {selectedStatus && (
               <div className="mt-3 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#bfe8c9]">
                 {selectedStatus.label}
               </div>
             )}
 
-            <div className="space-y-1.5 mt-3 text-xs sm:text-sm">
-              <div className="flex items-center gap-2">
-                <Calendar size={16} className="text-[#bfe8c9]" />
-                <span>{formatDate(selectedEvent.date)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-[#bfe8c9]" />
-                <span>{selectedEvent.time}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin size={16} className="text-[#bfe8c9]" />
-                <span>{selectedEvent.location}</span>
-              </div>
+            <div className="mt-3 text-xs sm:text-sm text-white/90 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1">
+                <Calendar size={14} className="text-[#bfe8c9]" />
+                {formatDate(selectedEvent.date)}
+              </span>
+              <span className="text-[#bfe8c9]">·</span>
+              <span className="inline-flex items-center gap-1">
+                <Clock size={14} className="text-[#bfe8c9]" />
+                {selectedEvent.time}
+              </span>
+              <span className="text-[#bfe8c9]">·</span>
+              <span className="inline-flex items-center gap-1">
+                <MapPin size={14} className="text-[#bfe8c9]" />
+                {selectedEvent.location}
+              </span>
             </div>
 
             <div className="mt-3 pt-2 border-t border-white/20">
@@ -336,24 +351,30 @@ export default function UpcomingEventsSection() {
               <CountdownTimer targetDate={countdownTarget} />
             </div>
 
-            <div className="mt-6 flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={handleJoinEvent}
-                  className="inline-flex items-center px-3 py-1.5 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 text-sm transition hover:bg-slate-50"
-                >
-                  Join Event
-                </button>
-                <button
-                  onClick={() => setLiked(!liked)}
-                  className="inline-flex items-center justify-center p-1.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition"
-                >
-                  <Heart size={18} fill={liked ? 'white' : 'none'} />
-                </button>
-                <button className="inline-flex items-center justify-center p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition">
-                  <Share2 size={18} />
-                </button>
-              </div>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleJoinEvent}
+                className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 text-sm transition hover:bg-slate-50"
+              >
+                Join Event
+                <span className="rounded-full bg-[#006400] px-2 py-0.5 text-[10px] font-semibold text-white">
+                  {selectedEvent.attendees || 0}
+                </span>
+              </button>
+              <button
+                onClick={handleLike}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm transition hover:bg-white/20"
+              >
+                <Heart size={16} fill={liked ? 'white' : 'none'} />
+                <span>{likeCount}</span>
+              </button>
+              <button
+                onClick={handleShare}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm transition hover:bg-white/20"
+              >
+                <Share2 size={16} />
+                <span>{shareCount}</span>
+              </button>
             </div>
           </div>
 

@@ -56,11 +56,8 @@ export class CommunicationsController {
   }
 
   @Get('notifications')
-  async getNotifications(@Query('userId') userId: string, @Query('skip') skip = 0, @Query('take') take = 50) {
+  async getNotifications(@Query('userId') userId?: string, @Query('skip') skip = 0, @Query('take') take = 50) {
     try {
-      if (!userId) {
-        throw new Error('userId is required');
-      }
       return await this.communicationsService.getNotifications(userId, Number(skip), Number(take));
     } catch (error) {
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);

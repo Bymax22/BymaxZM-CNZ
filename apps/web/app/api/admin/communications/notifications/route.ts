@@ -6,7 +6,7 @@ const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 async function proxyToBackend(request: NextRequest) {
   const url = new URL(request.url);
-  const backendPath = url.pathname.replace('/api', '');
+  const backendPath = url.pathname.replace('/api/admin', '');
   const backendUrl = `${BACKEND}${backendPath}${url.search}`;
   const init: any = {
     method: request.method,
