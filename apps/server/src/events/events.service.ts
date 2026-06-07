@@ -95,9 +95,20 @@ export class EventsService {
     companyName?: string;
     industry?: string;
   }) {
-    const event = await this.prisma.event.findUnique({
-      where: { id: data.eventId },
-    });
+    // Try to find the event by the provided id first
+    let event = await this.prisma.event.findUnique({ where: { id: data.eventId } });
+
+    // If not found, the frontend may be passing a CMS/content-card identifier (slug or id)
+    // for events that are represented as content cards. Attempt to resolve that to a
+    // backend event via the content card's `relatedId` field.
+    if (!event) {
+      const cardById = await this.prisma.contentCard.findUnique({ where: { id: data.eventId } }).catch(() => null);
+      const cardBySlug = await this.prisma.contentCard.findUnique({ where: { slug: data.eventId } }).catch(() => null);
+      const card = cardById || cardBySlug;
+      if (card && card.relatedId) {
+        event = await this.prisma.event.findUnique({ where: { id: card.relatedId } }).catch(() => null);
+      }
+    }
 
     if (!event) {
       throw new Error('Event not found');
