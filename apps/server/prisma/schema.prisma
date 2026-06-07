@@ -582,6 +582,7 @@ model Event {
   platform       String?
   host           String?
   registrationUrl String?
+  imageUrl       String?
   inviteMessage  String?
   organizerId    String
   clubId         String?
@@ -607,7 +608,7 @@ model EventRegistration {
   notes       String?
   createdAt   DateTime @default(now())
 
-  event       Event    @relation(fields: [eventId], references: [id])
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id])
 
   @@unique([eventId, userId])

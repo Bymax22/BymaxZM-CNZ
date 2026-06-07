@@ -48,6 +48,7 @@ export class EventsService {
     platform?: string;
     host?: string;
     registrationUrl?: string;
+    imageUrl?: string;
     inviteMessage?: string;
     organizerId: string;
     clubId?: string;
@@ -70,6 +71,7 @@ export class EventsService {
         platform: body.platform,
         host: body.host,
         registrationUrl: body.registrationUrl,
+        imageUrl: body.imageUrl,
         inviteMessage: body.inviteMessage,
         organizerId: body.organizerId,
         clubId: body.clubId,
@@ -86,6 +88,10 @@ export class EventsService {
   }
 
   async deleteEvent(id: string) {
+    await this.prisma.eventRegistration.deleteMany({
+      where: { eventId: id },
+    });
+
     return this.prisma.event.delete({
       where: { id },
     });
