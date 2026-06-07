@@ -4,7 +4,7 @@ import { authOptions } from '../../../lib/auth';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
-async function proxyToBackend(request: NextRequest) {
+async function proxyToBackend(request: NextRequest, session?: any) {
   const url = new URL(request.url);
   const backendPath = url.pathname.replace('/api/admin', '');
   const backendUrl = `${BACKEND}${backendPath}${url.search}`;
@@ -16,7 +16,25 @@ async function proxyToBackend(request: NextRequest) {
     },
     credentials: 'include',
   };
-  if (request.method !== 'GET' && request.method !== 'HEAD') init.body = await request.text();
+
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    let bodyText = await request.text();
+
+    if (request.method === 'POST' && bodyText) {
+      try {
+        const body = JSON.parse(bodyText);
+        if (!body.organizerId && session?.user?.id) {
+          body.organizerId = session.user.id;
+          bodyText = JSON.stringify(body);
+        }
+      } catch (e) {
+        // preserve original body if parsing fails
+      }
+    }
+
+    init.body = bodyText;
+  }
+
   const res = await fetch(backendUrl, init);
   const text = await res.text();
   return new NextResponse(text, { status: res.status, headers: { 'Content-Type': res.headers.get('content-type') || 'application/json' } });
@@ -41,7 +59,7 @@ export async function POST(request: NextRequest) {
     if (!session || !['SUPER_ADMIN', 'ADMIN'].includes(session?.user?.role ?? '')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    return await proxyToBackend(request);
+    return await proxyToBackend(request, session);
   } catch (error) {
     console.error('Admin events proxy POST error:', error);
     return NextResponse.json({ error: 'Failed to proxy events' }, { status: 500 });

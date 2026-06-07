@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import CloudinaryUploader from '../../components/admin/CloudinaryUploader';
 
@@ -52,6 +53,7 @@ function toDateTimeLocalString(iso?: string | null) {
 
 export default function AdminEventsPage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [events, setEvents] = useState<AdminEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -137,6 +139,7 @@ export default function AdminEventsPage() {
         location,
         type: eventType,
         isPublic: status === 'PUBLISHED',
+        organizerId: session?.user?.id,
       };
 
       const method = editingId ? 'PUT' : 'POST';
