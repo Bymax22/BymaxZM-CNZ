@@ -167,7 +167,7 @@ function mapCardToEvent(card: any): UpcomingEvent {
   const eventTime = card.metadata?.time || card.time || '';
 
   return {
-    id: card.id || card.slug || '',
+    id: card.relatedId || card.id || card.slug || '',
     title: card.title || card.name || '',
     description: card.description || card.body || '',
     date: eventDate,

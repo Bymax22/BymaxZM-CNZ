@@ -97,7 +97,7 @@ function mapCardToEvent(card: any): UpcomingEvent {
     '';
 
   return {
-    id: card.id || card.slug || '',
+    id: card.relatedId || card.id || card.slug || '',
     title: card.title || card.name || '',
     description: card.description || card.body || '',
     date: card.publishedAt || card.metadata?.date || '',
