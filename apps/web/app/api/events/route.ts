@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit') || '10';
     const upcoming = searchParams.get('upcoming') || 'true';
     const onlineOnly = searchParams.get('onlineOnly') || 'false';
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
     const queryParams = new URLSearchParams({ limit, upcoming, onlineOnly });
     const response = await fetch(`${backendUrl}/events?${queryParams.toString()}`, {

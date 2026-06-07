@@ -6,7 +6,7 @@ export default function CloudinaryUploader({ onUpload }: { onUpload?: (url: stri
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
   const publicCloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const publicUploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 

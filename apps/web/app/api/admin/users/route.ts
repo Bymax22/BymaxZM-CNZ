@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role') || undefined;
     const status = searchParams.get('status') || undefined;
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
     const queryParams = new URLSearchParams({ skip: skip.toString(), take: take.toString() });
     if (role) queryParams.append('role', role);
     if (status) queryParams.append('status', status);
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
     const response = await fetch(`${backendUrl}/users`, {
       method: 'POST',
@@ -92,7 +92,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
     const response = await fetch(`${backendUrl}/users/${id}`, {
       method: 'PUT',
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
     const response = await fetch(`${backendUrl}/users/${id}`, {
       method: 'DELETE',
