@@ -95,27 +95,38 @@ export class EventsService {
     companyName?: string;
     industry?: string;
   }) {
+    console.log('📥 registerForEvent called with:', { eventId: data.eventId, email: data.email });
+    
     // Try to find the event by the provided id first
     let event = await this.prisma.event.findUnique({ where: { id: data.eventId } });
+    console.log('🔍 Direct event lookup:', event ? 'found' : 'not found');
 
     // If not found, the frontend may be passing a CMS/content-card identifier (slug or id)
     // for events that are represented as content cards. Attempt to resolve that to a
     // backend event via the content card's `relatedId` field.
     if (!event) {
+      console.log('🔎 Attempting content card resolution for eventId:', data.eventId);
       const cardById = await this.prisma.contentCard.findUnique({ where: { id: data.eventId } }).catch(() => null);
       const cardBySlug = await this.prisma.contentCard.findUnique({ where: { slug: data.eventId } }).catch(() => null);
       const card = cardById || cardBySlug;
+      console.log('📋 Content card lookup:', card ? `found (relatedId: ${card?.relatedId})` : 'not found');
+      
       if (card && card.relatedId) {
         event = await this.prisma.event.findUnique({ where: { id: card.relatedId } }).catch(() => null);
+        console.log('✅ Resolved event from content card:', event ? 'found' : 'not found');
       }
     }
 
     if (!event) {
+      console.error('❌ Event not found for eventId:', data.eventId);
       throw new Error('Event not found');
     }
 
+    console.log('✅ Event resolved:', { eventId: event.id, title: event.title });
+
     const email = data.email.toLowerCase().trim();
     let user = await this.prisma.user.findUnique({ where: { email } });
+    console.log('👤 User lookup:', user ? 'found' : 'creating new user');
 
     if (!user) {
       const fullName = data.fullName?.trim() || email.split('@')[0];
@@ -134,18 +145,21 @@ export class EventsService {
           },
         },
       });
+      console.log('✅ User created:', { userId: user.id, email });
     }
 
+    // IMPORTANT: Use event.id (the resolved backend event ID), NOT data.eventId (which may be a content card ID)
     const existingRegistration = await this.prisma.eventRegistration.findUnique({
       where: {
         eventId_userId: {
-          eventId: data.eventId,
+          eventId: event.id,
           userId: user.id,
         },
       },
     });
 
     if (existingRegistration) {
+      console.log('⚠️  User already registered for this event');
       return {
         message: 'User is already registered for this event',
         alreadyRegistered: true,
@@ -165,12 +179,13 @@ export class EventsService {
 
     await this.prisma.eventRegistration.create({
       data: {
-        eventId: data.eventId,
+        eventId: event.id,
         userId: user.id,
         notes: notes || undefined,
       },
     });
 
+    console.log('✅ Registration created successfully');
     return {
       message: 'Successfully registered for the event',
       alreadyRegistered: false,

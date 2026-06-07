@@ -35,13 +35,23 @@ export class EventsController {
   @Post('register')
   async registerEvent(@Body() body: any) {
     try {
+      console.log('📥 POST /events/register received body:', JSON.stringify(body, null, 2));
+      
       if (!body?.eventId || !body?.email) {
+        console.error('❌ Validation failed - missing eventId or email:', { eventId: body?.eventId, email: body?.email });
         throw new HttpException({ error: 'eventId and email are required' }, HttpStatus.BAD_REQUEST);
       }
 
+      console.log('✅ Validation passed, calling registerForEvent...');
       const result = await this.eventsService.registerForEvent(body);
+      console.log('✅ Registration successful:', result);
       return result;
     } catch (error) {
+      console.error('❌ Registration error:', {
+        message: error?.message,
+        status: error?.status,
+        response: error?.response,
+      });
       if (error instanceof HttpException) throw error;
       throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
     }
