@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import CloudinaryUploader from '../../components/admin/CloudinaryUploader';
 
 interface AdminEvent {
@@ -10,6 +11,7 @@ interface AdminEvent {
   date?: string;
   time?: string;
   location?: string;
+  durationMinutes?: number;
   imageUrl?: string;
   publishedAt?: string | null;
   status?: string;
@@ -38,6 +40,7 @@ function toDateTimeLocalString(iso?: string | null) {
 }
 
 export default function AdminEventsPage() {
+  const router = useRouter();
   const [events, setEvents] = useState<AdminEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,6 +50,7 @@ export default function AdminEventsPage() {
   const [imageUrl, setImageUrl] = useState('');
   const [dateInput, setDateInput] = useState('');
   const [timeInput, setTimeInput] = useState('09:00');
+  const [durationInput, setDurationInput] = useState('60');
   const [location, setLocation] = useState('');
   const [status, setStatus] = useState('DRAFT');
   const [publishedAtInput, setPublishedAtInput] = useState('');
@@ -69,6 +73,7 @@ export default function AdminEventsPage() {
             date: c.publishedAt || c.metadata?.date,
             time: c.metadata?.time,
             location: c.metadata?.location || c.category,
+            durationMinutes: c.metadata?.durationMinutes || c.metadata?.duration,
             imageUrl: c.imageUrl,
             publishedAt: c.publishedAt,
             status: c.status,
@@ -91,6 +96,7 @@ export default function AdminEventsPage() {
     setImageUrl(evt.imageUrl || '');
     setDateInput(toDateTimeLocalString(evt.publishedAt));
     setTimeInput(evt.time || '09:00');
+    setDurationInput(evt.durationMinutes?.toString() || '60');
     setLocation(evt.location || '');
     setStatus(evt.status || 'DRAFT');
     setPartnerLogosInput((evt.partnerLogos || []).join('\n'));
@@ -113,7 +119,7 @@ export default function AdminEventsPage() {
         cardType: 'EVENT',
         category: 'event',
         status,
-        metadata: { date: dateInput || undefined, time: timeInput, location },
+        metadata: { date: dateInput || undefined, time: timeInput, durationMinutes: Number(durationInput) || 60, location },
         publishedAt: finalPublishedAt,
       };
 
@@ -149,6 +155,7 @@ export default function AdminEventsPage() {
         setImageUrl('');
         setDateInput('');
         setTimeInput('09:00');
+        setDurationInput('60');
         setLocation('');
         setStatus('DRAFT');
         setPublishedAtInput('');
@@ -209,7 +216,7 @@ export default function AdminEventsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700">Date (optional)</label>
                 <input type="date" value={dateInput ? dateInput.split('T')[0] : ''} onChange={(e) => setDateInput(e.target.value ? `${e.target.value}T00:00` : '')} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" />
@@ -217,6 +224,10 @@ export default function AdminEventsPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-700">Time</label>
                 <input type="time" value={timeInput} onChange={(e) => setTimeInput(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Duration (minutes)</label>
+                <input type="number" min="1" value={durationInput} onChange={(e) => setDurationInput(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700">Published date & time</label>
@@ -279,8 +290,16 @@ export default function AdminEventsPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => startEdit(evt)} className="text-sm text-emerald-600">Edit</button>
+                    <div className="flex items-center gap-3">
+                      <button 
+                        onClick={() => router.push(`/admin/events/attendance?eventId=${evt.id}`)}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        View Registrations
+                      </button>
+                      <button onClick={() => startEdit(evt)} className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+                        Edit
+                      </button>
                     </div>
                   </div>
                   <p className="mt-4 text-slate-600">{evt.description}</p>

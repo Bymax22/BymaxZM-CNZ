@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, Heart, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import EventRegistrationModal from '../events/EventRegistrationModal';
 
 interface UpcomingEvent {
   id: string;
@@ -18,6 +19,8 @@ interface UpcomingEvent {
   featured?: boolean;
   publishedAt?: string;
   status?: string;
+  durationMinutes?: number;
+  startDateTime?: string;
 }
 
 interface CountdownTime {
@@ -48,6 +51,8 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
           minutes: Math.floor((distance / (1000 * 60)) % 60),
           seconds: Math.floor((distance / 1000) % 60),
         });
+      } else {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
@@ -87,6 +92,39 @@ function formatDate(dateString: string) {
   });
 }
 
+function combineDateAndTime(dateString: string, timeString: string) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const hasTime = dateString.includes('T') || /\b(AM|PM)\b/i.test(timeString);
+  if (!Number.isNaN(date.getTime()) && hasTime) {
+    return dateString;
+  }
+
+  const datePart = dateString.split('T')[0] || dateString;
+  const timePart = timeString || '00:00';
+  return `${datePart}T${timePart}`;
+}
+
+function getEventStatus(event: UpcomingEvent, now: number) {
+  const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
+  const durationMs = (event.durationMinutes || 60) * 60 * 1000;
+  const end = start + durationMs;
+
+  if (Number.isNaN(start) || start === 0) {
+    return { status: 'upcoming' as const, label: 'Date TBD', targetTime: now };
+  }
+
+  if (now < start) {
+    return { status: 'upcoming' as const, label: 'Upcoming', targetTime: start };
+  }
+
+  if (now < end) {
+    return { status: 'live' as const, label: 'In session', targetTime: end };
+  }
+
+  return { status: 'ended' as const, label: 'Ended', targetTime: end };
+}
+
 function mapCardToEvent(card: any): UpcomingEvent {
   const gallery = Array.isArray(card.metadata?.gallery) ? card.metadata.gallery : [];
   const imageUrl =
@@ -94,13 +132,16 @@ function mapCardToEvent(card: any): UpcomingEvent {
     gallery.find((item: any) => item.type === 'image')?.url ||
     gallery[0]?.url ||
     '';
+  const eventDate = card.metadata?.date || card.publishedAt || '';
+  const eventTime = card.metadata?.time || card.time || '';
 
   return {
     id: card.id || card.slug || '',
     title: card.title || card.name || '',
     description: card.description || card.body || '',
-    date: card.publishedAt || card.metadata?.date || '',
-    time: card.metadata?.time || card.time || '',
+    date: eventDate,
+    time: eventTime,
+    startDateTime: combineDateAndTime(eventDate, eventTime),
     location: card.metadata?.location || card.venue || card.category || '',
     imageUrl,
     partnerLogos: card.metadata?.partnerLogos || [],
@@ -109,6 +150,7 @@ function mapCardToEvent(card: any): UpcomingEvent {
     featured: Boolean(card.featured || card.metadata?.featured),
     publishedAt: card.publishedAt,
     status: card.status,
+    durationMinutes: card.metadata?.durationMinutes || card.metadata?.duration || 60,
   };
 }
 
@@ -116,13 +158,25 @@ export default function UpcomingEventsSection() {
   const [events, setEvents] = useState<UpcomingEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null);
   const [liked, setLiked] = useState(false);
-  const [registering, setRegistering] = useState(false);
-  const [registerStatus, setRegisterStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({
-    type: 'idle',
-    message: '',
-  });
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
+  const [now, setNow] = useState(Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const activeEvents = events.filter((event) => {
+    const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
+    const end = start + ((event.durationMinutes || 60) * 60 * 1000);
+    return !Number.isNaN(start) && end > now;
+  });
+
+  const selectedStatus = selectedEvent ? getEventStatus(selectedEvent, now) : null;
+  const countdownLabel = selectedStatus?.status === 'live' ? 'Time remaining' : selectedStatus?.status === 'ended' ? 'Event ended' : 'Event starts in';
+  const countdownTarget = selectedStatus ? new Date(selectedStatus.targetTime).toISOString() : new Date().toISOString();
+
+  useEffect(() => {
+    const interval = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -142,15 +196,20 @@ export default function UpcomingEventsSection() {
           )
           .map(mapCardToEvent)
           .sort((a: UpcomingEvent, b: UpcomingEvent) => {
-            const dateA = new Date(a.date).getTime() || 0;
-            const dateB = new Date(b.date).getTime() || 0;
-            return dateA - dateB;
+            const startA = new Date(a.startDateTime || combineDateAndTime(a.date, a.time)).getTime() || 0;
+            const startB = new Date(b.startDateTime || combineDateAndTime(b.date, b.time)).getTime() || 0;
+            return startA - startB;
           });
 
         if (!mounted) return;
         setEvents(mapped);
         if (!selectedEvent && mapped.length > 0) {
-          setSelectedEvent(mapped[0]);
+          const nextActive = mapped.find((event: UpcomingEvent) => {
+            const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
+            const durationMs = (event.durationMinutes || 60) * 60 * 1000;
+            return !Number.isNaN(start) && start + durationMs > Date.now();
+          });
+          setSelectedEvent(nextActive || mapped[0]);
         }
       } catch (err) {
         console.error('Failed to load upcoming events', err);
@@ -165,32 +224,24 @@ export default function UpcomingEventsSection() {
     return () => {
       mounted = false;
     };
-  }, [selectedEvent]);
+  }, []);
 
-  const handleJoinEvent = async () => {
+  useEffect(() => {
     if (!selectedEvent) return;
-    setRegistering(true);
-    setRegisterStatus({ type: 'idle', message: '' });
 
-    try {
-      const res = await fetch('/api/events/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId: selectedEvent.id, email: 'user@example.com' }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setRegisterStatus({ type: 'success', message: 'Successfully registered!' });
-      } else {
-        setRegisterStatus({ type: 'error', message: data.error || 'Failed to register' });
+    const { status } = getEventStatus(selectedEvent, now);
+    if (status === 'ended') {
+      const nextEvent = activeEvents.find((event) => getEventStatus(event, now).status !== 'ended');
+      if (nextEvent && nextEvent.id !== selectedEvent.id) {
+        setSelectedEvent(nextEvent);
+      } else if (!nextEvent) {
+        setSelectedEvent(null);
       }
-    } catch (err) {
-      setRegisterStatus({ type: 'error', message: 'Failed to register' });
-    } finally {
-      setRegistering(false);
-      setTimeout(() => setRegisterStatus({ type: 'idle', message: '' }), 5000);
     }
+  }, [now, activeEvents, selectedEvent]);
+
+  const handleJoinEvent = () => {
+    setIsRegistrationModalOpen(true);
   };
 
   if (loading) {
@@ -213,8 +264,6 @@ export default function UpcomingEventsSection() {
     );
   }
 
-  const countdownTarget = selectedEvent.date || selectedEvent.publishedAt || new Date().toISOString();
-
   return (
     <section className="relative overflow-hidden py-12">
       <div className="absolute inset-0">
@@ -230,6 +279,11 @@ export default function UpcomingEventsSection() {
           <div className="max-w-[360px] lg:self-start">
             <p className="text-sm uppercase tracking-[0.25em] text-[#bfe8c9]">Upcoming Events</p>
             <h3 className="text-2xl font-bold leading-tight mt-4">{selectedEvent.title}</h3>
+            {selectedStatus && (
+              <div className="mt-3 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#bfe8c9]">
+                {selectedStatus.label}
+              </div>
+            )}
 
             <div className="space-y-2 mt-4 text-sm">
               <div className="flex items-center gap-2">
@@ -247,7 +301,7 @@ export default function UpcomingEventsSection() {
             </div>
 
             <div className="mt-4 pt-3 border-t border-white/20">
-              <p className="text-xs uppercase tracking-[0.2em] text-[#bfe8c9] mb-2">Event starts in</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-[#bfe8c9] mb-2">{countdownLabel}</p>
               <CountdownTimer targetDate={countdownTarget} />
             </div>
 
@@ -255,10 +309,9 @@ export default function UpcomingEventsSection() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleJoinEvent}
-                  disabled={registering}
-                  className="inline-flex items-center px-4 py-2 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 transition hover:bg-slate-50 disabled:opacity-50"
+                  className="inline-flex items-center px-4 py-2 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 transition hover:bg-slate-50"
                 >
-                  {registering ? 'Registering...' : 'Join Event'}
+                  Join Event
                 </button>
                 <button
                   onClick={() => setLiked(!liked)}
@@ -270,15 +323,6 @@ export default function UpcomingEventsSection() {
                   <Share2 size={18} />
                 </button>
               </div>
-              {registerStatus.message && (
-                <div
-                  className={`text-xs p-2 rounded-lg text-center ${
-                    registerStatus.type === 'success' ? 'bg-emerald-400/20 text-emerald-100' : 'bg-red-400/20 text-red-100'
-                  }`}
-                >
-                  {registerStatus.message}
-                </div>
-              )}
             </div>
           </div>
 
@@ -286,7 +330,7 @@ export default function UpcomingEventsSection() {
             <h4 className="text-lg font-semibold mb-4">Other Upcoming Events</h4>
             <div className="bg-white/10 p-2 rounded-2xl">
               <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/20">
-                {events.map((event) => (
+                {activeEvents.map((event) => (
                   <button
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
@@ -319,6 +363,16 @@ export default function UpcomingEventsSection() {
           </div>
         </div>
       </div>
+
+      {selectedEvent && (
+        <EventRegistrationModal
+          isOpen={isRegistrationModalOpen}
+          onClose={() => setIsRegistrationModalOpen(false)}
+          eventId={selectedEvent.id}
+          eventTitle={selectedEvent.title}
+          eventDate={formatDate(selectedEvent.date)}
+        />
+      )}
     </section>
   );
 }

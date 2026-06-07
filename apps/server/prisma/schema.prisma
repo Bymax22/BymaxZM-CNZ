@@ -3,6 +3,49 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Newsletter {
+  id            String   @id @default(cuid())
+  subject       String
+  content       String
+  htmlContent   String?
+  templateId    Int?     // Brevo template ID
+  status        String   @default("DRAFT") // DRAFT, SCHEDULED, SENT, FAILED
+  recipientCount Int     @default(0)
+  sentCount     Int      @default(0)
+  failedCount   Int      @default(0)
+  openCount     Int      @default(0)
+  clickCount    Int      @default(0)
+  unsubscribeCount Int   @default(0)
+  scheduledAt   DateTime?
+  sentAt        DateTime?
+  failedAt      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?
+
+  deliveryRecords NewsletterHistory[]
+
+  @@map("newsletters")
+}
+
+model NewsletterHistory {
+  id            String   @id @default(cuid())
+  newsletterId  String
+  email         String
+  status        String   @default("PENDING") // PENDING, SENT, FAILED, OPENED, CLICKED, UNSUBSCRIBED
+  sentAt        DateTime?
+  openedAt      DateTime?
+  clickedAt     DateTime?
+  failureReason String?
+  createdAt     DateTime @default(now())
+
+  newsletter    Newsletter @relation(fields: [newsletterId], references: [id], onDelete: Cascade)
+
+  @@index([newsletterId])
+  @@index([email])
+  @@index([status])
+  @@map("newsletter_history")
+}
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

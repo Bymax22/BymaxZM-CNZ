@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { CommunicationsModule } from './communications/communications.module';
 import { EventsModule } from './events/events.module';
+import { NewsletterModule } from './newsletter/newsletter.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EventsModule } from './events/events.module';
     ProjectsModule,
     CommunicationsModule,
     EventsModule,
+    NewsletterModule,
   ],
   controllers: [AppController],
   providers: [AppService],

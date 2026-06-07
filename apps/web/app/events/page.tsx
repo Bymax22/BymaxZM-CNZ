@@ -18,6 +18,8 @@ interface UpcomingEvent {
   featured?: boolean;
   publishedAt?: string;
   status?: string;
+  durationMinutes?: number;
+  startDateTime?: string;
 }
 
 function formatDate(dateString: string) {
@@ -34,6 +36,60 @@ function formatDate(dateString: string) {
   });
 }
 
+function combineDateAndTime(dateString: string, timeString: string) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const hasTime = dateString.includes('T') || /\b(AM|PM)\b/i.test(timeString);
+  if (!Number.isNaN(date.getTime()) && hasTime) {
+    return dateString;
+  }
+
+  const datePart = dateString.split('T')[0] || dateString;
+  const timePart = timeString || '00:00';
+  return `${datePart}T${timePart}`;
+}
+
+function getRelativeTime(start: number, end: number, now: number) {
+  if (now < start) {
+    const diff = start - now;
+    const minutes = Math.ceil(diff / (1000 * 60));
+    return `Starts in ${minutes} min`;
+  }
+
+  if (now < end) {
+    const diff = end - now;
+    const minutes = Math.ceil(diff / (1000 * 60));
+    return `Ends in ${minutes} min`;
+  }
+
+  const diff = now - end;
+  if (diff < 60 * 60 * 1000) {
+    const minutes = Math.ceil(diff / (1000 * 60));
+    return `${minutes} min ago`;
+  }
+
+  if (diff < 24 * 60 * 60 * 1000) {
+    const hours = Math.ceil(diff / (1000 * 60 * 60));
+    return `${hours} hr ago`;
+  }
+
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return `${days} day${days === 1 ? '' : 's'} ago`;
+}
+
+function getEventStatus(event: UpcomingEvent) {
+  const now = Date.now();
+  const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
+  const durationMs = (event.durationMinutes || 60) * 60 * 1000;
+  const end = start + durationMs;
+
+  if (Number.isNaN(start) || start === 0) {
+    return 'Date TBD';
+  }
+
+  return getRelativeTime(start, end, now);
+}
+
 function mapCardToEvent(card: any): UpcomingEvent {
   const gallery = Array.isArray(card.metadata?.gallery) ? card.metadata.gallery : [];
   const imageUrl =
@@ -42,12 +98,16 @@ function mapCardToEvent(card: any): UpcomingEvent {
     gallery[0]?.url ||
     '';
 
+  const date = card.metadata?.date || card.publishedAt || '';
+  const time = card.metadata?.time || card.time || '';
+  const startDateTime = combineDateAndTime(date, time);
+
   return {
     id: card.id || card.slug || '',
     title: card.title || card.name || '',
     description: card.description || card.body || '',
-    date: card.publishedAt || card.metadata?.date || '',
-    time: card.metadata?.time || card.time || '',
+    date,
+    time,
     location: card.metadata?.location || card.venue || card.category || '',
     imageUrl,
     partnerLogos: card.metadata?.partnerLogos || [],
@@ -56,6 +116,8 @@ function mapCardToEvent(card: any): UpcomingEvent {
     featured: Boolean(card.featured || card.metadata?.featured),
     publishedAt: card.publishedAt,
     status: card.status,
+    durationMinutes: card.metadata?.durationMinutes || card.metadata?.duration || 60,
+    startDateTime,
   };
 }
 
@@ -207,6 +269,11 @@ export default function EventsPage() {
                         <div className="flex items-center gap-2">
                           <MapPin size={16} className="text-[#008000]" />
                           {event.location}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700">
+                            {getEventStatus(event)}
+                          </span>
                         </div>
                       </div>
 
