@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Calendar, MapPin, Clock, Users, Heart, Share2, ArrowLeft } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import EventRegistrationModal from '../../components/events/EventRegistrationModal';
+import { ContentActions } from '../../components/ui/ContentActions';
 
 interface UpcomingEvent {
   id: string;
@@ -120,7 +121,6 @@ export default function EventDetailPage() {
   const [event, setEvent] = useState<UpcomingEvent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [liked, setLiked] = useState(false);
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
 
   useEffect(() => {
@@ -285,26 +285,21 @@ export default function EventDetailPage() {
               >
                 Register Event
               </button>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setLiked(!liked)}
-                  className={`flex-1 px-4 py-3 rounded-lg font-semibold transition border-2 flex items-center justify-center gap-2 ${
-                    liked
-                      ? 'bg-red-100 border-red-500 text-red-600'
-                      : 'border-gray-300 text-gray-600 hover:border-gray-400'
-                  }`}
-                >
-                  <Heart size={18} fill={liked ? 'currentColor' : 'none'} />
-                  {liked ? 'Liked' : 'Like'}
-                </button>
-                <button className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-600 rounded-lg font-semibold hover:border-gray-400 transition flex items-center justify-center gap-2">
-                  <Share2 size={18} />
-                  Share
-                </button>
-              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-6 pb-12">
+        <ContentActions
+          contentType="event"
+          contentId={event.id}
+          initialLikes={0}
+          initialComments={0}
+          initialShares={0}
+          contextLabel={event.title}
+          shareUrl={`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/events/${encodeURIComponent(event.id)}`}
+        />
       </div>
 
       {event && (

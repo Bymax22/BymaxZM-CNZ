@@ -24,20 +24,28 @@ function formatDate(date: string) {
   });
 }
 
+function truncateText(text: string, maxLength: number) {
+  const normalized = String(text || '').trim();
+  if (normalized.length <= maxLength) return normalized;
+  return `${normalized.slice(0, maxLength).trim()}…`;
+}
+
 function normalizeCardToItem(card: any, index: number): NewsEventItem {
   const publishedAt = card.publishedAt || card.createdAt || card.metadata?.publishedAt || '';
   const dateValue = publishedAt || card.metadata?.date || card.date || card.eventDate || '';
   const slug = card.slug || card.id || `news-item-${index}`;
+  const itemType = card.cardType === 'EVENT' || card.type === 'Event' ? 'Event' : 'News';
+  const excerptSource = card.description || card.subtitle || card.body || '';
 
   return {
     id: String(card.id ?? slug ?? index),
     title: card.title || card.name || 'Untitled story',
-    excerpt: card.description || card.subtitle || card.body || '',
+    excerpt: truncateText(excerptSource, 220),
     image: card.imageUrl || card.media?.url || card.image || '',
     category: card.category || card.cardType || 'News',
     date: dateValue,
-    href: `/news/${slug}`,
-    itemType: card.cardType === 'EVENT' || card.type === 'Event' ? 'Event' : 'News',
+    href: itemType === 'Event' ? `/events/${slug}` : `/news/${slug}`,
+    itemType,
     comments: card.comments || ['Nice story.'],
   };
 }
