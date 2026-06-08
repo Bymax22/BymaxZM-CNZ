@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Calendar, MapPin, Clock, Heart, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import EventRegistrationModal from '../events/EventRegistrationModal';
+import { fetchLikeCount, updateLikeCount } from '../../../lib/supabaseContent';
 
 interface UpcomingEvent {
   id: string;
@@ -185,9 +186,9 @@ function mapBackendEventToUpcomingEvent(event: any): UpcomingEvent {
 export default function UpcomingEventsSection() {
   const [events, setEvents] = useState<UpcomingEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null);
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(1);
-  const [shareCount, setShareCount] = useState(4);
+  const [liked, setLiked] = useState<Record<string, boolean>>({});
+  const [likeCount, setLikeCount] = useState<Record<string, number>>({});
+  const [shareCount, setShareCount] = useState<Record<string, number>>({});
   const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [loading, setLoading] = useState(true);
@@ -207,6 +208,33 @@ export default function UpcomingEventsSection() {
     const interval = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadCountsForSelectedEvent() {
+      if (!selectedEvent) return;
+
+      try {
+        const fetchedLikeCount = await fetchLikeCount('event', selectedEvent.id);
+        const fetchedShareCount = await fetchLikeCount('event_share', selectedEvent.id);
+
+        if (!mounted) return;
+        setLikeCount((prev) => ({ ...prev, [selectedEvent.id]: fetchedLikeCount }));
+        setShareCount((prev) => ({ ...prev, [selectedEvent.id]: fetchedShareCount }));
+      } catch (err) {
+        console.error('Error loading counts for event:', err);
+        if (!mounted) return;
+        setLikeCount((prev) => ({ ...prev, [selectedEvent.id]: 0 }));
+        setShareCount((prev) => ({ ...prev, [selectedEvent.id]: 0 }));
+      }
+    }
+
+    loadCountsForSelectedEvent();
+    return () => {
+      mounted = false;
+    };
+  }, [selectedEvent]);
 
   useEffect(() => {
     let mounted = true;
@@ -269,15 +297,33 @@ export default function UpcomingEventsSection() {
     setIsRegistrationModalOpen(true);
   };
 
-  const handleLike = () => {
-    setLiked((current) => {
-      setLikeCount((count) => count + (current ? -1 : 1));
-      return !current;
-    });
+  const handleLike = async () => {
+    if (!selectedEvent) return;
+
+    const isCurrentlyLiked = !!liked[selectedEvent.id];
+    const delta = isCurrentlyLiked ? -1 : 1;
+
+    setLiked((prev) => ({ ...prev, [selectedEvent.id]: !isCurrentlyLiked }));
+    
+    try {
+      const nextCount = await updateLikeCount('event', selectedEvent.id, delta);
+      setLikeCount((prev) => ({ ...prev, [selectedEvent.id]: nextCount }));
+    } catch (err) {
+      console.error('Error updating like count:', err);
+      // Revert on error
+      setLiked((prev) => ({ ...prev, [selectedEvent.id]: isCurrentlyLiked }));
+    }
   };
 
-  const handleShare = () => {
-    setShareCount((count) => count + 1);
+  const handleShare = async () => {
+    if (!selectedEvent) return;
+
+    try {
+      const nextCount = await updateLikeCount('event_share', selectedEvent.id, 1);
+      setShareCount((prev) => ({ ...prev, [selectedEvent.id]: nextCount }));
+    } catch (err) {
+      console.error('Error updating share count:', err);
+    }
   };
 
   if (loading) {
@@ -357,15 +403,15 @@ export default function UpcomingEventsSection() {
                 onClick={handleLike}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm transition hover:bg-white/20"
               >
-                <Heart size={16} fill={liked ? 'white' : 'none'} />
-                <span>{likeCount}</span>
+                <Heart size={16} fill={liked[selectedEvent.id] ? 'white' : 'none'} />
+                <span>{likeCount[selectedEvent.id] ?? 0}</span>
               </button>
               <button
                 onClick={handleShare}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 text-white text-sm transition hover:bg-white/20"
               >
                 <Share2 size={16} />
-                <span>{shareCount}</span>
+                <span>{shareCount[selectedEvent.id] ?? 0}</span>
               </button>
             </div>
           </div>

@@ -1,11 +1,65 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import { storyTopics, StoryTopic } from '../../components/sections/storyData';
+import { storyTopics, type StoryTopic } from '../../components/sections/storyData';
 import StoryInteractions from '../../components/stories/StoryInteractions';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
+
+function isVideoUrl(url?: string) {
+  return !!url && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+}
+
+async function fetchRemoteStory(id: string): Promise<StoryTopic | undefined> {
+  try {
+    const res = await fetch(`/api/communications/card/${encodeURIComponent(id)}`);
+    if (!res.ok) return undefined;
+    const card = await res.json();
+    if (!card) return undefined;
+
+    const gallerySource = Array.isArray(card.metadata?.gallery)
+      ? card.metadata.gallery
+      : Array.isArray(card.gallery)
+      ? card.gallery
+      : [];
+
+    const imageUrl =
+      card.imageUrl || gallerySource.find((item: any) => item?.type === 'image')?.url || '';
+    const videoUrl =
+      gallerySource.find((item: any) => item?.type === 'video')?.url ||
+      (isVideoUrl(card.imageUrl) ? card.imageUrl : undefined);
+
+    const heroMedia = videoUrl || imageUrl || '';
+    const highlight = card.subtitle || card.description || card.metadata?.summary || '';
+    const summary = card.description || card.subtitle || card.metadata?.summary || '';
+    const contentText = card.description || card.body || card.summary || '';
+    const content = contentText
+      ? contentText.split(/\n{2,}/).map((paragraph: string) => paragraph.trim()).filter(Boolean)
+      : [];
+
+    const gallery = gallerySource
+      .filter((item: any) => item?.url && item.type === 'image')
+      .map((item: any) => item.url);
+
+    return {
+      id: card.slug || card.id || id,
+      category: card.category || 'Other',
+      theme: (card.metadata?.theme || 'Other') as StoryTopic['theme'],
+      title: card.title || card.name || '',
+      description: card.description || card.subtitle || '',
+      summary,
+      highlight,
+      mediaType: videoUrl ? 'video' : 'image',
+      media: heroMedia,
+      gallery,
+      content: content.length ? content : [card.description || card.body || ''],
+    };
+  } catch (error) {
+    console.error('Failed to fetch story card', error);
+    return undefined;
+  }
+}
 
 export async function generateStaticParams() {
   return storyTopics.map((s) => ({ id: s.id }));
@@ -13,7 +67,12 @@ export async function generateStaticParams() {
 
 export default async function StoryDetail({ params }: Props) {
   const resolvedParams = await params;
-  const story = storyTopics.find((s) => s.id === resolvedParams.id) as StoryTopic | undefined;
+  let story = storyTopics.find((s) => s.id === resolvedParams.id);
+
+  if (!story) {
+    story = await fetchRemoteStory(resolvedParams.id);
+  }
+
   if (!story) return notFound();
 
   return (
@@ -67,7 +126,6 @@ export default async function StoryDetail({ params }: Props) {
           </aside>
         </div>
 
-        {/* gallery and interactions below details grid */}
         {story.gallery && story.gallery.length > 0 && (
           <div className="mt-8 grid grid-cols-3 gap-2">
             {story.gallery.map((g, i) => (
@@ -77,8 +135,6 @@ export default async function StoryDetail({ params }: Props) {
         )}
 
         <div className="mt-8">
-          {/* client interactions */}
-          {/* @ts-ignore */}
           <StoryInteractions storyId={story.id} initialComments={[]} initialLikes={0} />
         </div>
       </section>

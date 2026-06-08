@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
@@ -221,9 +222,9 @@ export default function OurStories() {
                       </div>
                     )}
                     <div className="mt-auto border-t border-slate-200 pt-4 flex items-center justify-between gap-3">
-                      <a href={`/stories/${t.slug}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
+                      <Link href={`/stories/${t.slug || t.id}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
                         Read Full Story →
-                      </a>
+                      </Link>
 
                       <div className="flex items-center gap-2">
                         <button
@@ -244,13 +245,13 @@ export default function OurStories() {
                           <Heart size={16} fill={likedItems[t.id] ? 'currentColor' : 'none'} />
                         </button>
 
-                        <button
-                          type="button"
+                        <Link
+                          href={`/stories/${t.slug || t.id}`}
                           aria-label="Comment"
                           className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600 transition"
                         >
                           <MessageCircle size={16} />
-                        </button>
+                        </Link>
 
                         <button
                           type="button"
@@ -260,7 +261,7 @@ export default function OurStories() {
                               navigator.share({
                                 title: t.author,
                                 text: t.text,
-                                url: `/stories/${t.slug}`,
+                                url: `${typeof window !== 'undefined' ? window.location.origin : ''}/stories/${t.slug || t.id}`,
                               }).catch(() => {});
                             }
                           }}
