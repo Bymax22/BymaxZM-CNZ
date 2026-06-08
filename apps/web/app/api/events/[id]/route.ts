@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest) {
   try {
-    const { id } = params;
+    const pathname = request.nextUrl.pathname;
+    const id = pathname.split('/').filter(Boolean).pop() || '';
+    if (!id) {
+      return NextResponse.json({ error: 'Event ID is required' }, { status: 400 });
+    }
+
     const response = await fetch(`${BACKEND}/events/${encodeURIComponent(id)}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
