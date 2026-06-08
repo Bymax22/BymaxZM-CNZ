@@ -69,6 +69,19 @@ function normalizeApiNewsItem(card: any): NormalizedNewsItem {
 
 async function fetchNewsItemBySlug(slug: string): Promise<NormalizedNewsItem | null> {
   try {
+    // First try fetching directly from communications card endpoint using the ID/slug
+    const cardRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/communications/cards/${encodeURIComponent(slug)}`, {
+      cache: 'no-store',
+    });
+
+    if (cardRes.ok) {
+      const card = await cardRes.json();
+      if (card) {
+        return normalizeApiNewsItem(card);
+      }
+    }
+
+    // Fallback: fetch all news/event cards and search
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/communications/cards?cardType=NEWS&cardType=EVENT&take=100`, {
       cache: 'no-store',
     });
@@ -90,15 +103,15 @@ async function fetchNewsItemBySlug(slug: string): Promise<NormalizedNewsItem | n
 }
 
 export async function generateStaticParams() {
-  return news.map((item) => ({ slug: item.slug }));
+  return news.map((item) => ({ id: item.id }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
-  let newsItem = await fetchNewsItemBySlug(resolvedParams.slug);
+  let newsItem = await fetchNewsItemBySlug(resolvedParams.id);
 
   if (!newsItem) {
-    const fallback = getNewsItemBySlug(resolvedParams.slug);
+    const fallback = getNewsItemBySlug(resolvedParams.id);
     if (fallback) {
       newsItem = normalizeApiNewsItem(fallback);
     }
@@ -119,16 +132,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 interface NewsArticlePageProps {
   params: Promise<{
-    slug: string;
+    id: string;
   }>;
 }
 
 export default async function NewsArticlePage({ params }: NewsArticlePageProps) {
   const resolvedParams = await params;
-  let newsItem = await fetchNewsItemBySlug(resolvedParams.slug);
+  let newsItem = await fetchNewsItemBySlug(resolvedParams.id);
 
   if (!newsItem) {
-    const fallback = getNewsItemBySlug(resolvedParams.slug);
+    const fallback = getNewsItemBySlug(resolvedParams.id);
     if (fallback) {
       newsItem = normalizeApiNewsItem(fallback);
     }

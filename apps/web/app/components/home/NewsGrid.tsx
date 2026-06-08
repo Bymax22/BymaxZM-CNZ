@@ -204,7 +204,8 @@ export default function NewsGrid() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {items.map((n, index) => {
-            const detailUrl = n.type === 'Event' ? `/events/${n.id}` : `/news/${n.slug}`;
+            // Use ID for routing; backend APIs return IDs consistently
+            const detailUrl = n.type === 'Event' ? `/events/${n.id}` : `/news/${n.id}`;
             const contentType = n.type === 'Event' ? 'event' : 'news';
             return (
               <div

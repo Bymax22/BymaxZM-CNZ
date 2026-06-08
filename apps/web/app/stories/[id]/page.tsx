@@ -67,8 +67,16 @@ export async function generateStaticParams() {
 
 export default async function StoryDetail({ params }: Props) {
   const resolvedParams = await params;
+  
+  // First try to find by exact ID match
   let story = storyTopics.find((s) => s.id === resolvedParams.id);
+  
+  // If not found, try to find by slug or case-insensitive ID
+  if (!story) {
+    story = storyTopics.find((s) => (s.slug && s.slug === resolvedParams.id) || s.id.toLowerCase() === resolvedParams.id.toLowerCase());
+  }
 
+  // If still not found, try remote fetch
   if (!story) {
     story = await fetchRemoteStory(resolvedParams.id);
   }

@@ -1,5 +1,6 @@
 export type StoryTopic = {
   id: string;
+  slug?: string;
   category: 'National' | 'Regional' | 'Global' | 'Other';
   theme: 'Nature' | 'Children' | 'Mining' | 'Policy' | 'Community' | 'Advocacy' | 'Pollution';
   title: string;
