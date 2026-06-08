@@ -103,7 +103,7 @@ async function fetchNewsItemBySlug(slug: string): Promise<NormalizedNewsItem | n
 }
 
 export async function generateStaticParams() {
-  return news.map((item) => ({ id: item.id }));
+  return news.map((item) => ({ id: String(item.id) }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
