@@ -3,6 +3,12 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { Heart, MessageCircle, Search, Share2, Sparkles } from 'lucide-react';
+import {
+  fetchComments,
+  fetchLikeCount,
+  postComment,
+  updateLikeCount,
+} from '../../lib/supabaseContent';
 
 type NewsEventItem = {
   id: string;
@@ -104,14 +110,32 @@ export default function NewsPage() {
         if (!mounted) return;
 
         setItems(parsedItems);
+
+        const countData = await Promise.all(
+          parsedItems.map(async (item: NewsEventItem) => {
+            const contentType = item.itemType === 'Event' ? 'event' : 'news';
+            const [likeCount, storedComments] = await Promise.all([
+              fetchLikeCount(contentType, item.id),
+              fetchComments(contentType, item.id),
+            ]);
+            return {
+              id: item.id,
+              likeCount,
+              comments: storedComments.map((comment) => comment.content),
+            };
+          })
+        );
+
+        if (!mounted) return;
+
         setLikes(
-          parsedItems.reduce((acc: Record<string, number>, item: NewsEventItem, index: number) => {
-            acc[item.id] = 12 + index * 2;
+          countData.reduce((acc: Record<string, number>, item) => {
+            acc[item.id] = item.likeCount;
             return acc;
           }, {})
         );
         setComments(
-          parsedItems.reduce((acc: Record<string, string[]>, item: NewsEventItem) => {
+          countData.reduce((acc: Record<string, string[]>, item) => {
             acc[item.id] = item.comments;
             return acc;
           }, {})
@@ -154,7 +178,7 @@ export default function NewsPage() {
     [activeTab, searchTerm, allItems]
   );
 
-  const handleToggleLike = (itemId: string) => {
+  const handleToggleLike = async (itemId: string) => {
     setLikedItems((prev) => {
       const isLiked = !prev[itemId];
       setLikes((current) => ({
@@ -163,11 +187,24 @@ export default function NewsPage() {
       }));
       return { ...prev, [itemId]: isLiked };
     });
+
+    const item = items.find((entry) => entry.id === itemId);
+    if (!item) return;
+    const contentType = item.itemType === 'Event' ? 'event' : 'news';
+    const nextCount = await updateLikeCount(contentType, itemId, likedItems[itemId] ? -1 : 1);
+    setLikes((current) => ({ ...current, [itemId]: nextCount }));
   };
 
-  const handleAddComment = (itemId: string) => {
+  const handleAddComment = async (itemId: string) => {
     const trimmed = commentText.trim();
     if (!trimmed) return;
+
+    const item = items.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    const contentType = item.itemType === 'Event' ? 'event' : 'news';
+    const savedComment = await postComment(contentType, itemId, trimmed);
+    if (!savedComment) return;
 
     setComments((prev) => ({
       ...prev,

@@ -146,7 +146,7 @@ export function subscribeToLikeCount(
         event: 'UPDATE',
         schema: 'public',
         table: SUPABASE_TABLES.likes,
-        filter: `content_type=eq.${contentType}&content_id=eq.${contentId}`,
+        filter: `content_type=eq.${contentType}&content_id=eq.${normalizedContentId}`,
       },
       async () => {
         const latest = await fetchLikeCount(contentType, contentId);

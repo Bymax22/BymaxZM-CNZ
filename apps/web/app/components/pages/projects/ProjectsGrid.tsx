@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { projects as staticProjects } from '../../sections/projectsData';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { fetchLikeCount, updateLikeCount } from '../../../../lib/supabaseContent';
 
 function isVideoUrl(url: string) {
   return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
@@ -28,16 +29,21 @@ function formatRelativeTime(value?: string) {
 
 export function ProjectsGrid() {
   const [projects, setProjects] = useState(staticProjects);
-  const [likes, setLikes] = useState<Record<string, boolean>>({});
+  const [likes, setLikes] = useState<Record<string, number>>({});
+  const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
+
   useEffect(() => {
     let mounted = true;
-    async function load() {
+
+    async function loadProjectsWithCounts() {
       try {
         const res = await fetch('/api/communications/cards?cardType=PROJECT&take=6');
         if (!res.ok) return;
+
         const data = await res.json();
         const cards = data.cards || data.contentCards || [];
         if (!mounted) return;
+
         const mapped = cards.map((c: any, i: number) => {
           const gallery = Array.isArray(c.metadata?.gallery) ? c.metadata.gallery : [];
           const heroImage = c.imageUrl || gallery.find((item: any) => item.type === 'image')?.url || '';
@@ -60,13 +66,35 @@ export function ProjectsGrid() {
             partnerLogos: c.metadata?.partnerLogos || [],
           };
         });
-        if (mapped.length) setProjects(mapped);
+
+        if (mapped.length) {
+          setProjects(mapped);
+
+          const countData = await Promise.all(
+            mapped.map(async (project: any) => {
+              const likeCount = await fetchLikeCount('project', project.id);
+              return { id: project.id, likeCount };
+            })
+          );
+
+          if (!mounted) return;
+
+          setLikes(
+            countData.reduce((acc: Record<string, number>, item) => {
+              acc[item.id] = item.likeCount;
+              return acc;
+            }, {})
+          );
+        }
       } catch (e) {
-        // keep static projects
+        // keep static projects and default counts
       }
     }
-    void load();
-    return () => { mounted = false; };
+
+    void loadProjectsWithCounts();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -173,16 +201,24 @@ export function ProjectsGrid() {
                         <button
                           type="button"
                           aria-label="Like"
-                          onClick={(e) => {
+                          onClick={async (e) => {
                             e.preventDefault();
-                            setLikes((prev) => ({ ...prev, [project.id]: !prev[project.id] }));
+                            const nextLiked = !likedItems[project.id];
+                            setLikedItems((prev) => ({ ...prev, [project.id]: nextLiked }));
+                            setLikes((prev) => ({
+                              ...prev,
+                              [project.id]: (prev[project.id] ?? 0) + (nextLiked ? 1 : -1),
+                            }));
+                            const nextCount = await updateLikeCount('project', project.id, nextLiked ? 1 : -1);
+                            setLikes((prev) => ({ ...prev, [project.id]: nextCount }));
                           }}
-                          className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${likes[project.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
+                          className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${likedItems[project.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                         >
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill={likes[project.id] ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill={likedItems[project.id] ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                           </svg>
                         </button>
+                        <span className="text-xs font-semibold text-slate-700">{likes[project.id] ?? 0}</span>
                         <button
                           type="button"
                           aria-label="Share"

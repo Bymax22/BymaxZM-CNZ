@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
+import { fetchLikeCount, updateLikeCount } from '../../../lib/supabaseContent';
 
 type CardView = { id: string; slug?: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; color?: string; location?: string; partnerLogos?: string[] };
 
@@ -47,17 +48,22 @@ export default function OurStories() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [cards, setCards] = useState<CardView[]>(initialCards);
-  const [likes, setLikes] = useState<Record<string, boolean>>({});
+  const [likes, setLikes] = useState<Record<string, number>>({});
+  const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
   const [follows, setFollows] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let mounted = true;
-    async function loadCards() {
+
+    async function loadCardsWithCounts() {
       try {
         const res = await fetch('/api/communications/cards?cardType=STORY&take=6');
         if (!res.ok) return;
+
         const data = await res.json();
         const items = data.cards || data.contentCards || [];
+        if (!mounted) return;
+
         const mapped: CardView[] = items.map((c: any, i: number) => {
           const gallery = Array.isArray(c.metadata?.gallery) ? c.metadata.gallery : [];
           const heroImage = c.imageUrl || gallery.find((item: any) => item.type === 'image')?.url || '';
@@ -76,14 +82,35 @@ export default function OurStories() {
             partnerLogos: c.metadata?.partnerLogos || [],
           };
         });
-        if (mounted && mapped.length) setCards(mapped);
+
+        if (mapped.length) {
+          setCards(mapped);
+
+          const countData = await Promise.all(
+            mapped.map(async (card) => {
+              const likeCount = await fetchLikeCount('story', card.id);
+              return { id: card.id, likeCount };
+            })
+          );
+
+          if (!mounted) return;
+
+          setLikes(
+            countData.reduce((acc: Record<string, number>, item) => {
+              acc[item.id] = item.likeCount;
+              return acc;
+            }, {})
+          );
+        }
       } catch (e) {
         // keep fallback
       }
     }
 
-    void loadCards();
-    return () => { mounted = false; };
+    void loadCardsWithCounts();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const scrollToIndex = (index: number) => {
@@ -202,10 +229,19 @@ export default function OurStories() {
                         <button
                           type="button"
                           aria-label="Like"
-                          onClick={() => setLikes((prev) => ({ ...prev, [t.id]: !prev[t.id] }))}
-                          className={`flex h-8 w-8 items-center justify-center rounded-md transition ${likes[t.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
+                          onClick={async () => {
+                            const nextLiked = !likedItems[t.id];
+                            setLikedItems((prev) => ({ ...prev, [t.id]: nextLiked }));
+                            setLikes((prev) => ({
+                              ...prev,
+                              [t.id]: (prev[t.id] ?? 0) + (nextLiked ? 1 : -1),
+                            }));
+                            const nextCount = await updateLikeCount('story', t.id, nextLiked ? 1 : -1);
+                            setLikes((prev) => ({ ...prev, [t.id]: nextCount }));
+                          }}
+                          className={`flex h-8 w-8 items-center justify-center rounded-md transition ${likedItems[t.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                         >
-                          <Heart size={16} fill={likes[t.id] ? 'currentColor' : 'none'} />
+                          <Heart size={16} fill={likedItems[t.id] ? 'currentColor' : 'none'} />
                         </button>
 
                         <button
