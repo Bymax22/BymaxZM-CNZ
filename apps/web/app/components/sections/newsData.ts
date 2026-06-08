@@ -2,7 +2,7 @@ import type { IconType } from 'react-icons';
 import { FaRegNewspaper, FaTree, FaUsers } from 'react-icons/fa';
 
 export type NewsItem = {
-  id: number;
+  id: string | number;
   title: string;
   excerpt: string;
   content: string[];

@@ -12,7 +12,8 @@ const SUPABASE_TABLES = {
   newsletter: 'newsletter_subscriptions',
 };
 
-export async function fetchLikeCount(contentType: string, contentId: string) {
+export async function fetchLikeCount(contentType: string, contentId: string | number) {
+  const normalizedContentId = String(contentId);
   if (!supabaseEnabled || !supabase) {
     return 0;
   }
@@ -21,7 +22,7 @@ export async function fetchLikeCount(contentType: string, contentId: string) {
     .from(SUPABASE_TABLES.likes)
     .select('likes')
     .eq('content_type', contentType)
-    .eq('content_id', contentId)
+    .eq('content_id', normalizedContentId)
     .single();
 
   if (error) {
@@ -32,7 +33,8 @@ export async function fetchLikeCount(contentType: string, contentId: string) {
   return data?.likes ?? 0;
 }
 
-export async function updateLikeCount(contentType: string, contentId: string, delta: number) {
+export async function updateLikeCount(contentType: string, contentId: string | number, delta: number) {
+  const normalizedContentId = String(contentId);
   if (!supabaseEnabled || !supabase) {
     return 0;
   }
@@ -45,7 +47,7 @@ export async function updateLikeCount(contentType: string, contentId: string, de
     .upsert(
       {
         content_type: contentType,
-        content_id: contentId,
+        content_id: normalizedContentId,
         likes: nextCount,
       },
       { onConflict: 'content_type,content_id' }
@@ -59,7 +61,8 @@ export async function updateLikeCount(contentType: string, contentId: string, de
   return nextCount;
 }
 
-export async function fetchComments(contentType: string, contentId: string) {
+export async function fetchComments(contentType: string, contentId: string | number) {
+  const normalizedContentId = String(contentId);
   if (!supabaseEnabled || !supabase) {
     return [] as ContentComment[];
   }
@@ -68,7 +71,7 @@ export async function fetchComments(contentType: string, contentId: string) {
     .from(SUPABASE_TABLES.comments)
     .select('id, content, created_at')
     .eq('content_type', contentType)
-    .eq('content_id', contentId)
+    .eq('content_id', normalizedContentId)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -79,14 +82,15 @@ export async function fetchComments(contentType: string, contentId: string) {
   return (data ?? []) as ContentComment[];
 }
 
-export async function postComment(contentType: string, contentId: string, content: string) {
+export async function postComment(contentType: string, contentId: string | number, content: string) {
+  const normalizedContentId = String(contentId);
   if (!supabaseEnabled || !supabase) {
     return null;
   }
 
   const { data, error } = await supabase
     .from(SUPABASE_TABLES.comments)
-    .insert([{ content_type: contentType, content_id: contentId, content }])
+    .insert([{ content_type: contentType, content_id: normalizedContentId, content }])
     .select('id, content, created_at')
     .single();
 
@@ -112,23 +116,24 @@ export async function subscribeNewsletter(email: string) {
 
 export function subscribeToLikeCount(
   contentType: string,
-  contentId: string,
+  contentId: string | number,
   onUpdate: (likes: number) => void
 ) {
+  const normalizedContentId = String(contentId);
   if (!supabaseEnabled || !supabase) {
     return () => {};
   }
 
   const client = supabase;
   const channel = client
-    .channel(`content-likes-${contentType}-${contentId}`)
+    .channel(`content-likes-${contentType}-${normalizedContentId}`)
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
         table: SUPABASE_TABLES.likes,
-        filter: `content_type=eq.${contentType}&content_id=eq.${contentId}`,
+        filter: `content_type=eq.${contentType}&content_id=eq.${normalizedContentId}`,
       },
       async () => {
         const latest = await fetchLikeCount(contentType, contentId);
@@ -157,9 +162,10 @@ export function subscribeToLikeCount(
 
 export function subscribeToComments(
   contentType: string,
-  contentId: string,
+  contentId: string | number,
   onInsert: (comment: ContentComment) => void
 ) {
+  const normalizedContentId = String(contentId);
   if (!supabaseEnabled || !supabase) {
     return () => {};
   }
@@ -167,14 +173,14 @@ export function subscribeToComments(
   const client = supabase;
 
   const channel = client
-    .channel(`content-comments-${contentType}-${contentId}`)
+    .channel(`content-comments-${contentType}-${normalizedContentId}`)
     .on(
       'postgres_changes',
       {
         event: 'INSERT',
         schema: 'public',
         table: SUPABASE_TABLES.comments,
-        filter: `content_type=eq.${contentType}&content_id=eq.${contentId}`,
+        filter: `content_type=eq.${contentType}&content_id=eq.${normalizedContentId}`,
       },
       (payload) => {
         if (payload.new) {

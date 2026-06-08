@@ -20,7 +20,7 @@ type CommentItem = {
 
 type ContentActionsProps = {
   contentType?: string;
-  contentId: string;
+  contentId: string | number;
   initialLikes?: number;
   initialComments?: number;
   initialShares?: number;
