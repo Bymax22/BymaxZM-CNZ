@@ -46,7 +46,9 @@ function normalizeApiNewsItem(card: any) {
   };
 }
 
-async function fetchNewsItemBySlug(slug: string) {
+type NormalizedNewsItem = ReturnType<typeof normalizeApiNewsItem>;
+
+async function fetchNewsItemBySlug(slug: string): Promise<NormalizedNewsItem | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/communications/cards?cardType=NEWS&cardType=EVENT&take=100`, {
       cache: 'no-store',
@@ -74,7 +76,14 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const newsItem = (await fetchNewsItemBySlug(resolvedParams.slug)) || getNewsItemBySlug(resolvedParams.slug);
+  let newsItem = await fetchNewsItemBySlug(resolvedParams.slug);
+
+  if (!newsItem) {
+    const fallback = getNewsItemBySlug(resolvedParams.slug);
+    if (fallback) {
+      newsItem = normalizeApiNewsItem(fallback);
+    }
+  }
 
   if (!newsItem) {
     return {
@@ -100,7 +109,10 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   let newsItem = await fetchNewsItemBySlug(resolvedParams.slug);
 
   if (!newsItem) {
-    newsItem = getNewsItemBySlug(resolvedParams.slug);
+    const fallback = getNewsItemBySlug(resolvedParams.slug);
+    if (fallback) {
+      newsItem = normalizeApiNewsItem(fallback);
+    }
   }
 
   if (!newsItem) {
