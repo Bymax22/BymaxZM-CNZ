@@ -1,9 +1,18 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { getProjectById } from '../../components/sections/projectsData';
 import { notFound } from 'next/navigation';
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+async function getSiteUrl() {
+  const headersList = await headers();
+  const host = headersList.get('x-forwarded-host') || headersList.get('host');
+  const proto = headersList.get('x-forwarded-proto') || headersList.get('x-forwarded-protocol') || 'https';
+  if (host) {
+    return `${proto}://${host}`;
+  }
+  return process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+}
 
 export async function generateStaticParams() {
   const { projects } = await import('../../components/sections/projectsData');
@@ -17,7 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   let project = getProjectById(resolvedParams.id);
   if (!project) {
     try {
-      const res = await fetch(`${SITE_URL}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
+      const siteUrl = await getSiteUrl();
+      const res = await fetch(`${siteUrl}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
       if (res.ok) {
         const card = await res.json();
         project = {
@@ -55,7 +65,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   if (!project) {
     try {
-      const res = await fetch(`${SITE_URL}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
+      const siteUrl = await getSiteUrl();
+      const res = await fetch(`${siteUrl}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
       if (res.ok) {
         const card = await res.json();
         project = {

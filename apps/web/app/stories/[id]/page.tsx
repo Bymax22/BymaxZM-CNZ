@@ -1,13 +1,22 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 import { storyTopics, type StoryTopic } from '../../components/sections/storyData';
 import StoryInteractions from '../../components/stories/StoryInteractions';
-
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
+
+async function getSiteUrl() {
+  const headersList = await headers();
+  const host = headersList.get('x-forwarded-host') || headersList.get('host');
+  const proto = headersList.get('x-forwarded-proto') || headersList.get('x-forwarded-protocol') || 'https';
+  if (host) {
+    return `${proto}://${host}`;
+  }
+  return process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+}
 
 function isVideoUrl(url?: string) {
   return !!url && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
@@ -15,7 +24,8 @@ function isVideoUrl(url?: string) {
 
 async function fetchRemoteStory(id: string): Promise<StoryTopic | undefined> {
   try {
-    const res = await fetch(`${SITE_URL}/api/communications/card/${encodeURIComponent(id)}`);
+    const siteUrl = await getSiteUrl();
+    const res = await fetch(`${siteUrl}/api/communications/card/${encodeURIComponent(id)}`);
     if (!res.ok) return undefined;
     const card = await res.json();
     if (!card) return undefined;
