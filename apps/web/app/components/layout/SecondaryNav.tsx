@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { MdOutlineMenu, MdOutlineClose } from 'react-icons/md';
 import { FaSearch, FaFacebookF, FaEnvelope, FaWhatsapp, FaPhone } from 'react-icons/fa';
 import { FaTree, FaUsers, FaTools, FaHandshake } from 'react-icons/fa';
@@ -40,10 +41,16 @@ const mobileMenus: MobileMenu[] = [
 
 export const SecondaryNav = () => {
   const { data: session } = useSession();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
+
+  // Hide secondary nav on dashboard/portal routes
+  if (pathname.startsWith('/portal') || pathname.startsWith('/admin') || pathname.startsWith('/staff') || pathname.startsWith('/donor') || pathname.startsWith('/club')) {
+    return null;
+  }
 
   const getDashboardHref = (role?: string) => {
     switch (role) {

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
@@ -28,8 +28,14 @@ export const Navigation = () => {
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
   const { data: session } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+  // Hide navigation on dashboard/portal routes
+  if (pathname.startsWith('/portal') || pathname.startsWith('/admin') || pathname.startsWith('/staff') || pathname.startsWith('/donor') || pathname.startsWith('/club')) {
+    return null;
+  }
 
   const getDashboardHref = (role?: string) => {
     switch (role) {
