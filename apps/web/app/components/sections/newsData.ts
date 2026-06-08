@@ -103,6 +103,6 @@ export const news: NewsItem[] = [
   }
 ];
 
-export function getNewsItemBySlug(slug: string) {
-  return news.find((item) => item.slug === slug);
+export function getNewsItemBySlug(slug: string): NewsItem | null {
+  return news.find((item) => item.slug === slug) ?? null;
 }
