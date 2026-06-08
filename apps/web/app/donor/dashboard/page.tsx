@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FaDonate, FaHeart, FaChartLine, FaHandsHelping } from 'react-icons/fa';
+import PlaceholderDashboardNotice from '@/components/dashboard/PlaceholderDashboardNotice';
 
 export default function DonorDashboardPage() {
   const { data: session, status } = useSession();
@@ -43,6 +44,7 @@ export default function DonorDashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <PlaceholderDashboardNotice />
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {[
             { title: 'Total Donations', value: 'ZMW 12,450', icon: FaDonate, color: 'emerald' },

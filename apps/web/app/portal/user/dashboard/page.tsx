@@ -4,6 +4,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import PlaceholderDashboardNotice from '@/components/dashboard/PlaceholderDashboardNotice';
 
 interface UserStats {
   joinedClubs: number;
@@ -48,6 +49,8 @@ export default function UserDashboardPage() {
           <h1 className="text-3xl font-bold">User Portal</h1>
           <p className="text-sm text-gray-600">Personal overview and quick access to your activity.</p>
         </div>
+
+        <PlaceholderDashboardNotice />
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-2xl p-6 shadow-sm">

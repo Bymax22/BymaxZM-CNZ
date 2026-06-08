@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import PlaceholderDashboardNotice from '@/components/dashboard/PlaceholderDashboardNotice';
 import { useEffect, useState } from 'react';
 import { FaClipboardList, FaUsers, FaChartBar, FaCalendarAlt } from 'react-icons/fa';
 
@@ -202,6 +203,7 @@ export default function StaffDashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <PlaceholderDashboardNotice />
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
