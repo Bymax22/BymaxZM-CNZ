@@ -24,6 +24,33 @@ interface UpcomingEvent {
   startDateTime?: string;
 }
 
+interface BackendEvent {
+  id?: string;
+  slug?: string;
+  title?: string;
+  name?: string;
+  description?: string;
+  body?: string;
+  startDate?: string;
+  date?: string;
+  endDate?: string;
+  durationMinutes?: number;
+  location?: string;
+  venue?: string;
+  imageUrl?: string;
+  partnerLogos?: string[];
+  type?: string;
+  category?: string;
+  maxAttendees?: number;
+  attendees?: number;
+  isPublic?: boolean;
+  featured?: boolean;
+  publishedAt?: string;
+  createdAt?: string;
+  status?: string;
+  isOnline?: boolean;
+}
+
 interface CountdownTime {
   days: number;
   hours: number;
@@ -157,7 +184,7 @@ function getEventStatus(event: UpcomingEvent, now: number) {
   return { status: 'ended' as const, label: 'Ended', targetTime: end };
 }
 
-function mapBackendEventToUpcomingEvent(event: any): UpcomingEvent {
+function mapBackendEventToUpcomingEvent(event: BackendEvent): UpcomingEvent {
   const startDate = event.startDate || event.date || '';
   const endDate = event.endDate || '';
   const durationMinutes = event.durationMinutes
@@ -256,7 +283,7 @@ export default function UpcomingEventsSection() {
 
         if (!mounted) return;
         setEvents(mapped);
-        if (!selectedEvent && mapped.length > 0) {
+        if (mapped.length > 0) {
           const nextActive = mapped.find((event: UpcomingEvent) => {
             const start = new Date(event.startDateTime || combineDateAndTime(event.date, event.time)).getTime();
             const durationMs = (event.durationMinutes || 60) * 60 * 1000;
