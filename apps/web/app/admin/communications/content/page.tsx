@@ -11,7 +11,7 @@ interface ContentCard {
   body?: string;
   status?: string;
   imageUrl?: string;
-  publishedAt?: string | null;
+  publishedAt?: string;
   createdAt: string;
   cardType?: string;
   subtitle?: string;

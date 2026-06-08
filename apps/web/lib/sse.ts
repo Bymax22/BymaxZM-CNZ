@@ -20,6 +20,7 @@ export function emitUpdate(payload: SSEPayload) {
 
 export function createSSEStream(): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
+  let cleanup: () => void = () => {};
 
   return new ReadableStream<Uint8Array>({
     start(controller) {
@@ -34,15 +35,13 @@ export function createSSEStream(): ReadableStream<Uint8Array> {
         controller.enqueue(encoder.encode(': ping\n\n'));
       }, 15000);
 
-      const cleanup = () => {
+      cleanup = () => {
         clearInterval(keepAlive);
         subscribers.delete(send);
       };
-
-      controller.signal.addEventListener('abort', cleanup);
     },
     cancel() {
-      // The abort listener above will handle cleanup
+      cleanup();
     },
   });
 }

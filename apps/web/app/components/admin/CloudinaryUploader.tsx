@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export default function CloudinaryUploader({ onUpload }: { onUpload?: (url: string) => void }) {
+export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: string; onUpload?: (url: string) => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
