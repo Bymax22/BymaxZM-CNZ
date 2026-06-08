@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { 
   FaHandHoldingUsd, 
@@ -15,10 +16,11 @@ const options = [
   {
     icon: FaHandHoldingUsd,
     title: 'Donate',
-    description: 'Support our conservation projects with your financial contribution. Every donation makes a difference.',
+    description: 'Support our projects with your financial contribution. Every donation makes a difference.',
     href: '/get-involved/donate',
-    color: 'from-[#029346] to-[#0C4726]',
-    impact: 'Funds 100 trees planted',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779725638/482250613_1058339666325306_2005527676673850582_n_wxcov2.jpg',
+    imageAlt: 'Hands holding a tree sapling for donation impact',
+    impact: 'Make a Difference',
     cta: 'Make a Donation'
   },
   {
@@ -26,8 +28,9 @@ const options = [
     title: 'Volunteer',
     description: 'Join our field operations, community outreach, or administrative tasks as a volunteer.',
     href: '/get-involved/volunteer',
-    color: 'from-[#F79021] to-[#AA5D26]',
-    impact: 'Helps 50 families',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779053035/679892067_1434164485409487_1368698975194245651_n_txyhcj.jpg',
+    imageAlt: 'Volunteers working together in the field',
+    impact: 'Supporting Communities',
     cta: 'Join as Volunteer'
   },
   {
@@ -35,17 +38,19 @@ const options = [
     title: 'Partner',
     description: 'Collaborate with us as a corporate partner, NGO, or community organization.',
     href: '/get-involved/partnership',
-    color: 'from-[#029346] to-[#0C4726]',
-    impact: 'Scales our impact',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779731951/430668235_798310958994846_3096352634249485481_n_e5gshv.jpg',
+    imageAlt: 'Partners collaborating on community conservation work',
+    impact: 'Scales the impact',
     cta: 'Become a Partner'
   },
   {
     icon: FaShareAlt,
     title: 'Spread Awareness',
-    description: 'Share our mission on social media and help us reach more supporters.',
+    description: 'Share our work and help reach more.',
     href: '/get-involved/share',
-    color: 'from-[#F79021] to-[#AA5D26]',
-    impact: 'Reaches thousands',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779730968/481665428_1050112787147994_3743707429000313539_n_o21q55.jpg',
+    imageAlt: 'Community members sharing conservation stories',
+    impact: 'Reach More',
     cta: 'Share Our Work'
   },
   {
@@ -53,16 +58,18 @@ const options = [
     title: 'Start a Club',
     description: 'Establish a Care for Nature Club in your school, university, or community.',
     href: '/clubs',
-    color: 'from-[#029346] to-[#0C4726]',
-    impact: 'Engages youth',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779730965/402642239_734363315389611_2340961023292662326_n_lwuhlg.jpg',
+    imageAlt: 'Young people gathering at a community club event',
+    impact: 'Engages children, youths or community memebers',
     cta: 'Learn About Clubs'
   },
   {
     icon: FaTree,
     title: 'Attend Events',
-    description: 'Participate in our workshops, tree planting events, and conservation campaigns.',
+    description: 'Participate in our workshops, events, advocacy and campaigns.',
     href: '/events',
-    color: 'from-[#F79021] to-[#AA5D26]',
+    image: 'https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779050065/690822822_1446469870845615_2517492534617368429_n_cr2ym2.jpg',
+    imageAlt: 'Community event',
     impact: 'Joins community',
     cta: 'View Events'
   }
@@ -79,12 +86,7 @@ export function InvolvementOptions() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Ways to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#029346] to-[#0C4726]">Get Involved</span>
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choose how you want to make a difference. Every action counts in our mission to protect Zambia&apos;s environment.
-          </p>
+
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -99,25 +101,29 @@ export function InvolvementOptions() {
             >
               <Link href={option.href}>
                 <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100 h-full flex flex-col overflow-hidden">
-                  {/* Header */}
-                  <div className={`p-6 bg-gradient-to-br ${option.color} text-white`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <option.icon className="w-8 h-8" />
-                      <span className="text-sm font-semibold bg-white/20 px-3 py-1 rounded-full">
+                  <div className="relative h-56 w-full overflow-hidden">
+                    <Image
+                      src={option.image}
+                      alt={option.imageAlt}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <span className="inline-flex items-center justify-between rounded-full bg-white/15 px-3 py-1 text-xs font-semibold leading-none backdrop-blur-sm">
                         {option.impact}
                       </span>
+                      <h3 className="mt-4 text-2xl font-bold tracking-tight">{option.title}</h3>
                     </div>
-                    <h3 className="text-2xl font-bold mb-3">{option.title}</h3>
-                    <p className="text-white/90 leading-relaxed">
-                      {option.description}
-                    </p>
                   </div>
 
-                  {/* Footer */}
                   <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">{option.cta}</span>
-                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-[#029346] group-hover:text-white transition-all duration-300">
+                    <div>
+                      <p className="text-gray-700 leading-relaxed">{option.description}</p>
+                    </div>
+                    <div className="mt-6 flex items-center justify-between">
+                      <span className="text-gray-900 font-semibold">{option.cta}</span>
+                      <div className="w-10 h-10 rounded-full bg-[#f3f4f6] flex items-center justify-center text-gray-900 transition-all duration-300 group-hover:bg-[#029346] group-hover:text-white">
                         →
                       </div>
                     </div>

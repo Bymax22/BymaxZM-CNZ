@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationType } from '@prisma/client';
+import { NotificationType, UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class CommunicationsService {
@@ -139,16 +140,62 @@ export class CommunicationsService {
     return { groups, total };
   }
 
+  private async resolveSubmitterId(payload: {
+    submitterId?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  }) {
+    if (payload.submitterId) {
+      return payload.submitterId;
+    }
+
+    const email = payload.email?.trim().toLowerCase();
+    if (!email) {
+      throw new Error('Submitter email is required when submitterId is not provided');
+    }
+
+    let user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      const fullName = [payload.firstName?.trim(), payload.lastName?.trim()].filter(Boolean).join(' ') || email.split('@')[0];
+      const [firstName, ...rest] = fullName.split(' ');
+      const lastName = rest.join(' ');
+
+      user = await this.prisma.user.create({
+        data: {
+          firstName: firstName || 'Guest',
+          lastName,
+          email,
+          phone: payload.phone,
+          password: randomUUID(),
+          role: UserRole.GUEST,
+          profile: {
+            create: { bio: '' },
+          },
+        },
+      });
+    }
+
+    return user.id;
+  }
+
   async createSubmission(payload: {
     title: string;
     description: string;
     type: string;
-    submitterId: string;
+    submitterId?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
     assigneeId?: string;
     priority?: string;
     attachments?: any;
     notes?: string;
   }) {
+    const submitterId = await this.resolveSubmitterId(payload);
+
     return this.prisma.submission.create({
       data: {
         title: payload.title,
@@ -156,7 +203,7 @@ export class CommunicationsService {
         type: payload.type,
         status: 'PENDING',
         priority: payload.priority ?? 'MEDIUM',
-        submitterId: payload.submitterId,
+        submitterId,
         assigneeId: payload.assigneeId,
         attachments: payload.attachments ?? undefined,
         notes: payload.notes,

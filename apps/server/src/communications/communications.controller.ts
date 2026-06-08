@@ -95,10 +95,13 @@ export class CommunicationsController {
   }
 
   @Post('submissions')
-  async createSubmission(@Body() body: { title: string; description: string; type: string; submitterId: string; assigneeId?: string; priority?: string; attachments?: any; notes?: string }) {
+  async createSubmission(@Body() body: { title: string; description: string; type: string; submitterId?: string; firstName?: string; lastName?: string; email?: string; phone?: string; assigneeId?: string; priority?: string; attachments?: any; notes?: string }) {
     try {
-      if (!body.title || !body.description || !body.type || !body.submitterId) {
-        throw new Error('Title, description, type and submitterId are required');
+      if (!body.title || !body.description || !body.type) {
+        throw new Error('Title, description and type are required');
+      }
+      if (!body.submitterId && !body.email) {
+        throw new Error('Email is required when submitterId is not provided');
       }
       return await this.communicationsService.createSubmission(body);
     } catch (error) {

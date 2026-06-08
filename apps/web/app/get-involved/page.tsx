@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { GetInvolvedHero } from '../components/pages/get-involved/GetInvolvedHero';
 import { InvolvementOptions } from '../components/pages/get-involved/InvolvementOptions';
-import ImpactCalculator from '../components/pages/get-involved/ImpactCalculator';
 import { GetInvolvedActions } from '../components/pages/get-involved/GetInvolvedActions';
 
 export const metadata: Metadata = {
@@ -15,7 +14,6 @@ export default function GetInvolvedPage() {
       <GetInvolvedHero />
       <InvolvementOptions />
       <GetInvolvedActions />
-      <ImpactCalculator />
     </>
   );
 }

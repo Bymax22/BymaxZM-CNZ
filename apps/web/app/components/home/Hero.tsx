@@ -105,7 +105,7 @@ export default function Hero() {
               {/* BUTTONS */}
               <div className="flex flex-wrap gap-3">
                 <a
-                  href="#"
+                  href="/programs"
                   className="h-10 px-5 rounded-lg bg-[#007200] text-white font-semibold text-sm inline-flex items-center gap-2 hover:bg-[#005d00] transition-all"
                 >
                   Explore Our Programs
@@ -113,7 +113,7 @@ export default function Hero() {
                 </a>
 
                 <a
-                  href="#"
+                  href="/get-involved"
                   className="h-10 px-5 rounded-lg border border-[#d1d5db] bg-white text-[#101828] font-semibold text-sm inline-flex items-center justify-center hover:bg-gray-50 transition-all"
                 >
                   Get Involved

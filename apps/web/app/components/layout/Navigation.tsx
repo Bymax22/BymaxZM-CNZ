@@ -137,12 +137,12 @@ export const Navigation = () => {
     },
     {
       name: 'Our Stories',
-      href: '/our-stories',
+      href: '/stories',
       items: [
-        { title: 'All Stories', href: '/our-stories' },
-        { title: 'Nature', href: '/our-stories/nature' },
-        { title: 'Children', href: '/our-stories/children' },
-        { title: 'Mining', href: '/our-stories/mining' },
+        { title: 'All Stories', href: '/stories' },
+        { title: 'Nature', href: '/stories/nature' },
+        { title: 'Children', href: '/stories/children' },
+        { title: 'Mining', href: '/stories/mining' },
       ],
     },
     {
@@ -399,20 +399,20 @@ export const Navigation = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-6 text-sm text-white">
-            <Link href="/projects" className="transition-colors duration-200 hover:text-[#F0F9F4]">Programs</Link>
+            <Link href="/programs" className="transition-colors duration-200 hover:text-[#F0F9F4]">Programs</Link>
             <Link href="/get-involved" className="transition-colors duration-200 hover:text-[#F0F9F4]">Get Involved</Link>
             <Link href="/about" className="transition-colors duration-200 hover:text-[#F0F9F4]">About</Link>
-            <Link href="/news" className="transition-colors duration-200 hover:text-[#F0F9F4]">News</Link>
+            <Link href="/news" className="transition-colors duration-200 hover:text-[#F0F9F4]">News & Events</Link>
             <Link href="/get-involved/careers" className="transition-colors duration-200 hover:text-[#F0F9F4]">Careers</Link>
             <Link href="/contact" className="transition-colors duration-200 hover:text-[#F0F9F4]">Contact</Link>
             <Link href="/about/reports" className="transition-colors duration-200 hover:text-[#F0F9F4]">Reports</Link>
             <Link href="/webinar" className="transition-colors duration-200 hover:text-[#F0F9F4]">Webinar</Link>
-            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#F0F9F4]">Choose Account</Link>
-            <Link href="/auth/register" className="transition-colors duration-200 hover:text-[#F0F9F4]">Choose Account</Link>
+            <Link href="/events" className="transition-colors duration-200 hover:text-[#F0F9F4]">Upcoming Events</Link>
+           
           </div>
 
           <Link
-            href="/portal/dashboard"
+            href="/auth/register"
             className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#029346] shadow-sm transition-colors duration-200 hover:bg-slate-100"
           >
             Go to Portal
