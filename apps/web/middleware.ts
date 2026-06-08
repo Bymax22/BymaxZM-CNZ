@@ -62,6 +62,11 @@ export default withAuth(
       if (!isAuthenticated) {
         return NextResponse.redirect(new URL('/auth/login', request.url));
       }
+
+      // restrict portal to STAFF only
+      if (role !== 'STAFF') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
     }
 
     return NextResponse.next();

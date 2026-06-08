@@ -3,14 +3,13 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FaLeaf,
   FaTachometerAlt,
   FaUsers,
   FaTree,
-  FaDonate,
+  
   FaCalendar,
   FaChartBar,
   FaCog,
@@ -41,6 +40,7 @@ interface SubMenuItem {
 }
 
 export default function PortalSidebar() {
+  const { data: session } = useSession();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const pathname = usePathname();
@@ -97,17 +97,7 @@ export default function PortalSidebar() {
         { name: 'Certificates', href: '/portal/volunteer/certificates' }
       ]
     },
-    {
-      name: 'Donations',
-      href: '/portal/donations',
-      icon: FaDonate,
-      children: [
-        { name: 'Make Donation', href: '/portal/donations/make' },
-        { name: 'Donation History', href: '/portal/donations/history' },
-        { name: 'Recurring Donations', href: '/portal/donations/recurring' },
-        { name: 'Donation Impact', href: '/portal/donations/impact' }
-      ]
-    },
+    
     {
       name: 'Reports',
       href: '/portal/reports',
@@ -176,12 +166,12 @@ export default function PortalSidebar() {
     <motion.div
       initial={false}
       animate={{ width: isCollapsed ? 80 : 280 }}
-      className="bg-gradient-to-b from-emerald-800 to-green-900 text-white flex flex-col h-full relative transition-all duration-300"
+      className="bg-gradient-to-b from-blue-800 to-blue-900 text-white flex flex-col h-full relative transition-all duration-300"
     >
       {/* Toggle Button */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-8 bg-white text-emerald-600 rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all duration-200 z-10"
+        className="absolute -right-3 top-8 bg-white text-blue-600 rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all duration-200 z-10"
       >
         {isCollapsed ? (
           <FaChevronRight className="w-3 h-3" />
@@ -191,34 +181,30 @@ export default function PortalSidebar() {
       </button>
 
       {/* Header */}
-      <div className="p-6 border-b border-emerald-700/50">
+      <div className="p-6 border-b border-blue-700/50">
         <div className="flex items-center space-x-3">
-          <motion.div
-            animate={{ scale: isCollapsed ? 0.8 : 1 }}
-            className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg"
-          >
-            <FaLeaf className="w-6 h-6 text-emerald-600" />
-          </motion.div>
-          <AnimatePresence>
-            {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
-                className="overflow-hidden"
-              >
-                <h1 className="text-xl font-bold">CNZ Portal</h1>
-                <p className="text-emerald-200 text-xs">Conservation Hub</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isCollapsed ? (
+            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-sm font-bold text-blue-600">CNZ</span>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: 'auto' }}
+              exit={{ opacity: 0, width: 0 }}
+              className="overflow-hidden"
+            >
+              <h1 className="text-xl font-bold">Staff Portal</h1>
+              <p className="text-blue-200 text-xs">Care For Nature Zambia</p>
+            </motion.div>
+          )}
         </div>
       </div>
 
       {/* User Profile */}
-      <div className="p-4 border-b border-emerald-700/50">
+      <div className="p-4 border-b border-blue-700/50">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center font-semibold text-white">
+          <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center font-semibold text-white">
             <FaUser className="w-5 h-5" />
           </div>
           <AnimatePresence>
@@ -229,15 +215,15 @@ export default function PortalSidebar() {
                 exit={{ opacity: 0, width: 0 }}
                 className="overflow-hidden flex-1"
               >
-                <p className="font-medium text-sm">John Doe</p>
-                <p className="text-emerald-200 text-xs">Club Leader</p>
+                <p className="font-medium text-sm">{session?.user?.name ?? 'Guest'}</p>
+                <p className="text-blue-200 text-xs">{(session?.user as any)?.role ?? 'Member'}</p>
               </motion.div>
             )}
           </AnimatePresence>
           {!isCollapsed && (
-            <button className="relative p-1 rounded-lg hover:bg-emerald-700/50 transition-colors">
+            <button className="relative p-1 rounded-lg hover:bg-blue-700/50 transition-colors">
               <FaBell className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-emerald-800"></span>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-blue-800"></span>
             </button>
           )}
         </div>
@@ -260,14 +246,14 @@ export default function PortalSidebar() {
                 }}
                 className={`w-full flex items-center justify-between p-3 rounded-xl transition-all duration-200 group ${
                   isActive(item.href)
-                    ? 'bg-emerald-600 shadow-lg'
-                    : 'hover:bg-emerald-700/50'
+                    ? 'bg-blue-600 shadow-lg'
+                    : 'hover:bg-blue-700/50'
                 }`}
               >
                 <div className="flex items-center space-x-3 min-w-0">
                   <item.icon
                     className={`w-5 h-5 flex-shrink-0 ${
-                      isActive(item.href) ? 'text-white' : 'text-emerald-200'
+                      isActive(item.href) ? 'text-white' : 'text-blue-200'
                     }`}
                   />
                   <AnimatePresence>
@@ -316,8 +302,8 @@ export default function PortalSidebar() {
                       onClick={() => handleNavigation(subItem.href)}
                       className={`w-full text-left p-2 rounded-lg text-sm transition-all duration-200 ${
                         isActive(subItem.href)
-                          ? 'bg-emerald-600/50 text-white'
-                          : 'text-emerald-200 hover:text-white hover:bg-emerald-700/30'
+                          ? 'bg-blue-600/50 text-white'
+                          : 'text-blue-200 hover:text-white hover:bg-blue-700/30'
                       }`}
                     >
                       {subItem.name}
@@ -331,7 +317,7 @@ export default function PortalSidebar() {
       </nav>
 
       {/* Bottom Menu */}
-      <div className="p-4 border-t border-emerald-700/50">
+      <div className="p-4 border-t border-blue-700/50">
         <div className="space-y-1">
           {bottomMenuItems.map((item) => (
             <motion.button
@@ -341,13 +327,13 @@ export default function PortalSidebar() {
               onClick={() => handleNavigation(item.href)}
               className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 group ${
                 isActive(item.href)
-                  ? 'bg-emerald-600 shadow-lg'
-                  : 'hover:bg-emerald-700/50'
+                  ? 'bg-blue-600 shadow-lg'
+                  : 'hover:bg-blue-700/50'
               }`}
             >
               <item.icon
                 className={`w-5 h-5 ${
-                  isActive(item.href) ? 'text-white' : 'text-emerald-200'
+                  isActive(item.href) ? 'text-white' : 'text-blue-200'
                 }`}
               />
               <AnimatePresence>
@@ -393,9 +379,9 @@ export default function PortalSidebar() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 pt-4 border-t border-emerald-700/50"
+            className="mt-4 pt-4 border-t border-blue-700/50"
           >
-            <p className="text-emerald-300 text-xs text-center">
+            <p className="text-blue-300 text-xs text-center">
               CNZ Portal v2.1.0
             </p>
           </motion.div>

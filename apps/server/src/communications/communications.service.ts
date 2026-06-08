@@ -334,10 +334,12 @@ export class CommunicationsService {
       const types = Array.isArray(cardType)
         ? cardType
         : cardType.split(',').map((t) => t.trim()).filter(Boolean);
+      // Use case-insensitive matching to avoid missing cards when stored casing differs
       if (types.length === 1) {
-        where.cardType = types[0];
+        where.cardType = { equals: types[0], mode: 'insensitive' };
       } else if (types.length > 1) {
-        where.cardType = { in: types };
+        // Prisma doesn't support case-insensitive `in` directly; build OR of equals with insensitive mode
+        where.OR = types.map((t) => ({ cardType: { equals: t, mode: 'insensitive' } }));
       }
     }
     if (featured !== undefined) where.featured = featured;

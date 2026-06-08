@@ -7,14 +7,20 @@ import { useEffect } from 'react';
 import StaffSidebar from '../components/staff/StaffSidebar';
 
 export default function StaffLayout({ children }: { children: ReactNode }) {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/login');
+    } else if (status === 'authenticated') {
+      // Ensure only staff can access the staff portal
+      const userRole = (session?.user as any)?.role;
+      if (userRole !== 'STAFF') {
+        router.push('/');
+      }
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   if (status === 'loading') {
     return (

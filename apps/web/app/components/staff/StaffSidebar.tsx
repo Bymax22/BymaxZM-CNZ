@@ -3,35 +3,38 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
-import { FaTachometerAlt, FaClipboardList, FaUsers, FaChartBar, FaCogs, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { useState } from 'react';
+import { FaTachometerAlt, FaClipboardList, FaUsers, FaChartBar, FaCalendarAlt, FaSignOutAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 
 interface MenuItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  requiredRoles?: string[];
 }
 
 const menuItems: MenuItem[] = [
   { name: 'Dashboard', href: '/staff/dashboard', icon: FaTachometerAlt },
-  { name: 'Tasks', href: '/staff/tasks', icon: FaClipboardList, requiredRoles: ['STAFF', 'PROJECT_MANAGER', 'FIELD_OFFICER', 'VOLUNTEER_COORDINATOR'] },
-  { name: 'Team', href: '/staff/team', icon: FaUsers, requiredRoles: ['STAFF', 'PROJECT_MANAGER', 'FIELD_OFFICER'] },
-  { name: 'Projects', href: '/staff/projects', icon: FaChartBar, requiredRoles: ['PROJECT_MANAGER', 'FIELD_OFFICER', 'STAFF'] },
-  { name: 'Operations', href: '/staff/operations', icon: FaCogs, requiredRoles: ['FINANCE_OFFICER', 'STAFF', 'PROJECT_MANAGER'] },
+  { name: 'Content', href: '/staff/content', icon: FaClipboardList },
+  { name: 'Projects', href: '/staff/projects', icon: FaChartBar },
+  { name: 'Events', href: '/staff/events', icon: FaCalendarAlt },
+  { name: 'Team', href: '/staff/users', icon: FaUsers },
 ];
 
 export default function StaffSidebar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
-  const userRole = session?.user?.role as string | undefined;
-  const filteredMenuItems = menuItems.filter((item) => {
-    if (!item.requiredRoles) return true;
-    return userRole ? item.requiredRoles.includes(userRole) : false;
-  });
+  // Ensure only staff can access this sidebar
+  useEffect(() => {
+    if (status === 'authenticated') {
+      const userRole = (session?.user as any)?.role;
+      if (userRole !== 'STAFF') {
+        router.push('/');
+      }
+    }
+  }, [status, session, router]);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
@@ -45,8 +48,8 @@ export default function StaffSidebar() {
     >
       <div className="flex items-center justify-between gap-3 px-5 py-5 border-b border-slate-800">
         <div>
-          <div className="text-2xl text-emerald-400">ST</div>
-          {!collapsed && <p className="text-sm font-semibold">Staff Hub</p>}
+          <div className="text-2xl font-bold text-blue-400">CNZ</div>
+          {!collapsed && <p className="text-sm font-semibold">Staff Portal</p>}
         </div>
         <button
           onClick={() => setCollapsed(!collapsed)}

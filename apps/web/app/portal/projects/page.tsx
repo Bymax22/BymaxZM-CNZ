@@ -46,67 +46,25 @@ export default function ProjectsPage() {
   }, [status, router]);
 
   useEffect(() => {
-    // Mock data
-    const mockProjects: Project[] = [
-      {
-        id: '1',
-        title: 'Urban Greening Initiative',
-        description: 'Planting trees in urban areas of Lusaka to improve air quality and biodiversity',
-        status: 'ACTIVE',
-        progress: 75,
-        startDate: '2024-01-15',
-        endDate: '2024-06-30',
-        budget: 50000,
-        location: 'Lusaka',
-        memberCount: 24,
-        club: 'Lusaka Green Warriors'
-      },
-      {
-        id: '2',
-        title: 'School Conservation Program',
-        description: 'Environmental education and tree planting in local schools',
-        status: 'ACTIVE',
-        progress: 90,
-        startDate: '2024-01-01',
-        endDate: '2024-03-31',
-        budget: 25000,
-        location: 'Copperbelt',
-        memberCount: 18,
-        club: 'Copperbelt Conservation Club'
-      },
-      {
-        id: '3',
-        title: 'Wildlife Corridor Restoration',
-        description: 'Restoring natural corridors for wildlife movement between protected areas',
-        status: 'PLANNING',
-        progress: 25,
-        startDate: '2024-04-01',
-        endDate: '2024-12-31',
-        budget: 100000,
-        location: 'Southern Province',
-        memberCount: 32,
-        club: 'Livingstone Nature Guardians'
-      },
-      {
-        id: '4',
-        title: 'Community Garden Project',
-        description: 'Establishing sustainable community gardens for food security',
-        status: 'COMPLETED',
-        progress: 100,
-        startDate: '2023-09-01',
-        endDate: '2024-02-29',
-        budget: 30000,
-        location: 'Eastern Province',
-        memberCount: 15,
-        club: 'Chipata Green Club'
+    // Fetch real projects data from API
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('/api/portal/projects?limit=100');
+        const data = await res.json();
+        if (res.ok) {
+          setProjects(data.projects || []);
+        }
+      } catch (error) {
+        console.error('Failed to load projects:', error);
+      } finally {
+        setIsLoading(false);
       }
-    ];
+    };
 
-    setTimeout(() => {
-      setProjects(mockProjects);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    if (status === 'authenticated') {
+      fetchProjects();
+    }
+  }, [status]);
 
   const filteredProjects = projects.filter(project => {
     const matchesFilter = filter === 'ALL' || project.status === filter;
@@ -128,7 +86,7 @@ export default function ProjectsPage() {
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -150,7 +108,7 @@ export default function ProjectsPage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
             >
               <FaPlus className="w-4 h-4" />
               <span>New Project</span>
@@ -171,13 +129,13 @@ export default function ProjectsPage() {
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="ALL">All Status</option>
             <option value="ACTIVE">Active</option>
@@ -202,14 +160,14 @@ export default function ProjectsPage() {
               className="bg-white rounded-2xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
               {/* Project Header */}
-              <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-6 text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold">{project.title}</h3>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
                     {project.status}
                   </span>
                 </div>
-                <p className="text-emerald-100 text-sm opacity-90 line-clamp-2">
+                <p className="text-blue-100 text-sm opacity-90 line-clamp-2">
                   {project.description}
                 </p>
               </div>
@@ -225,7 +183,7 @@ export default function ProjectsPage() {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
-                        className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${project.progress}%` }}
                       ></div>
                     </div>
@@ -266,7 +224,7 @@ export default function ProjectsPage() {
                   {/* Budget */}
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-sm text-gray-600">Budget</p>
-                    <p className="text-lg font-bold text-emerald-600">
+                    <p className="text-lg font-bold text-blue-600">
                       ZMW {project.budget.toLocaleString()}
                     </p>
                   </div>
@@ -274,7 +232,7 @@ export default function ProjectsPage() {
 
                 {/* Actions */}
                 <div className="flex space-x-2 mt-6">
-                  <button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2">
+                  <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2">
                     <FaEye className="w-3 h-3" />
                     <span>View</span>
                   </button>
@@ -304,7 +262,7 @@ export default function ProjectsPage() {
             <p className="text-gray-500 mb-6">
               {searchTerm ? 'No projects match your search criteria.' : 'Get started by creating your first project.'}
             </p>
-            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
               Create New Project
             </button>
           </motion.div>

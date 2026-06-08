@@ -46,67 +46,25 @@ export default function EventsPage() {
   }, [status, router]);
 
   useEffect(() => {
-    // Mock data
-    const mockEvents: Event[] = [
-      {
-        id: '1',
-        title: 'Community Tree Planting',
-        description: 'Join us for a day of tree planting in the community park',
-        type: 'VOLUNTEERING',
-        startDate: '2024-03-15T08:00:00',
-        endDate: '2024-03-15T14:00:00',
-        location: 'Lusaka City Park',
-        maxAttendees: 50,
-        currentAttendees: 35,
-        club: 'Lusaka Green Warriors',
-        status: 'UPCOMING'
-      },
-      {
-        id: '2',
-        title: 'Conservation Workshop',
-        description: 'Learn about sustainable conservation practices',
-        type: 'TRAINING',
-        startDate: '2024-03-20T14:00:00',
-        endDate: '2024-03-20T17:00:00',
-        location: 'CNZ Headquarters',
-        maxAttendees: 30,
-        currentAttendees: 28,
-        club: 'All Clubs',
-        status: 'UPCOMING'
-      },
-      {
-        id: '3',
-        title: 'Monthly Club Meeting',
-        description: 'Regular monthly meeting to discuss ongoing projects',
-        type: 'MEETING',
-        startDate: '2024-03-10T17:00:00',
-        endDate: '2024-03-10T19:00:00',
-        location: 'Community Hall',
-        maxAttendees: 25,
-        currentAttendees: 18,
-        club: 'Copperbelt Conservation Club',
-        status: 'COMPLETED'
-      },
-      {
-        id: '4',
-        title: 'Fundraising Gala',
-        description: 'Annual fundraising event for conservation projects',
-        type: 'FUNDRAISER',
-        startDate: '2024-04-05T18:00:00',
-        endDate: '2024-04-05T22:00:00',
-        location: 'Garden Hotel',
-        maxAttendees: 100,
-        currentAttendees: 67,
-        club: 'All Clubs',
-        status: 'UPCOMING'
+    // Fetch real events data from API
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('/api/portal/events?limit=100');
+        const data = await res.json();
+        if (res.ok) {
+          setEvents(data.events || []);
+        }
+      } catch (error) {
+        console.error('Failed to load events:', error);
+      } finally {
+        setIsLoading(false);
       }
-    ];
+    };
 
-    setTimeout(() => {
-      setEvents(mockEvents);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    if (status === 'authenticated') {
+      fetchEvents();
+    }
+  }, [status]);
 
   const filteredEvents = events.filter(event => {
     const matchesFilter = filter === 'ALL' || event.status === filter;
@@ -127,7 +85,7 @@ export default function EventsPage() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'VOLUNTEERING': return 'bg-emerald-100 text-emerald-800';
+      case 'VOLUNTEERING': return 'bg-blue-100 text-blue-800';
       case 'TRAINING': return 'bg-blue-100 text-blue-800';
       case 'MEETING': return 'bg-purple-100 text-purple-800';
       case 'FUNDRAISER': return 'bg-amber-100 text-amber-800';
@@ -148,7 +106,7 @@ export default function EventsPage() {
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -170,7 +128,7 @@ export default function EventsPage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
             >
               <FaPlus className="w-4 h-4" />
               <span>New Event</span>
@@ -191,13 +149,13 @@ export default function EventsPage() {
               placeholder="Search events..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="ALL">All Events</option>
             <option value="UPCOMING">Upcoming</option>
@@ -222,7 +180,7 @@ export default function EventsPage() {
               className="bg-white rounded-2xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow duration-200"
             >
               {/* Event Header */}
-              <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-6 text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold">{event.title}</h3>
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(event.status)}`}>
@@ -232,7 +190,7 @@ export default function EventsPage() {
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(event.type)} inline-block mb-2`}>
                   {event.type}
                 </span>
-                <p className="text-emerald-100 text-sm opacity-90 line-clamp-2">
+                <p className="text-blue-100 text-sm opacity-90 line-clamp-2">
                   {event.description}
                 </p>
               </div>
@@ -266,7 +224,7 @@ export default function EventsPage() {
                       <div className="flex items-center space-x-2">
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
                           <div 
-                            className="bg-emerald-500 h-2 rounded-full"
+                            className="bg-blue-500 h-2 rounded-full"
                             style={{ width: `${(event.currentAttendees / event.maxAttendees) * 100}%` }}
                           ></div>
                         </div>
@@ -290,7 +248,7 @@ export default function EventsPage() {
                 {/* Actions */}
                 <div className="flex space-x-2 mt-6">
                   {event.status === 'UPCOMING' && (
-                    <button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                    <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
                       Register Now
                     </button>
                   )}
@@ -325,7 +283,7 @@ export default function EventsPage() {
             <p className="text-gray-500 mb-6">
               {searchTerm ? 'No events match your search criteria.' : 'Get started by creating your first event.'}
             </p>
-            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
               Create New Event
             </button>
           </motion.div>

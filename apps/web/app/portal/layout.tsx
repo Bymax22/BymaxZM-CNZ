@@ -17,14 +17,20 @@ export default function PortalLayout({
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push('/auth/login');
+    } else if (status === 'authenticated') {
+      // enforce staff-only access for the portal
+      const role = (session?.user as any)?.role;
+      if (role !== 'STAFF') {
+        router.push('/');
+      }
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   if (status === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading Portal...</p>
         </div>
       </div>

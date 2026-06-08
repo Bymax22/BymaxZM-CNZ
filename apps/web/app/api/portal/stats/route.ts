@@ -9,6 +9,8 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const role = (session.user as any)?.role;
+    if (role !== 'STAFF') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
     const backendUrl = `${BACKEND}${new URL(request.url).pathname.replace('/api', '')}${new URL(request.url).search}`;
     const res = await fetch(backendUrl, { headers: { cookie: request.headers.get('cookie') || '' } });

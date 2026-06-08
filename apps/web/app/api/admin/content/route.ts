@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
+import { emitUpdate } from '../../../lib/sse';
 const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
 function formatPublishedAt(status: string | undefined, publishedAt?: string) {
@@ -72,6 +73,10 @@ async function processRequest(request: NextRequest, method: 'POST' | 'PUT') {
   });
 
   const data = await res.json();
+  if (res.ok) {
+    emitUpdate({ resource: 'content', action: method === 'POST' ? 'created' : 'updated', id: data?.id, data });
+  }
+
   return NextResponse.json(data, { status: res.status });
 }
 

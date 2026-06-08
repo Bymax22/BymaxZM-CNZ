@@ -39,53 +39,30 @@ export default function ClubsPage() {
   }, [status, router]);
 
   useEffect(() => {
-    // Mock data - replace with actual API call
-    const mockClubs: Club[] = [
-      {
-        id: '1',
-        name: 'Lusaka Green Warriors',
-        description: 'Dedicated to urban conservation and tree planting in Lusaka',
-        location: 'Lusaka City',
-        province: 'Lusaka',
-        memberCount: 45,
-        meetingDay: 'Saturday',
-        meetingTime: '09:00',
-        status: 'ACTIVE'
-      },
-      {
-        id: '2',
-        name: 'Copperbelt Conservation Club',
-        description: 'Focusing on mining area rehabilitation and wildlife protection',
-        location: 'Kitwe',
-        province: 'Copperbelt',
-        memberCount: 32,
-        meetingDay: 'Sunday',
-        meetingTime: '14:00',
-        status: 'ACTIVE'
-      },
-      {
-        id: '3',
-        name: 'Livingstone Nature Guardians',
-        description: 'Protecting Victoria Falls ecosystem and promoting eco-tourism',
-        location: 'Livingstone',
-        province: 'Southern',
-        memberCount: 28,
-        meetingDay: 'Wednesday',
-        meetingTime: '17:00',
-        status: 'ACTIVE'
+    // Fetch real clubs data from API
+    const fetchClubs = async () => {
+      try {
+        const res = await fetch('/api/portal/clubs?limit=100');
+        const data = await res.json();
+        if (res.ok) {
+          setClubs(data.clubs || []);
+        }
+      } catch (error) {
+        console.error('Failed to load clubs:', error);
+      } finally {
+        setIsLoading(false);
       }
-    ];
+    };
 
-    setTimeout(() => {
-      setClubs(mockClubs);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+    if (status === 'authenticated') {
+      fetchClubs();
+    }
+  }, [status]);
 
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -109,7 +86,7 @@ export default function ClubsPage() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 transition-colors"
             >
               <FaPlus className="w-4 h-4" />
               <span>Create New Club</span>
@@ -130,7 +107,7 @@ export default function ClubsPage() {
               <input
                 type="text"
                 placeholder="Search clubs by name, location, or province..."
-                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <button className="px-4 py-3 border border-gray-300 rounded-xl flex items-center space-x-2 text-gray-700 hover:bg-gray-50 transition-colors">
@@ -152,9 +129,9 @@ export default function ClubsPage() {
               className="bg-white rounded-2xl shadow-sm border overflow-hidden group cursor-pointer"
             >
               {/* Club Header */}
-              <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-6 text-white">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
                 <h3 className="text-xl font-bold mb-2">{club.name}</h3>
-                <p className="text-emerald-100 text-sm opacity-90">{club.description}</p>
+                <p className="text-blue-100 text-sm opacity-90">{club.description}</p>
               </div>
 
               {/* Club Details */}
@@ -187,7 +164,7 @@ export default function ClubsPage() {
 
                 {/* Actions */}
                 <div className="mt-6 flex space-x-3">
-                  <button className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                  <button className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
                     Join Club
                   </button>
                   <button className="flex-1 border border-gray-300 hover:bg-gray-50 text-gray-700 py-2 px-4 rounded-lg text-sm font-medium transition-colors">
@@ -224,7 +201,7 @@ export default function ClubsPage() {
             <p className="text-gray-500 mb-6">
               There are no clubs matching your search criteria.
             </p>
-            <button className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
+            <button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
               Create the first club
             </button>
           </motion.div>

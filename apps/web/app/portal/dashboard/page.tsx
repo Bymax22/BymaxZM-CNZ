@@ -8,7 +8,6 @@ import { motion } from 'framer-motion';
 import { 
   FaUsers, 
   FaTree, 
-  FaDonate, 
   FaHandsHelping,
   FaSeedling,
   FaCalendar,
@@ -75,53 +74,59 @@ export default function DashboardPage() {
   }, [status]);
 
   useEffect(() => {
-    // Mock data - replace with actual API calls
-    const mockActivity: RecentActivity[] = [
-      {
-        id: '1',
-        type: 'project',
-        title: 'New Project Launched',
-        description: 'Urban Greening Initiative in Lusaka',
-        time: '2 hours ago',
-        user: 'Sarah Chibwe'
-      },
-      {
-        id: '2',
-        type: 'donation',
-        title: 'Donation Received',
-        description: 'ZMW 5,000 from Green Future Corp',
-        time: '4 hours ago',
-        user: 'System'
-      },
-      {
-        id: '3',
-        type: 'member',
-        title: 'New Member Joined',
-        description: 'John Banda joined Copperbelt Club',
-        time: '1 day ago',
-        user: 'System'
-      },
-      {
-        id: '4',
-        type: 'event',
-        title: 'Event Scheduled',
-        description: 'Tree Planting - Saturday, 10 AM',
-        time: '2 days ago',
-        user: 'Grace Mwale'
-      }
-    ];
+    // Fetch real activity data from API
+    const fetchActivity = async () => {
+      try {
+        const [projectsRes, eventsRes] = await Promise.all([
+          fetch('/api/portal/projects?limit=5'),
+          fetch('/api/portal/events?limit=5'),
+        ]);
 
-    setTimeout(() => {
-      setRecentActivity(mockActivity);
-      setIsLoading(false);
-    }, 1000);
-  }, []);
+        const projectsData = await projectsRes.json();
+        const eventsData = await eventsRes.json();
+
+        const activities: RecentActivity[] = [];
+
+        // Add recent projects
+        (projectsData.projects || []).slice(0, 2).forEach((proj: any) => {
+          activities.push({
+            id: proj.id,
+            type: 'project',
+            title: proj.status === 'ACTIVE' ? 'Project Active' : `Project ${proj.status}`,
+            description: proj.title,
+            time: new Date(proj.updatedAt).toLocaleDateString(),
+            user: 'System'
+          });
+        });
+
+        // Add recent events
+        (eventsData.events || []).slice(0, 2).forEach((evt: any) => {
+          activities.push({
+            id: evt.id,
+            type: 'event',
+            title: 'Event Scheduled',
+            description: evt.title,
+            time: new Date(evt.startDate).toLocaleDateString(),
+            user: 'System'
+          });
+        });
+
+        setRecentActivity(activities);
+      } catch (error) {
+        console.error('Error fetching activity:', error);
+      }
+    };
+
+    if (status === 'authenticated') {
+      fetchActivity();
+    }
+  }, [status]);
 
   if (status === 'loading' || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading Dashboard...</p>
         </div>
       </div>
@@ -148,15 +153,6 @@ export default function DashboardPage() {
       icon: FaTree,
       color: 'emerald',
       description: 'In progress'
-    },
-    {
-      title: 'Total Donations',
-      value: `ZMW ${stats?.totalDonations.toLocaleString()}`,
-      change: '+18%',
-      isPositive: true,
-      icon: FaDonate,
-      color: 'green',
-      description: 'This month'
     },
     {
       title: 'Volunteer Hours',
@@ -240,7 +236,7 @@ export default function DashboardPage() {
               <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <FaCog className="w-5 h-5" />
               </button>
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
                 {session.user?.name?.charAt(0)}
               </div>
             </div>
@@ -306,7 +302,7 @@ export default function DashboardPage() {
                         <action.icon className={`w-6 h-6 text-${action.color}-600`} />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                           {action.title}
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">{action.description}</p>
@@ -347,13 +343,13 @@ export default function DashboardPage() {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                           <div 
-                            className="bg-emerald-500 h-2 rounded-full transition-all duration-300"
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${project.progress}%` }}
                           ></div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className="text-sm font-medium text-emerald-600">
+                        <span className="text-sm font-medium text-blue-600">
                           {project.progress}%
                         </span>
                       </div>
@@ -380,7 +376,7 @@ export default function DashboardPage() {
                       className="flex items-start space-x-3"
                     >
                       <div className={`w-2 h-2 mt-2 rounded-full ${
-                        activity.type === 'project' ? 'bg-emerald-500' :
+                        activity.type === 'project' ? 'bg-blue-500' :
                         activity.type === 'donation' ? 'bg-green-500' :
                         activity.type === 'event' ? 'bg-blue-500' : 'bg-amber-500'
                       }`}></div>
@@ -413,7 +409,7 @@ export default function DashboardPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: index * 0.1 + 0.8 }}
-                      className="p-4 rounded-lg border border-gray-200 hover:border-emerald-300 transition-colors"
+                      className="p-4 rounded-lg border border-gray-200 hover:border-blue-300 transition-colors"
                     >
                       <h4 className="font-medium text-gray-900">{event.title}</h4>
                       <div className="flex items-center space-x-2 mt-2 text-sm text-gray-600">
