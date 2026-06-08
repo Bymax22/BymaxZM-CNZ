@@ -27,6 +27,7 @@ function normalizeCard(card: ContentCard) {
     ...card,
     tags: card.tags || [],
     metadata: card.metadata || {},
+    publishedAt: card.publishedAt ?? undefined,
   };
 }
 
