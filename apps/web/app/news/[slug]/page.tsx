@@ -12,7 +12,22 @@ function truncateText(text: string, maxLength: number) {
   return `${normalized.slice(0, maxLength).trim()}…`;
 }
 
-function normalizeApiNewsItem(card: any) {
+type NormalizedNewsItem = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string[];
+  image: string;
+  video?: string;
+  category: string;
+  date: string;
+  author: string;
+  readTime: string;
+  tags: string[];
+};
+
+function normalizeApiNewsItem(card: any): NormalizedNewsItem {
   const gallery = Array.isArray(card.metadata?.gallery) ? card.metadata.gallery : [];
   const imageUrl =
     card.imageUrl ||
@@ -27,7 +42,12 @@ function normalizeApiNewsItem(card: any) {
   const content = typeof contentText === 'string'
     ? contentText.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean)
     : Array.isArray(contentText)
-    ? contentText
+    ? contentText.map(String)
+    : [];
+  const tags = Array.isArray(card.tags)
+    ? card.tags.map(String)
+    : Array.isArray(card.metadata?.tags)
+    ? card.metadata.tags.map(String)
     : [];
 
   return {
@@ -42,11 +62,10 @@ function normalizeApiNewsItem(card: any) {
     date: card.publishedAt || card.createdAt || card.metadata?.date || '',
     author: card.author || card.metadata?.author || 'Care for Nature Zambia',
     readTime: card.readTime || '2 min',
-    tags: card.tags || card.metadata?.tags || [],
+    tags,
   };
 }
 
-type NormalizedNewsItem = ReturnType<typeof normalizeApiNewsItem>;
 
 async function fetchNewsItemBySlug(slug: string): Promise<NormalizedNewsItem | null> {
   try {

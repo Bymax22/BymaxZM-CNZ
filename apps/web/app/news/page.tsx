@@ -16,6 +16,28 @@ type NewsEventItem = {
   comments: string[];
 };
 
+type RawCard = {
+  id?: string | number;
+  slug?: string | number;
+  title?: string;
+  name?: string;
+  description?: string;
+  subtitle?: string;
+  body?: string;
+  imageUrl?: string;
+  media?: { url?: string };
+  image?: string;
+  category?: string;
+  cardType?: string;
+  type?: string;
+  publishedAt?: string;
+  createdAt?: string;
+  metadata?: { publishedAt?: string; date?: string };
+  date?: string;
+  eventDate?: string;
+  comments?: string[];
+};
+
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     month: 'long',
@@ -30,12 +52,15 @@ function truncateText(text: string, maxLength: number) {
   return `${normalized.slice(0, maxLength).trim()}…`;
 }
 
-function normalizeCardToItem(card: any, index: number): NewsEventItem {
+function normalizeCardToItem(card: RawCard, index: number): NewsEventItem {
   const publishedAt = card.publishedAt || card.createdAt || card.metadata?.publishedAt || '';
   const dateValue = publishedAt || card.metadata?.date || card.date || card.eventDate || '';
   const slug = card.slug || card.id || `news-item-${index}`;
   const itemType = card.cardType === 'EVENT' || card.type === 'Event' ? 'Event' : 'News';
   const excerptSource = card.description || card.subtitle || card.body || '';
+  const comments = Array.isArray(card.comments)
+    ? card.comments.map(String)
+    : ['Nice story.'];
 
   return {
     id: String(card.id ?? slug ?? index),
@@ -46,7 +71,7 @@ function normalizeCardToItem(card: any, index: number): NewsEventItem {
     date: dateValue,
     href: itemType === 'Event' ? `/events/${slug}` : `/news/${slug}`,
     itemType,
-    comments: card.comments || ['Nice story.'],
+    comments,
   };
 }
 
