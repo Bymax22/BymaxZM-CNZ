@@ -58,12 +58,23 @@ export default withAuth(
       }
     }
 
+    // Allow a user-specific portal under /portal/user/* for users with role 'USER'
+    if (pathname.startsWith('/portal/user')) {
+      if (!isAuthenticated) {
+        return NextResponse.redirect(new URL('/auth/login', request.url));
+      }
+
+      if (role !== 'USER') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    }
+
     if (pathname.startsWith('/portal')) {
       if (!isAuthenticated) {
         return NextResponse.redirect(new URL('/auth/login', request.url));
       }
 
-      // restrict portal to STAFF only
+      // restrict main portal to STAFF only
       if (role !== 'STAFF') {
         return NextResponse.redirect(new URL('/', request.url));
       }

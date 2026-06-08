@@ -79,6 +79,8 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
             return '/donor/dashboard';
           case 'CLUB_LEADER':
             return '/club/dashboard';
+          case 'USER':
+            return '/portal/user/dashboard';
           default:
             return '/portal/dashboard';
         }
