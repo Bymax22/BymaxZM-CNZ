@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { getProjectById } from '../../components/sections/projectsData';
 import { notFound } from 'next/navigation';
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 export async function generateStaticParams() {
   const { projects } = await import('../../components/sections/projectsData');
   return projects.map((project) => ({
@@ -15,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   let project = getProjectById(resolvedParams.id);
   if (!project) {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || ''}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
+      const res = await fetch(`${SITE_URL}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
       if (res.ok) {
         const card = await res.json();
         project = {
@@ -53,7 +55,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   if (!project) {
     try {
-      const res = await fetch(`/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
+      const res = await fetch(`${SITE_URL}/api/communications/card/${encodeURIComponent(resolvedParams.id)}`);
       if (res.ok) {
         const card = await res.json();
         project = {

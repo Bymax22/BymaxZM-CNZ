@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { storyTopics, type StoryTopic } from '../../components/sections/storyData';
 import StoryInteractions from '../../components/stories/StoryInteractions';
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 type Props = {
   params: Promise<{ id: string }>;
 };
@@ -13,7 +15,7 @@ function isVideoUrl(url?: string) {
 
 async function fetchRemoteStory(id: string): Promise<StoryTopic | undefined> {
   try {
-    const res = await fetch(`/api/communications/card/${encodeURIComponent(id)}`);
+    const res = await fetch(`${SITE_URL}/api/communications/card/${encodeURIComponent(id)}`);
     if (!res.ok) return undefined;
     const card = await res.json();
     if (!card) return undefined;

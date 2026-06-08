@@ -90,28 +90,32 @@ function formatDate(dateString: string) {
   });
 }
 
-function mapCardToEvent(card: any): UpcomingEvent {
-  const gallery = Array.isArray(card.metadata?.gallery) ? card.metadata.gallery : [];
+function mapEventToUpcomingEvent(eventData: any): UpcomingEvent {
+  const gallery = Array.isArray(eventData.metadata?.gallery)
+    ? eventData.metadata.gallery
+    : Array.isArray(eventData.gallery)
+    ? eventData.gallery
+    : [];
   const imageUrl =
-    card.imageUrl ||
+    eventData.imageUrl ||
     gallery.find((item: any) => item.type === 'image')?.url ||
     gallery[0]?.url ||
     '';
 
   return {
-    id: card.relatedId || card.id || card.slug || '',
-    title: card.title || card.name || '',
-    description: card.description || card.body || '',
-    date: card.publishedAt || card.metadata?.date || '',
-    time: card.metadata?.time || card.time || '',
-    location: card.metadata?.location || card.venue || card.category || '',
+    id: eventData.id || eventData.slug || eventData.relatedId || '',
+    title: eventData.title || eventData.name || '',
+    description: eventData.description || eventData.body || '',
+    date: eventData.startDate || eventData.date || eventData.publishedAt || '',
+    time: eventData.metadata?.time || eventData.time || '',
+    location: eventData.location || eventData.venue || eventData.category || '',
     imageUrl,
-    partnerLogos: card.metadata?.partnerLogos || [],
-    category: (card.cardType === 'EVENT' ? 'EVENT' : (card.category || 'EVENT')).toString().toUpperCase(),
-    attendees: card.metadata?.attendees || card.attendees || 0,
-    featured: Boolean(card.featured || card.metadata?.featured),
-    publishedAt: card.publishedAt,
-    status: card.status,
+    partnerLogos: eventData.partnerLogos || eventData.metadata?.partnerLogos || [],
+    category: (eventData.type || eventData.category || 'EVENT').toString().toUpperCase(),
+    attendees: eventData.maxAttendees || eventData.attendees || eventData.metadata?.attendees || 0,
+    featured: Boolean(eventData.featured || eventData.metadata?.featured || eventData.isPublic),
+    publishedAt: eventData.publishedAt || eventData.createdAt,
+    status: eventData.status || (eventData.isOnline ? 'ONLINE' : 'UPCOMING'),
   };
 }
 
@@ -134,16 +138,16 @@ export default function EventDetailPage() {
       }
 
       try {
-        const res = await fetch(`/api/communications/card/${encodeURIComponent(eventId)}`);
-        const card = await res.json();
+        const res = await fetch(`/api/events/${encodeURIComponent(eventId)}`);
+        const eventData = await res.json();
 
         if (!res.ok) {
-          throw new Error(card.error || 'Event not found');
+          throw new Error(eventData.error || 'Event not found');
         }
 
         if (!mounted) return;
-        const mappedEvent = mapCardToEvent(card);
-        console.log('Loaded event:', { eventId: mappedEvent.id, cardRelatedId: card.relatedId, cardId: card.id, cardSlug: card.slug });
+        const mappedEvent = mapEventToUpcomingEvent(eventData);
+        console.log('Loaded event:', { eventId: mappedEvent.id, eventIdRaw: eventData.id, eventTitle: eventData.title });
         setEvent(mappedEvent);
       } catch (err) {
         console.error('Failed to load event', err);
