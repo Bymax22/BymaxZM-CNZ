@@ -44,6 +44,7 @@ export default function AdminContentPage() {
   const [slug, setSlug] = useState<string>('');
   const [cardType, setCardType] = useState<string>('STORY');
   const [subtitle, setSubtitle] = useState<string>('');
+  const [location, setLocation] = useState<string>('');
   const [imageAlt, setImageAlt] = useState<string>('');
   const [tags, setTags] = useState<string>('');
   const [category, setCategory] = useState<string>('general');
@@ -107,6 +108,7 @@ export default function AdminContentPage() {
       const galleryUrls = parseMediaUrls(galleryUrlsInput);
       const metadata: any = {};
 
+      if (location) metadata.location = location;
       if (partnerLogos.length) metadata.partnerLogos = partnerLogos;
       if (galleryUrls.length) {
         metadata.gallery = galleryUrls.map((url) => ({ url, type: isVideoUrl(url) ? 'video' : 'image' }));
@@ -156,6 +158,7 @@ export default function AdminContentPage() {
         setImageUrl('');
         setSlug('');
         setSubtitle('');
+        setLocation('');
         setImageAlt('');
         setTags('');
         setCategory('general');
@@ -183,6 +186,7 @@ export default function AdminContentPage() {
     setImageUrl(card.imageUrl || '');
     setSlug(card.slug || '');
     setSubtitle(card.subtitle || '');
+    setLocation(existingMetadata.location || '');
     setImageAlt(card.imageAlt || '');
     setTags((card.tags || []).join(','));
     setCategory(card.category || 'general');
@@ -257,6 +261,16 @@ export default function AdminContentPage() {
             <div>
               <label className="block text-sm font-medium text-slate-700">Subtitle</label>
               <input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3" />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700">Location</label>
+              <input
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3"
+                placeholder="Location"
+              />
             </div>
 
             <div>

@@ -361,7 +361,7 @@ export const Navigation = () => {
       </header>
 
       {/* SECONDARY DESKTOP HEADER */}
-      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 bg-[#007200] text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
+      <nav className={`hidden md:block fixed top-20 left-0 w-full z-40 bg-[rgb(114,42,0)] text-white shadow-sm transition-transform duration-300 ${secondaryHidden ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between h-14 px-6 gap-4">
           <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
             <Link
