@@ -64,8 +64,17 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
 
       showSuccess('Login successful! Redirecting...');
 
+      const normalizeRole = (role: string | undefined): string | undefined => {
+        if (!role) return undefined;
+        // Normalize role to uppercase for consistency
+        const normalized = role.toUpperCase();
+        // Handle 'user' -> 'USER'
+        return normalized;
+      };
+
       const redirectByRole = (role: string | undefined) => {
-        switch (role) {
+        const normalized = normalizeRole(role);
+        switch (normalized) {
           case 'SUPER_ADMIN':
           case 'ADMIN':
             return '/admin/dashboard';
@@ -97,19 +106,23 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
             const session = await response.json();
             const userRole = session?.user?.role;
             if (userRole) {
+              console.debug('[auth] Session role retrieved:', userRole);
               return userRole;
             }
-          } catch {
-            // swallow error and retry
+          } catch (err) {
+            console.debug('[auth] Session fetch attempt', attempt + 1, 'failed:', err);
           }
 
           await new Promise((resolve) => setTimeout(resolve, 400));
         }
+        console.warn('[auth] Could not retrieve session role after', maxAttempts, 'attempts');
         return undefined;
       };
 
       const userRole = await getSessionRole();
-      router.push(redirectByRole(userRole));
+      const redirectUrl = redirectByRole(userRole || selectedRole);
+      console.debug('[auth] Redirecting to:', redirectUrl, 'with role:', userRole || selectedRole);
+      router.push(redirectUrl);
     } catch (err) {
       showError('An unexpected error occurred. Please try again.');
     } finally {
