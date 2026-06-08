@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   return {
     title: `${newsItem.title} | News`,
-    description: newsItem.excerpt || newsItem.subtitle || newsItem.description || '',
+    description: newsItem.excerpt || '',
   };
 }
 
