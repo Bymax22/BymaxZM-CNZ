@@ -332,7 +332,7 @@ export const Navigation = () => {
 
             <Link
               href="/get-involved/donate"
-              className="inline-flex items-center justify-center rounded-full bg-[#029346] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#027437]"
+              className="inline-flex items-center justify-center rounded-30 bg-[#029346] px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-[#027437]"
             >
               Donate
             </Link>
@@ -419,7 +419,7 @@ export const Navigation = () => {
 
           <Link
             href="/auth/register"
-            className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#029346] shadow-sm transition-colors duration-200 hover:bg-slate-100"
+            className="inline-flex items-center justify-center rounded-35 bg-white px-5 py-2 text-sm font-semibold text-[#029346] shadow-sm transition-colors duration-200 hover:bg-slate-100"
           >
             Go to Portal
           </Link>
