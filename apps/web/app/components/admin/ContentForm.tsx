@@ -109,27 +109,32 @@ export default function ContentForm({
     setMessage(null);
 
     const payload: ContentCardFormData = {
-      ...form,
-      tags: normalizeList(tagsInput),
-      metadata: {
-        ...form.metadata,
-          location: locationInput,
+  ...form,
+  tags: normalizeList(tagsInput),
+  metadata: {
+    ...form.metadata,
+    location: locationInput,
+    partnerLogos: normalizeList(partnerLogosInput),
+    galleryUrls: normalizeList(galleryUrlsInput),
+  },
+};
 
-    try {
-      const result = await onSubmit(payload);
-      if (result.error) {
-        setMessage(result.error);
-      } else {
-        setMessage('Saved successfully.');
-        onSuccess?.(result.data);
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage('Failed to save content card.');
-    } finally {
-      setSaving(false);
-    }
+try {
+  const result = await onSubmit(payload);
+
+  if (result.error) {
+    setMessage(result.error);
+  } else {
+    setMessage('Saved successfully.');
+    onSuccess?.(result.data);
   }
+} catch (error) {
+  console.error(error);
+  setMessage('Failed to save content card.');
+} finally {
+  setSaving(false);
+}
+}
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
