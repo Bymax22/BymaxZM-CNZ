@@ -328,7 +328,7 @@ export class CommunicationsService {
     return card;
   }
 
-  async listCards(skip = 0, take = 50, cardType?: string | string[], featured?: boolean) {
+  async listCards(skip = 0, take = 50, cardType?: string | string[], featured?: boolean, status?: string | string[]) {
     const where: any = {};
     if (cardType) {
       const types = Array.isArray(cardType)
@@ -343,6 +343,17 @@ export class CommunicationsService {
       }
     }
     if (featured !== undefined) where.featured = featured;
+    if (status) {
+      const statuses = Array.isArray(status)
+        ? status
+        : status.split(',').map((s) => s.trim()).filter(Boolean);
+      // Use case-insensitive matching for status as well
+      if (statuses.length === 1) {
+        where.status = { equals: statuses[0], mode: 'insensitive' };
+      } else if (statuses.length > 1) {
+        where.OR = (where.OR || []).concat(statuses.map((s) => ({ status: { equals: s, mode: 'insensitive' } })));
+      }
+    }
 
     console.log('📡 listCards query:', { skip, take, cardType, featured, where });
 

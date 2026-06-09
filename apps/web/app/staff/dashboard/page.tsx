@@ -194,24 +194,21 @@ export default function StaffDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <h1 className="text-3xl font-bold text-slate-900">Staff Dashboard</h1>
-          <p className="mt-2 text-sm text-slate-600">Monitor pending reviews, active projects, and upcoming events with real-time data.</p>
-        </div>
+    <div className="space-y-8">
+      <div className="bg-white shadow-sm border-b rounded-lg p-6 mb-8">
+        <h1 className="text-3xl font-bold text-slate-900">Staff Dashboard</h1>
+        <p className="mt-2 text-sm text-slate-600">Monitor pending reviews, active projects, and upcoming events with real-time data.</p>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        <PlaceholderDashboardNotice />
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-slate-600">Loading dashboard data...</p>
-          </div>
-        ) : (
-          <>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <PlaceholderDashboardNotice />
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="inline-block w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="mt-4 text-slate-600">Loading dashboard data...</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
               {cardConfigs.map((card) => (
                 <motion.div
                   key={card.title}
@@ -264,7 +261,6 @@ export default function StaffDashboardPage() {
             </div>
           </>
         )}
-      </div>
     </div>
   );
 }

@@ -20,6 +20,7 @@ export interface ContentCardFormData {
   displayOrder: number;
   metadata: {
     category?: string;
+    location?: string;
     partnerLogos?: string[];
     galleryUrls?: string[];
   };
@@ -51,6 +52,7 @@ const defaultForm: ContentCardFormData = {
   featured: false,
   displayOrder: 0,
   metadata: {
+    location: '',
     partnerLogos: [],
     galleryUrls: [],
   },
@@ -86,6 +88,7 @@ export default function ContentForm({
         metadata: {
           ...defaultForm.metadata,
           ...initialData.metadata,
+          location: initialData.metadata?.location || defaultForm.metadata.location,
           partnerLogos: initialData.metadata?.partnerLogos || defaultForm.metadata.partnerLogos,
           galleryUrls: initialData.metadata?.galleryUrls || defaultForm.metadata.galleryUrls,
         },
@@ -98,6 +101,7 @@ export default function ContentForm({
   const tagsInput = useMemo(() => form.tags.join(', '), [form.tags]);
   const partnerLogosInput = useMemo(() => form.metadata.partnerLogos?.join(', ') || '', [form.metadata.partnerLogos]);
   const galleryUrlsInput = useMemo(() => form.metadata.galleryUrls?.join(', ') || '', [form.metadata.galleryUrls]);
+  const locationInput = useMemo(() => form.metadata.location || '', [form.metadata.location]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -109,11 +113,7 @@ export default function ContentForm({
       tags: normalizeList(tagsInput),
       metadata: {
         ...form.metadata,
-        partnerLogos: normalizeList(partnerLogosInput),
-        galleryUrls: normalizeList(galleryUrlsInput),
-      },
-      publishedAt: form.publishedAt || undefined,
-    };
+          location: locationInput,
 
     try {
       const result = await onSubmit(payload);
@@ -309,6 +309,15 @@ export default function ContentForm({
 
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">
+            Location / Address
+            <input
+              value={locationInput}
+              onChange={(event) => setForm((prev) => ({ ...prev, metadata: { ...prev.metadata, location: event.target.value } }))}
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:outline-none"
+              placeholder="e.g., Lusaka, Zambia or specific address"
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-700">
             Partner Logos
             <input
               value={partnerLogosInput}
@@ -317,16 +326,17 @@ export default function ContentForm({
               placeholder="comma separated logo URLs"
             />
           </label>
-          <label className="space-y-2 text-sm text-slate-700">
-            Gallery URLs
-            <input
-              value={galleryUrlsInput}
-              onChange={(event) => setForm((prev) => ({ ...prev, metadata: { ...prev.metadata, galleryUrls: normalizeList(event.target.value) } }))}
-              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:outline-none"
-              placeholder="comma separated image URLs"
-            />
-          </label>
         </div>
+
+        <label className="space-y-2 text-sm text-slate-700">
+          Gallery URLs
+          <input
+            value={galleryUrlsInput}
+            onChange={(event) => setForm((prev) => ({ ...prev, metadata: { ...prev.metadata, galleryUrls: normalizeList(event.target.value) } }))}
+            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:outline-none"
+            placeholder="comma separated image URLs"
+          />
+        </label>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">

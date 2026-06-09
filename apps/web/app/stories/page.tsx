@@ -1,10 +1,68 @@
+'use client';
+
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { storyTopics } from "../components/sections/storyData";
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import StoryInteractions from '../components/stories/StoryInteractions';
 
+type Story = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  media?: string;
+  description?: string;
+  subtitle?: string;
+  imageUrl?: string;
+  publishedAt?: string;
+  metadata?: any;
+};
+
 export default function StoriesPage() {
+  const initialStories: Story[] = storyTopics.map((s) => ({
+    id: s.id,
+    slug: s.slug || s.id,
+    title: s.title,
+    summary: s.summary,
+    media: s.media,
+  }));
+  
+  const [stories, setStories] = useState<Story[]>(initialStories);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStories = async () => {
+      try {
+        const res = await fetch('/api/communications/cards?cardType=STORY&take=100&status=PUBLISHED');
+        const data = await res.json();
+        const items = data.cards || data.contentCards || [];
+        
+        if (items.length > 0) {
+          const mapped = items.map((item: any) => ({
+            id: item.id,
+            slug: item.slug || item.id,
+            title: item.title,
+            summary: item.subtitle || item.description || item.metadata?.summary || '',
+            media: item.imageUrl || item.metadata?.gallery?.[0]?.url || '',
+            description: item.description,
+            subtitle: item.subtitle,
+            imageUrl: item.imageUrl,
+            publishedAt: item.publishedAt,
+            metadata: item.metadata,
+          }));
+          setStories(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to load stories:', error);
+        // Fall back to static data
+      } finally {
+        setLoading(false);
+      }
+    };
+    void loadStories();
+  }, []);
+
   return (
     <main className="bg-slate-50 pt-20">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-6">
@@ -37,8 +95,14 @@ export default function StoriesPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-6 lg:px-8 py-12">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <p className="mt-4 text-slate-600">Loading stories...</p>
+          </div>
+        ) : (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {storyTopics.map((story) => (
+          {stories.map((story) => (
             <article key={story.id} className="group flex h-full flex-col overflow-hidden rounded-xl border bg-white shadow">
               <div className="relative h-48 w-full overflow-hidden">
                 <img src={story.media} alt={story.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
@@ -64,6 +128,7 @@ export default function StoriesPage() {
             </article>
           ))}
         </div>
+        )}
       </section>
     </main>
   );

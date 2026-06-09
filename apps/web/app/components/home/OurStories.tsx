@@ -58,7 +58,7 @@ export default function OurStories() {
 
     async function loadCardsWithCounts() {
       try {
-        const res = await fetch('/api/communications/cards?cardType=STORY&take=6');
+        const res = await fetch('/api/communications/cards?cardType=STORY&take=6&status=PUBLISHED');
         if (!res.ok) return;
 
         const data = await res.json();

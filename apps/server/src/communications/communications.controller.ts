@@ -148,10 +148,11 @@ export class CommunicationsController {
     @Query('take') take = 50,
     @Query('cardType') cardType?: string | string[],
     @Query('featured') featured?: string,
+    @Query('status') status?: string | string[],
   ) {
     try {
       const featuredFlag = featured === 'true' ? true : featured === 'false' ? false : undefined;
-      return await this.communicationsService.listCards(Number(skip), Number(take), cardType, featuredFlag);
+      return await this.communicationsService.listCards(Number(skip), Number(take), cardType, featuredFlag, status);
     } catch (error) {
       throw new HttpException({ error: error.message }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
