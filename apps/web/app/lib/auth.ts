@@ -48,7 +48,8 @@ export const authOptions: NextAuthOptions = {
             email: user.email,
             name: `${user.firstName} ${user.lastName}`,
             role: user.role,
-            avatar: user.avatar
+            avatar: user.avatar,
+            isVerified: user.isVerified,
           };
         } catch (err) {
           console.error('[next-auth] authorize error:', err);
@@ -72,7 +73,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session?.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
-        session.user.isVerified = token.isVerified as boolean;
+        (session.user as Record<string, unknown>).isVerified = token.isVerified as boolean;
       }
       return session;
     }
