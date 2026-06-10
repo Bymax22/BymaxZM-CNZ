@@ -87,12 +87,22 @@ export default function UsersManagement() {
       setIsLoading(true);
       try {
         const params = new URLSearchParams();
-        if (searchTerm) params.append('search', searchTerm);
-        if (filter) params.append('filter', filter);
-        params.append('limit', '50');
+        params.append('skip', '0');
+        params.append('take', '100');
+        
+        // Apply role/status filter
+        if (filter !== 'ALL') {
+          if (filter === 'ACTIVE' || filter === 'INACTIVE') {
+            params.append('status', filter.toLowerCase());
+          } else {
+            params.append('role', filter);
+          }
+        }
+        
         const res = await fetch(`/api/admin/users?${params.toString()}`);
         const data = await res.json();
-        if (res.ok) {
+        
+        if (res.ok && data.users && Array.isArray(data.users)) {
           setUsers(data.users.map((u: ApiUser) => ({
             id: u.id,
             firstName: u.firstName,
@@ -106,16 +116,18 @@ export default function UsersManagement() {
             club: u.memberships?.[0]?.clubId || ''
           })));
         } else {
+          console.error('Failed to fetch users:', data);
           setUsers([]);
         }
-      } catch {
+      } catch (error) {
+        console.error('Users fetch error:', error);
         setUsers([]);
       } finally {
         setIsLoading(false);
       }
     };
     if (status === 'authenticated') fetchUsers();
-  }, [status, searchTerm, filter]);
+  }, [status, filter]);
 
   const staffRoles = ['STAFF', 'PROJECT_MANAGER', 'FINANCE_OFFICER', 'VOLUNTEER_COORDINATOR', 'FIELD_OFFICER'];
 
@@ -261,9 +273,15 @@ export default function UsersManagement() {
       // Refresh users
       setIsLoading(true);
       const params = new URLSearchParams();
-      if (searchTerm) params.append('search', searchTerm);
-      if (filter) params.append('filter', filter);
-      params.append('limit', '50');
+      params.append('skip', '0');
+      params.append('take', '100');
+      if (filter !== 'ALL') {
+        if (filter === 'ACTIVE' || filter === 'INACTIVE') {
+          params.append('status', filter.toLowerCase());
+        } else {
+          params.append('role', filter);
+        }
+      }
       const usersRes = await fetch(`/api/admin/users?${params.toString()}`);
       const usersData = await usersRes.json();
       setUsers(usersData.users.map((u: ApiUser) => ({
