@@ -133,12 +133,15 @@ export class CommunicationsController {
       if (!body.title || !body.slug || !body.cardType) {
         throw new Error('Title, slug, and cardType are required');
       }
-      return await this.communicationsService.createCard({
+      const result = await this.communicationsService.createCard({
         ...body,
         publishedAt: body.publishedAt ? new Date(body.publishedAt) : undefined,
       });
+      return result;
     } catch (error) {
-      throw new HttpException({ error: error.message }, HttpStatus.BAD_REQUEST);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('❌ Error creating content card:', message);
+      throw new HttpException({ error: message }, HttpStatus.BAD_REQUEST);
     }
   }
 
