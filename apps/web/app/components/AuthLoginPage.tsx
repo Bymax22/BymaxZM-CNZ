@@ -70,10 +70,23 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
 
       if (precheck.status === 401) {
         const body: any = await parseJsonResponse(precheck);
+        const bodyText = typeof body === 'string' ? body : JSON.stringify(body || {});
+        const hasChallenge =
+          body?.otpRequired ||
+          body?.emailVerificationRequired ||
+          body?.message?.otpRequired ||
+          body?.message?.emailVerificationRequired ||
+          /otp|verification/i.test(bodyText);
 
-        if (body?.otpRequired || body?.emailVerificationRequired) {
+        if (hasChallenge) {
           setOtpMode(true);
-          setChallengeMessage(body?.message || (body?.otpRequired ? 'OTP required. Check your email.' : 'Email verification required.'));
+          setChallengeMessage(
+            body?.message ||
+              body?.error ||
+              (body?.otpRequired ? 'OTP required. Check your email.' : 'Email verification required.') ||
+              'A verification step is required. Check your email for the code.',
+          );
+          setOtp('');
           setIsLoading(false);
           return;
         }
@@ -336,12 +349,63 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
           </div>
 
           {otpMode ? (
-            <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
-              <h3 className="text-lg font-semibold text-emerald-900">OTP sent</h3>
-              <p className="mt-2 text-sm text-emerald-800">
-                A verification code has been sent to your email. Enter it in the popup that appears on the screen.
-              </p>
-              {challengeMessage ? <p className="mt-3 text-sm text-slate-600">{challengeMessage}</p> : null}
+            <div className="space-y-6 rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
+              <div>
+                <h3 className="text-lg font-semibold text-emerald-900">OTP sent</h3>
+                <p className="mt-2 text-sm text-emerald-800">
+                  A verification code has been sent to your email. Enter it below to complete your login.
+                </p>
+                {challengeMessage ? <p className="mt-3 text-sm text-slate-600">{challengeMessage}</p> : null}
+              </div>
+
+              <div>
+                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-2">
+                  Verification code
+                </label>
+                <input
+                  id="otp"
+                  name="otp"
+                  type="text"
+                  inputMode="numeric"
+                  required
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  disabled={isLoading}
+                  className="block w-full rounded-xl border border-gray-300 px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="Enter the 6 digit code"
+                />
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  type="button"
+                  onClick={resendOtp}
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Resend code
+                </button>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full sm:w-auto inline-flex justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:from-emerald-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    'Verify code'
+                  )}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setOtpMode(false)}
+                disabled={isLoading}
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
             </div>
           ) : (
             <>
