@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
 import Image from 'next/image';
 import AuthErrorModal from './AuthErrorModal';
@@ -35,6 +35,19 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
   const [otp, setOtp] = useState('');
   const [challengeMessage, setChallengeMessage] = useState<string | null>(null);
 
+  const parseJsonResponse = async (response: Response) => {
+    try {
+      return await response.json();
+    } catch {
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        return { error: text };
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -56,12 +69,7 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
       });
 
       if (precheck.status === 401) {
-        let body: any = {};
-        try {
-          body = await precheck.json();
-        } catch (e) {
-          // ignore
-        }
+        const body: any = await parseJsonResponse(precheck);
 
         if (body?.otpRequired || body?.emailVerificationRequired) {
           setOtpMode(true);
@@ -328,56 +336,13 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
           </div>
 
           {otpMode ? (
-            <>
-              <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-2">
-                  Verification code
-                </label>
-                <div className="relative">
-                  <input
-                    id="otp"
-                    name="otp"
-                    type="text"
-                    inputMode="numeric"
-                    required
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    disabled={isLoading}
-                    className="block w-full pl-3 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    placeholder="Enter the code sent to your email"
-                  />
-                </div>
-                {challengeMessage ? <p className="mt-2 text-sm text-gray-600">{challengeMessage}</p> : null}
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="text-sm">
-                  <button type="button" onClick={resendOtp} disabled={isLoading} className="font-medium text-emerald-600 hover:text-emerald-500">
-                    Resend code
-                  </button>
-                </div>
-
-                <div className="text-sm">
-                  <button type="button" onClick={() => setOtpMode(false)} disabled={isLoading} className="font-medium text-gray-600 hover:text-gray-800">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  'Verify code'
-                )}
-              </motion.button>
-            </>
+            <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
+              <h3 className="text-lg font-semibold text-emerald-900">OTP sent</h3>
+              <p className="mt-2 text-sm text-emerald-800">
+                A verification code has been sent to your email. Enter it in the popup that appears on the screen.
+              </p>
+              {challengeMessage ? <p className="mt-3 text-sm text-slate-600">{challengeMessage}</p> : null}
+            </div>
           ) : (
             <>
               <div>
@@ -465,6 +430,99 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
           </p>
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {otpMode && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
+          >
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl ring-1 ring-slate-200"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="otp-modal-title"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 id="otp-modal-title" className="text-xl font-semibold text-slate-900">
+                    Enter verification code
+                  </h2>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {challengeMessage || 'Enter the 6-digit code sent to your email to complete your login.'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOtpMode(false)}
+                  className="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                  aria-label="Close OTP modal"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form className="mt-6 space-y-4" onSubmit={handleSubmitOtp}>
+                <label htmlFor="otp-modal-input" className="block text-sm font-medium text-gray-700">
+                  Verification code
+                </label>
+                <input
+                  id="otp-modal-input"
+                  name="otp"
+                  type="text"
+                  inputMode="numeric"
+                  required
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  disabled={isLoading}
+                  className="block w-full rounded-xl border border-gray-300 px-4 py-3 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="Enter the 6 digit code"
+                />
+
+                <div className="flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={resendOtp}
+                    disabled={isLoading}
+                    className="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Resend code
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOtpMode(false)}
+                    disabled={isLoading}
+                    className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full inline-flex justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:from-emerald-600 hover:to-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    'Verify code'
+                  )}
+                </motion.button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
