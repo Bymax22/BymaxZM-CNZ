@@ -179,19 +179,20 @@ export default function NewsPage() {
   );
 
   const handleToggleLike = async (itemId: string) => {
-    setLikedItems((prev) => {
-      const isLiked = !prev[itemId];
-      setLikes((current) => ({
-        ...current,
-        [itemId]: (current[itemId] ?? 0) + (isLiked ? 1 : -1),
-      }));
-      return { ...prev, [itemId]: isLiked };
-    });
+    const currentLiked = likedItems[itemId] ?? false;
+    const nextLiked = !currentLiked;
+
+    setLikedItems((prev) => ({ ...prev, [itemId]: nextLiked }));
+    setLikes((current) => ({
+      ...current,
+      [itemId]: (current[itemId] ?? 0) + (nextLiked ? 1 : -1),
+    }));
 
     const item = items.find((entry) => entry.id === itemId);
     if (!item) return;
+
     const contentType = item.itemType === 'Event' ? 'event' : 'news';
-    const nextCount = await updateLikeCount(contentType, itemId, likedItems[itemId] ? -1 : 1);
+    const nextCount = await updateLikeCount(contentType, itemId, nextLiked ? 1 : -1);
     setLikes((current) => ({ ...current, [itemId]: nextCount }));
   };
 

@@ -72,7 +72,18 @@ async function processRequest(request: NextRequest, method: 'POST' | 'PUT') {
     }),
   });
 
-  const data = await res.json();
+  let data: any;
+  try {
+    data = await res.json();
+  } catch (parseError) {
+    const textContent = await res.text();
+    console.error(`Backend ${method} response parse error (status ${res.status}):`, textContent.substring(0, 500));
+    return NextResponse.json(
+      { error: `Backend error: ${textContent.substring(0, 100)}` },
+      { status: res.status || 500 }
+    );
+  }
+
   if (res.ok) {
     emitUpdate({ resource: 'content', action: method === 'POST' ? 'created' : 'updated', id: data?.id, data });
   }
@@ -101,7 +112,17 @@ export async function GET(request: NextRequest) {
     if (status) params.set('status', status);
 
     const res = await fetch(`${BACKEND}/communications/cards?${params.toString()}`);
-    const data = await res.json();
+    let data: any;
+    try {
+      data = await res.json();
+    } catch (parseError) {
+      const textContent = await res.text();
+      console.error(`Backend GET response parse error (status ${res.status}):`, textContent.substring(0, 500));
+      return NextResponse.json(
+        { error: `Backend error: ${textContent.substring(0, 100)}` },
+        { status: res.status || 500 }
+      );
+    }
     return NextResponse.json(data, { status: res.status });
   } catch (error) {
     console.error('Admin content GET error:', error);

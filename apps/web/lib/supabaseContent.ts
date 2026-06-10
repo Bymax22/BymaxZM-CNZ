@@ -42,7 +42,7 @@ export async function updateLikeCount(contentType: string, contentId: string | n
   const current = await fetchLikeCount(contentType, contentId);
   const nextCount = Math.max(0, current + delta);
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(SUPABASE_TABLES.likes)
     .upsert(
       {
@@ -51,14 +51,16 @@ export async function updateLikeCount(contentType: string, contentId: string | n
         likes: nextCount,
       },
       { onConflict: 'content_type,content_id' }
-    );
+    )
+    .select('likes')
+    .single();
 
   if (error) {
     console.error('updateLikeCount error', error);
     return current;
   }
 
-  return nextCount;
+  return data?.likes ?? nextCount;
 }
 
 export async function fetchComments(contentType: string, contentId: string | number) {
