@@ -32,8 +32,8 @@ export const Navigation = () => {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Hide navigation on dashboard/portal routes
-  if (pathname.startsWith('/portal') || pathname.startsWith('/admin') || pathname.startsWith('/staff') || pathname.startsWith('/donor') || pathname.startsWith('/club')) {
+  // Hide navigation on dashboard routes (but not portal)
+  if (pathname.startsWith('/admin') || pathname.startsWith('/staff') || pathname.startsWith('/donor') || pathname.startsWith('/club')) {
     return null;
   }
 

@@ -47,8 +47,8 @@ export const SecondaryNav = () => {
   const [isScrolling, setIsScrolling] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  // Hide secondary nav on dashboard/portal routes
-  if (pathname.startsWith('/portal') || pathname.startsWith('/admin') || pathname.startsWith('/staff') || pathname.startsWith('/donor') || pathname.startsWith('/club')) {
+  // Hide secondary nav on dashboard routes (but not portal)
+  if (pathname.startsWith('/admin') || pathname.startsWith('/staff') || pathname.startsWith('/donor') || pathname.startsWith('/club')) {
     return null;
   }
 

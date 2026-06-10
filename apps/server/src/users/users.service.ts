@@ -76,6 +76,8 @@ export class UsersService {
         lastName: true,
         email: true,
         role: true,
+        isActive: true,
+        isVerified: true,
       },
     });
   }
@@ -105,6 +107,7 @@ export class UsersService {
         email: true,
         role: true,
         isActive: true,
+        isVerified: true,
       },
     });
   }

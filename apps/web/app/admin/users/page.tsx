@@ -23,7 +23,12 @@ import {
   FaUser,
   FaClock,
   FaDonate,
-  FaBan
+  FaBan,
+  FaCheck,
+  FaTrash,
+  FaLock,
+  FaUnlock,
+  FaShieldAlt
 } from 'react-icons/fa';
 
 interface User {
@@ -33,6 +38,7 @@ interface User {
   email: string;
   role: string;
   status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+  isVerified: boolean;
   lastLogin: string;
   joinDate: string;
 	club?: string;
@@ -45,6 +51,7 @@ interface ApiUser {
   email: string;
   role: string;
   isActive: boolean;
+  isVerified: boolean;
   lastLogin: string;
   createdAt: string;
   club?: { name: string };
@@ -64,6 +71,8 @@ export default function UsersManagement() {
   const [form, setForm] = useState<UserForm>({ firstName: '', lastName: '', email: '', role: 'USER', phone: '' });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<User | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -90,6 +99,7 @@ export default function UsersManagement() {
             lastName: u.lastName,
             email: u.email,
             role: u.role,
+            isVerified: u.isVerified,
             status: u.isActive ? 'ACTIVE' : 'INACTIVE',
             lastLogin: u.lastLogin,
             joinDate: u.createdAt,
@@ -262,6 +272,7 @@ export default function UsersManagement() {
         lastName: u.lastName,
         email: u.email,
         role: u.role,
+        isVerified: u.isVerified,
         status: u.isActive ? 'ACTIVE' : 'INACTIVE',
         lastLogin: u.lastLogin,
         joinDate: u.createdAt,
@@ -274,18 +285,77 @@ export default function UsersManagement() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
-    setIsLoading(true);
+  const handleDelete = async (user: User) => {
+    setDeleteConfirmation(user);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmation) return;
+    setActionLoading(deleteConfirmation.id);
     try {
-      const res = await fetch(`/api/admin/users?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users?id=${deleteConfirmation.id}`, { method: 'DELETE' });
       if (!res.ok) {
         alert('Failed to delete user');
       } else {
-        setUsers(users => users.filter(u => u.id !== id));
+        setUsers(users => users.filter(u => u.id !== deleteConfirmation.id));
+        setDeleteConfirmation(null);
       }
     } finally {
-      setIsLoading(false);
+      setActionLoading(null);
+    }
+  };
+
+  const handleToggleSuspend = async (user: User) => {
+    setActionLoading(`suspend-${user.id}`);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          id: user.id, 
+          isActive: user.status === 'ACTIVE' ? false : true 
+        })
+      });
+      if (res.ok) {
+        setUsers(users => 
+          users.map(u => 
+            u.id === user.id 
+              ? { ...u, status: u.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' }
+              : u
+          )
+        );
+      } else {
+        alert('Failed to update user status');
+      }
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleToggleVerify = async (user: User) => {
+    setActionLoading(`verify-${user.id}`);
+    try {
+      const res = await fetch('/api/admin/users', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          id: user.id, 
+          isVerified: !user.isVerified
+        })
+      });
+      if (res.ok) {
+        setUsers(users => 
+          users.map(u => 
+            u.id === user.id 
+              ? { ...u, isVerified: !u.isVerified }
+              : u
+          )
+        );
+      } else {
+        alert('Failed to update verification status');
+      }
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -375,10 +445,10 @@ export default function UsersManagement() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Login
+                    Verified
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Club
+                    Last Login
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -422,22 +492,45 @@ export default function UsersManagement() {
                           {user.status}
                         </span>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${user.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                          {user.isVerified ? 'Verified' : 'Unverified'}
+                        </span>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.lastLogin).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {user.club || '-'}
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button className="text-blue-600 hover:text-blue-900 transition-colors">
-                            <FaEye className="w-4 h-4" />
+                        <div className="flex items-center justify-end gap-2">
+                          <button 
+                            disabled={actionLoading === `verify-${user.id}`}
+                            onClick={() => handleToggleVerify(user)}
+                            title={user.isVerified ? 'Unverify user' : 'Verify user'}
+                            className={`${user.isVerified ? 'text-green-600 hover:text-green-900' : 'text-yellow-600 hover:text-yellow-900'} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            <FaShieldAlt className="w-4 h-4" />
                           </button>
-                          <button className="text-emerald-600 hover:text-emerald-900 transition-colors" onClick={() => openEditModal(user)}>
+                          <button 
+                            disabled={actionLoading === `suspend-${user.id}`}
+                            onClick={() => handleToggleSuspend(user)}
+                            title={user.status === 'ACTIVE' ? 'Suspend user' : 'Activate user'}
+                            className={`${user.status === 'ACTIVE' ? 'text-emerald-600 hover:text-emerald-900' : 'text-red-600 hover:text-red-900'} transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            {user.status === 'ACTIVE' ? <FaUnlock className="w-4 h-4" /> : <FaLock className="w-4 h-4" />}
+                          </button>
+                          <button 
+                            disabled={actionLoading === `edit-${user.id}`}
+                            onClick={() => openEditModal(user)}
+                            className="text-blue-600 hover:text-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
                             <FaEdit className="w-4 h-4" />
                           </button>
-                          <button className="text-red-600 hover:text-red-900 transition-colors" onClick={() => handleDelete(user.id)}>
-                            <FaBan className="w-4 h-4" />
+                          <button 
+                            disabled={actionLoading === user.id}
+                            onClick={() => handleDelete(user)}
+                            className="text-red-600 hover:text-red-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <FaTrash className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
@@ -543,6 +636,59 @@ export default function UsersManagement() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md relative"
+          >
+            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
+              <FaTrash className="w-6 h-6 text-red-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-center mb-2">Delete User?</h2>
+            <p className="text-gray-600 text-center mb-4">
+              Are you sure you want to delete <strong>{deleteConfirmation.firstName} {deleteConfirmation.lastName}</strong>?
+            </p>
+            <div className="bg-red-50 rounded-lg p-4 mb-6 text-sm">
+              <p className="text-gray-700"><strong>Email:</strong> {deleteConfirmation.email}</p>
+              <p className="text-gray-700"><strong>Role:</strong> {deleteConfirmation.role}</p>
+              <p className="text-gray-700"><strong>Status:</strong> {deleteConfirmation.status}</p>
+            </div>
+            <p className="text-red-600 text-sm mb-6 text-center">
+              This action cannot be undone. All associated data will be permanently deleted.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeleteConfirmation(null)}
+                disabled={actionLoading === deleteConfirmation.id}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={actionLoading === deleteConfirmation.id}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {actionLoading === deleteConfirmation.id ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <FaTrash className="w-4 h-4" />
+                    Delete User
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
         </div>
       )}
     </div>
