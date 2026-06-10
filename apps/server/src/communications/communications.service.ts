@@ -256,7 +256,7 @@ export class CommunicationsService {
     // Ensure slug is unique — append suffix if needed to avoid unique constraint errors
     const finalSlug = await this.ensureUniqueSlug(payload.slug);
 
-    return this.prisma.contentCard.create({
+    const created = await this.prisma.contentCard.create({
       data: {
         title: payload.title,
         slug: finalSlug,
@@ -276,6 +276,31 @@ export class CommunicationsService {
         publishedAt: payload.publishedAt,
       },
     });
+
+    try {
+      if (created.status && created.status.toUpperCase() === 'PUBLISHED' && created.relatedId) {
+        // If relatedId corresponds to a user, notify them
+        const user = await this.prisma.user.findUnique({ where: { id: created.relatedId } }).catch(() => null);
+        if (user && user.email) {
+          const subject = `Your ${created.cardType?.toLowerCase() || 'content'} has been published`;
+          const html = `<p>Hi ${user.firstName || ''},</p><p>Your content titled <strong>${created.title}</strong> has been published.</p>`;
+          await this.emailService.sendEmail({ to: user.email, subject, htmlContent: html, textContent: subject });
+          await this.createNotification({
+            title: subject,
+            content: `Your content "${created.title}" was published.`,
+            type: NotificationType.SYSTEM,
+            userId: user.id,
+            relatedId: created.id,
+            relatedType: 'content_card',
+          });
+        }
+      }
+    } catch (err) {
+      // swallow — we don't want to fail create on notification errors
+      console.error('Failed to send publication notification', err);
+    }
+
+    return created;
   }
 
   async updateCard(id: string, payload: any) {
@@ -297,11 +322,36 @@ export class CommunicationsService {
     if (payload.metadata !== undefined) data.metadata = payload.metadata;
     if (payload.relatedId !== undefined) data.relatedId = payload.relatedId;
     if (payload.publishedAt !== undefined) data.publishedAt = payload.publishedAt;
+    const existing = await this.prisma.contentCard.findUnique({ where: { id } });
+    const updated = await this.prisma.contentCard.update({ where: { id }, data });
 
-    return this.prisma.contentCard.update({
-      where: { id },
-      data,
-    });
+    try {
+      const prevStatus = existing?.status?.toUpperCase();
+      const newStatus = (updated.status || '').toUpperCase();
+      if (prevStatus !== 'PUBLISHED' && newStatus === 'PUBLISHED') {
+        // notify related user if exists
+        if (updated.relatedId) {
+          const user = await this.prisma.user.findUnique({ where: { id: updated.relatedId } }).catch(() => null);
+          if (user && user.email) {
+            const subject = `Your ${updated.cardType?.toLowerCase() || 'content'} has been published`;
+            const html = `<p>Hi ${user.firstName || ''},</p><p>Your content titled <strong>${updated.title}</strong> has been published.</p>`;
+            await this.emailService.sendEmail({ to: user.email, subject, htmlContent: html, textContent: subject });
+            await this.createNotification({
+              title: subject,
+              content: `Your content "${updated.title}" was published.`,
+              type: NotificationType.SYSTEM,
+              userId: user.id,
+              relatedId: updated.id,
+              relatedType: 'content_card',
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to send publication notification', err);
+    }
+
+    return updated;
   }
 
   async ensureUniqueSlug(slug: string) {
