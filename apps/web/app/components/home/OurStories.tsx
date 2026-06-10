@@ -222,7 +222,7 @@ export default function OurStories() {
                       </div>
                     )}
                     <div className="mt-auto border-t border-slate-200 pt-4 flex items-center justify-between gap-3">
-                      <Link href={`/stories/${t.slug || t.id}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
+                      <Link href={`/stories/${encodeURIComponent(t.slug || t.id)}`} className="text-sm text-[#008000] font-medium hover:text-emerald-700 transition-colors">
                         Read Full Story →
                       </Link>
 
@@ -246,7 +246,7 @@ export default function OurStories() {
                         </button>
 
                         <Link
-                          href={`/stories/${t.slug || t.id}`}
+                          href={`/stories/${encodeURIComponent(t.slug || t.id)}`}
                           aria-label="Comment"
                           className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600 transition"
                         >
@@ -261,7 +261,7 @@ export default function OurStories() {
                               navigator.share({
                                 title: t.author,
                                 text: t.text,
-                                url: `${typeof window !== 'undefined' ? window.location.origin : ''}/stories/${t.slug || t.id}`,
+                                url: `${typeof window !== 'undefined' ? window.location.origin : ''}/stories/${encodeURIComponent(t.slug || t.id)}`,
                               }).catch(() => {});
                             }
                           }}
