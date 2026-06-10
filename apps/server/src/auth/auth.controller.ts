@@ -42,10 +42,18 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: { email: string; password: string }) {
+  async login(@Body() body: { email: string; password: string; otp?: string }) {
     try {
-      const user = await this.authService.login(body.email, body.password);
-      return { message: 'Login successful', user };
+      const result = await this.authService.login(body.email, body.password, body.otp);
+
+      // If the service returned a challenge (OTP or email verification required),
+      // surface that to the client as a non-2xx response so the frontend can handle it.
+      if (result && (result.otpRequired || result.emailVerificationRequired)) {
+        throw new HttpException(result, HttpStatus.UNAUTHORIZED);
+      }
+
+      // Successful login - return the authenticated user object
+      return { message: 'Login successful', user: result };
     } catch (error) {
       throw new HttpException(
         { error: error.message },

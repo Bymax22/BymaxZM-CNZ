@@ -22,10 +22,13 @@ export const authOptions: NextAuthOptions = {
           console.debug('[next-auth] Authorize attempt for:', credentials.email);
 
           // Proxy authentication to backend instead of using Prisma in the web package
+          const body: any = { email: credentials.email, password: credentials.password };
+          if ((credentials as any).otp) body.otp = (credentials as any).otp;
+
           const res = await fetch(`${BACKEND}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: credentials.email, password: credentials.password }),
+            body: JSON.stringify(body),
           });
 
           if (!res.ok) {
@@ -58,9 +61,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // `user` is typed via NextAuth augmentation to include `id` and `role`
+        // `user` is typed via NextAuth augmentation to include `id`, `role` and `isVerified`
         token.role = ((user as unknown) as Record<string, unknown>).role as string;
         token.id = ((user as unknown) as Record<string, unknown>).id as string;
+        token.isVerified = ((user as unknown) as Record<string, unknown>).isVerified as boolean;
       }
       return token;
     },
@@ -68,6 +72,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session?.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.isVerified = token.isVerified as boolean;
       }
       return session;
     }

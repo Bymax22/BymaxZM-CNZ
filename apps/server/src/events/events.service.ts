@@ -1,11 +1,14 @@
 import { EventType } from '@prisma/client';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { randomUUID } from 'crypto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class EventsService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(EventsService.name);
+
+  constructor(private prisma: PrismaService, private emailService: EmailService) {}
 
   async getEvents(limit = 10, upcoming = true, onlineOnly = false) {
     const now = new Date();
@@ -197,6 +200,14 @@ export class EventsService {
         notes: notes || undefined,
       },
     });
+
+    // Send confirmation email to registrant (best-effort)
+    try {
+      const registrantName = `${user.firstName || ''}${user.lastName ? ' ' + user.lastName : ''}`.trim();
+      await this.emailService.sendEventRegistrationEmail(user.email, event.title, event.startDate, registrantName || undefined);
+    } catch (err) {
+      this.logger.warn('Failed to send event registration email:', err);
+    }
 
     console.log('✅ Registration created successfully');
     return {

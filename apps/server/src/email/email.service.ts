@@ -23,6 +23,7 @@ export class EmailService {
   private readonly brevoTemplateAuthNotification = this.parseTemplateId(process.env.BREVO_TEMPLATE_AUTH_NOTIFICATION);
   private readonly brevoTemplateNewsletterSubscription = this.parseTemplateId(process.env.BREVO_TEMPLATE_NEWSLETTER_SUBSCRIPTION);
   private readonly brevoTemplateNewsletter = this.parseTemplateId(process.env.BREVO_TEMPLATE_NEWSLETTER);
+  private readonly brevoTemplateEventRegistration = this.parseTemplateId(process.env.BREVO_TEMPLATE_EVENT_REGISTRATION);
 
   private parseTemplateId(value?: string): number | undefined {
     if (!value) return undefined;
@@ -213,6 +214,31 @@ export class EmailService {
       });
     } catch (error) {
       this.logger.error('Failed to send newsletter:', error);
+      return false;
+    }
+  }
+
+  async sendEventRegistrationEmail(email: string, eventTitle: string, eventDate?: Date, registrantName?: string): Promise<boolean> {
+    try {
+      const subject = `Event registration confirmation: ${eventTitle}`;
+      const dateStr = eventDate ? new Date(eventDate).toLocaleString() : '';
+      const htmlContent = `<p>Hi ${registrantName || ''},</p><p>Thank you for registering for <strong>${eventTitle}</strong>${dateStr ? ` on ${dateStr}` : ''}.</p><p>We look forward to seeing you there.</p>`;
+      const textContent = `Hi ${registrantName || ''},\n\nThank you for registering for ${eventTitle}${dateStr ? ` on ${dateStr}` : ''}.\n\nWe look forward to seeing you there.`;
+
+      return await this.sendEmail({
+        to: email,
+        subject,
+        templateId: this.brevoTemplateEventRegistration,
+        params: {
+          event_title: eventTitle,
+          event_date: dateStr,
+          registrant_name: registrantName || email,
+        },
+        htmlContent,
+        textContent,
+      });
+    } catch (error) {
+      this.logger.error('Failed to send event registration email:', error);
       return false;
     }
   }

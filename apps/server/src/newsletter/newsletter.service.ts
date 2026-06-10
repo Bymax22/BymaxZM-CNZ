@@ -21,7 +21,7 @@ export class NewsletterService {
 
     if (existing) {
       // Resubscribe if previously unsubscribed
-      return await this.prisma.newsletterSubscriber.update({
+      const updated = await this.prisma.newsletterSubscriber.update({
         where: { email: normalizedEmail },
         data: {
           isActive: true,
@@ -29,9 +29,17 @@ export class NewsletterService {
           updatedAt: new Date(),
         },
       });
+
+      try {
+        await this.emailService.sendSubscriptionConfirmationEmail(normalizedEmail, firstName);
+      } catch (err) {
+        this.logger.warn(`Failed to send subscription confirmation to ${normalizedEmail}: ${err}`);
+      }
+
+      return updated;
     }
 
-    return await this.prisma.newsletterSubscriber.create({
+    const created = await this.prisma.newsletterSubscriber.create({
       data: {
         email: normalizedEmail,
         firstName,
@@ -39,6 +47,14 @@ export class NewsletterService {
         source: source || 'website',
       },
     });
+
+    try {
+      await this.emailService.sendSubscriptionConfirmationEmail(normalizedEmail, firstName);
+    } catch (err) {
+      this.logger.warn(`Failed to send subscription confirmation to ${normalizedEmail}: ${err}`);
+    }
+
+    return created;
   }
 
   async unsubscribeNewsletter(email: string) {

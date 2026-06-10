@@ -98,10 +98,12 @@ export class AuthService {
       },
     });
 
-    return user;
+    await this.sendOtp(data.email);
+
+    return { user, otpSent: true };
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, otp?: string) {
     const user = await this.prisma.user.findUnique({
       where: { email },
       select: {
@@ -111,6 +113,7 @@ export class AuthService {
         email: true,
         password: true,
         isActive: true,
+        isVerified: true,
         role: true,
       },
     });
@@ -123,23 +126,62 @@ export class AuthService {
       throw new Error('User is not active');
     }
 
+    if (!user.isVerified) {
+      const { token } = await this.otpService.createEmailVerificationToken(user.id);
+      const emailSent = await this.emailService.sendVerificationEmail(email, token);
+
+      if (!emailSent) {
+        throw new BadRequestException('Failed to send email verification');
+      }
+
+      this.logger.log(`Email verification required for ${email}`);
+      return {
+        emailVerificationRequired: true,
+        message: 'Email verification is required. Check your inbox for instructions.',
+      };
+    }
+
     if (!user.password) {
       throw new Error('User has no password set');
     }
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      throw new Error('Invalid password');
+    // If an OTP was provided, verify it and complete login
+    if (otp) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        throw new Error('Invalid password');
+      }
+
+      const otpValid = await this.otpService.verifyOtp(user.id, otp, 'email');
+      if (!otpValid) {
+        throw new BadRequestException('Invalid or expired OTP');
+      }
+
+      this.logger.log(`OTP verified for ${email}`);
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        isVerified: user.isVerified,
+      };
     }
 
-    // Update last login
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() },
-    });
+    // No OTP provided: send one to complete login
+    const { otp: generatedOtp } = await this.otpService.createOtp(user.id, 'email');
+    const emailSent = await this.emailService.sendOtpEmail(email, generatedOtp);
 
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    if (!emailSent) {
+      throw new BadRequestException('Failed to send OTP email');
+    }
+
+    this.logger.log(`OTP sent for login to ${email}`);
+    return {
+      otpRequired: true,
+      message: 'OTP sent to your email. Enter it to complete login.',
+    };
   }
 
   async sendEmailVerification(email: string) {
@@ -310,8 +352,13 @@ export class AuthService {
         throw new UnauthorizedException('Invalid or expired OTP');
       }
 
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { isVerified: true },
+      });
+
       this.logger.log(`OTP verified for ${email}`);
-      return { message: 'OTP verified successfully', user: { id: user.id, email: user.email } };
+      return { message: 'OTP verified successfully', user: { id: user.id, email: user.email, role: user.role } };
     } catch (error) {
       this.logger.error('Verify OTP error:', error);
       throw error;

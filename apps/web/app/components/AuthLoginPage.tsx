@@ -31,6 +31,10 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
       : undefined;
   const { error, isOpen, showError, showSuccess, clearError } = useAuthError();
 
+  const [otpMode, setOtpMode] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [challengeMessage, setChallengeMessage] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -44,6 +48,41 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
     setIsLoading(true);
 
     try {
+      // Pre-check login to detect OTP / verification challenges from backend
+      const precheck = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, password }),
+      });
+
+      if (precheck.status === 401) {
+        let body: any = {};
+        try {
+          body = await precheck.json();
+        } catch (e) {
+          // ignore
+        }
+
+        if (body?.otpRequired || body?.emailVerificationRequired) {
+          setOtpMode(true);
+          setChallengeMessage(body?.message || (body?.otpRequired ? 'OTP required. Check your email.' : 'Email verification required.'));
+          setIsLoading(false);
+          return;
+        }
+
+        showError(body?.error || 'Invalid credentials');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!precheck.ok) {
+        const text = await precheck.text();
+        showError(text || 'Login failed. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // No challenge — proceed with NextAuth signIn to establish session
       const result = await signIn('credentials', {
         email: normalizedEmail,
         password,
@@ -129,6 +168,102 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
       setIsLoading(false);
     }
   };
++
++  const handleSubmitOtp = async (e: React.FormEvent) => {
++    e.preventDefault();
++    if (!otp) {
++      showError('Please enter the OTP sent to your email');
++      return;
++    }
++
++    setIsLoading(true);
++    try {
++      const result = await signIn('credentials', {
++        email: email.trim(),
++        password,
++        otp,
++        redirect: false,
++      });
++
++      if (result?.error) {
++        showError(result.error === 'CredentialsSignin' ? 'Invalid OTP or credentials' : result.error);
++        setIsLoading(false);
++        return;
++      }
++
++      if (!result?.ok) {
++        showError('OTP verification failed. Please try again.');
++        setIsLoading(false);
++        return;
++      }
++
++      showSuccess('Verification successful! Redirecting...');
++      // reuse existing redirect logic by fetching session role
++      const getSessionRole = async (): Promise<string | undefined> => {
++        const maxAttempts = 6;
++        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
++          try {
++            const response = await fetch('/api/auth/session', { cache: 'no-store' });
++            if (!response.ok) {
++              continue;
++            }
++            const session = await response.json();
++            const userRole = session?.user?.role;
++            if (userRole) return userRole;
++          } catch (_) {}
++          await new Promise((resolve) => setTimeout(resolve, 400));
++        }
++        return undefined;
++      };
++
++      const userRole = await getSessionRole();
++      const normalizeRole = (role: string | undefined): string | undefined => role ? role.toUpperCase() : undefined;
++      const redirectByRole = (role: string | undefined) => {
++        const normalized = normalizeRole(role);
++        switch (normalized) {
++          case 'SUPER_ADMIN':
++          case 'ADMIN':
++            return '/admin/dashboard';
++          case 'STAFF':
++          case 'PROJECT_MANAGER':
++          case 'FINANCE_OFFICER':
++          case 'VOLUNTEER_COORDINATOR':
++          case 'FIELD_OFFICER':
++            return '/staff/dashboard';
++          case 'DONOR':
++            return '/donor/dashboard';
++          case 'CLUB_LEADER':
++            return '/club/dashboard';
++          case 'USER':
++            return '/portal/user/dashboard';
++          default:
++            return '/portal/dashboard';
++        }
++      };
++
++      router.push(redirectByRole(userRole || selectedRole));
++    } catch (err) {
++      showError('An unexpected error occurred. Please try again.');
++    } finally {
++      setIsLoading(false);
++    }
++  };
++
++  const resendOtp = async () => {
++    if (!email.trim()) return showError('Email is required to resend OTP');
++    try {
++      const res = await fetch('/api/auth/send-otp', {
++        method: 'POST',
++        headers: { 'Content-Type': 'application/json' },
++        body: JSON.stringify({ email: email.trim() }),
++      });
++      const data = await res.json();
++      if (!res.ok) return showError(data?.error || 'Failed to resend OTP');
++      showSuccess('OTP resent. Check your email.');
++    } catch (err) {
++      showError('Failed to resend OTP');
++    }
++  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -168,7 +303,7 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
           </p>
         </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={otpMode ? handleSubmitOtp : handleSubmit}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
@@ -192,75 +327,130 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
             </div>
           </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaLock className="h-5 w-5 text-gray-400" />
+          {otpMode ? (
+            <>
+              <div>
+                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-2">
+                  Verification code
+                </label>
+                <div className="relative">
+                  <input
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    disabled={isLoading}
+                    className="block w-full pl-3 pr-3 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="Enter the code sent to your email"
+                  />
+                </div>
+                {challengeMessage ? <p className="mt-2 text-sm text-gray-600">{challengeMessage}</p> : null}
               </div>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+
+              <div className="flex items-center justify-between">
+                <div className="text-sm">
+                  <button type="button" onClick={resendOtp} disabled={isLoading} className="font-medium text-emerald-600 hover:text-emerald-500">
+                    Resend code
+                  </button>
+                </div>
+
+                <div className="text-sm">
+                  <button type="button" onClick={() => setOtpMode(false)} disabled={isLoading} className="font-medium text-gray-600 hover:text-gray-800">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+
+              <motion.button
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                type="submit"
                 disabled={isLoading}
-                className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                disabled={isLoading}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center disabled:opacity-50"
-                onClick={() => setShowPassword(!showPassword)}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                {showPassword ? (
-                  <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                  'Verify code'
                 )}
-              </button>
-            </div>
-          </div>
+              </motion.button>
+            </>
+          ) : (
+            <>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaLock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    disabled={isLoading}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center disabled:opacity-50"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+              </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    disabled={isLoading}
+                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                    Remember me
+                  </label>
+                </div>
+
+                <div className="text-sm">
+                  <Link href="/auth/forgot-password" className="font-medium text-emerald-600 hover:text-emerald-500">
+                    Forgot password?
+                  </Link>
+                </div>
+              </div>
+
+              <motion.button
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                type="submit"
                 disabled={isLoading}
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <Link href="/auth/forgot-password" className="font-medium text-emerald-600 hover:text-emerald-500">
-                Forgot password?
-              </Link>
-            </div>
-          </div>
-
-          <motion.button
-            whileHover={{ scale: isLoading ? 1 : 1.02 }}
-            whileTap={{ scale: isLoading ? 1 : 0.98 }}
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-          >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              'Sign in'
-            )}
-          </motion.button>
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Sign in'
+                )}
+              </motion.button>
+            </>
+          )}
         </form>
 
         <div className="text-center">
