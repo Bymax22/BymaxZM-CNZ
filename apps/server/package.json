@@ -25,6 +25,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/config": "^4.0.0",
     "@prisma/client": "^6.6.0",
+    "axios": "^1.8.4",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.10.0",
     "reflect-metadata": "^0.2.2",
