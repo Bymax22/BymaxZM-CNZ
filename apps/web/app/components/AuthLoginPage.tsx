@@ -168,102 +168,102 @@ export default function AuthLoginPage({ selectedRole: selectedRoleProp }: AuthLo
       setIsLoading(false);
     }
   };
-+
-+  const handleSubmitOtp = async (e: React.FormEvent) => {
-+    e.preventDefault();
-+    if (!otp) {
-+      showError('Please enter the OTP sent to your email');
-+      return;
-+    }
-+
-+    setIsLoading(true);
-+    try {
-+      const result = await signIn('credentials', {
-+        email: email.trim(),
-+        password,
-+        otp,
-+        redirect: false,
-+      });
-+
-+      if (result?.error) {
-+        showError(result.error === 'CredentialsSignin' ? 'Invalid OTP or credentials' : result.error);
-+        setIsLoading(false);
-+        return;
-+      }
-+
-+      if (!result?.ok) {
-+        showError('OTP verification failed. Please try again.');
-+        setIsLoading(false);
-+        return;
-+      }
-+
-+      showSuccess('Verification successful! Redirecting...');
-+      // reuse existing redirect logic by fetching session role
-+      const getSessionRole = async (): Promise<string | undefined> => {
-+        const maxAttempts = 6;
-+        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-+          try {
-+            const response = await fetch('/api/auth/session', { cache: 'no-store' });
-+            if (!response.ok) {
-+              continue;
-+            }
-+            const session = await response.json();
-+            const userRole = session?.user?.role;
-+            if (userRole) return userRole;
-+          } catch (_) {}
-+          await new Promise((resolve) => setTimeout(resolve, 400));
-+        }
-+        return undefined;
-+      };
-+
-+      const userRole = await getSessionRole();
-+      const normalizeRole = (role: string | undefined): string | undefined => role ? role.toUpperCase() : undefined;
-+      const redirectByRole = (role: string | undefined) => {
-+        const normalized = normalizeRole(role);
-+        switch (normalized) {
-+          case 'SUPER_ADMIN':
-+          case 'ADMIN':
-+            return '/admin/dashboard';
-+          case 'STAFF':
-+          case 'PROJECT_MANAGER':
-+          case 'FINANCE_OFFICER':
-+          case 'VOLUNTEER_COORDINATOR':
-+          case 'FIELD_OFFICER':
-+            return '/staff/dashboard';
-+          case 'DONOR':
-+            return '/donor/dashboard';
-+          case 'CLUB_LEADER':
-+            return '/club/dashboard';
-+          case 'USER':
-+            return '/portal/user/dashboard';
-+          default:
-+            return '/portal/dashboard';
-+        }
-+      };
-+
-+      router.push(redirectByRole(userRole || selectedRole));
-+    } catch (err) {
-+      showError('An unexpected error occurred. Please try again.');
-+    } finally {
-+      setIsLoading(false);
-+    }
-+  };
-+
-+  const resendOtp = async () => {
-+    if (!email.trim()) return showError('Email is required to resend OTP');
-+    try {
-+      const res = await fetch('/api/auth/send-otp', {
-+        method: 'POST',
-+        headers: { 'Content-Type': 'application/json' },
-+        body: JSON.stringify({ email: email.trim() }),
-+      });
-+      const data = await res.json();
-+      if (!res.ok) return showError(data?.error || 'Failed to resend OTP');
-+      showSuccess('OTP resent. Check your email.');
-+    } catch (err) {
-+      showError('Failed to resend OTP');
-+    }
-+  };
+
+  const handleSubmitOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otp) {
+      showError('Please enter the OTP sent to your email');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const result = await signIn('credentials', {
+        email: email.trim(),
+        password,
+        otp,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        showError(result.error === 'CredentialsSignin' ? 'Invalid OTP or credentials' : result.error);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!result?.ok) {
+        showError('OTP verification failed. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      showSuccess('Verification successful! Redirecting...');
+      // reuse existing redirect logic by fetching session role
+      const getSessionRole = async (): Promise<string | undefined> => {
+        const maxAttempts = 6;
+        for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+          try {
+            const response = await fetch('/api/auth/session', { cache: 'no-store' });
+            if (!response.ok) {
+              continue;
+            }
+            const session = await response.json();
+            const userRole = session?.user?.role;
+            if (userRole) return userRole;
+          } catch (_) {}
+          await new Promise((resolve) => setTimeout(resolve, 400));
+        }
+        return undefined;
+      };
+
+      const userRole = await getSessionRole();
+      const normalizeRole = (role: string | undefined): string | undefined => role ? role.toUpperCase() : undefined;
+      const redirectByRole = (role: string | undefined) => {
+        const normalized = normalizeRole(role);
+        switch (normalized) {
+          case 'SUPER_ADMIN':
+          case 'ADMIN':
+            return '/admin/dashboard';
+          case 'STAFF':
+          case 'PROJECT_MANAGER':
+          case 'FINANCE_OFFICER':
+          case 'VOLUNTEER_COORDINATOR':
+          case 'FIELD_OFFICER':
+            return '/staff/dashboard';
+          case 'DONOR':
+            return '/donor/dashboard';
+          case 'CLUB_LEADER':
+            return '/club/dashboard';
+          case 'USER':
+            return '/portal/user/dashboard';
+          default:
+            return '/portal/dashboard';
+        }
+      };
+
+      router.push(redirectByRole(userRole || selectedRole));
+    } catch (err) {
+      showError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resendOtp = async () => {
+    if (!email.trim()) return showError('Email is required to resend OTP');
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) return showError(data?.error || 'Failed to resend OTP');
+      showSuccess('OTP resent. Check your email.');
+    } catch (err) {
+      showError('Failed to resend OTP');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
