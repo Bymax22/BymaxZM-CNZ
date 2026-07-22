@@ -24,8 +24,9 @@ function isVideoUrl(url?: string) {
 
 async function fetchRemoteStory(id: string): Promise<StoryTopic | undefined> {
   try {
+    const safeId = id.trim();
     const siteUrl = await getSiteUrl();
-    const res = await fetch(`${siteUrl}/api/communications/card/${encodeURIComponent(id)}`);
+    const res = await fetch(`${siteUrl}/api/communications/card/${encodeURIComponent(safeId)}`);
     if (!res.ok) return undefined;
     const card = await res.json();
     if (!card) return undefined;
@@ -79,18 +80,19 @@ export async function generateStaticParams() {
 
 export default async function StoryDetail({ params }: Props) {
   const resolvedParams = await params;
+  const requestedId = (resolvedParams.id || '').trim();
   
   // First try to find by exact ID match
-  let story = storyTopics.find((s) => s.id === resolvedParams.id);
+  let story = storyTopics.find((s) => s.id === requestedId);
   
   // If not found, try to find by slug or case-insensitive ID
   if (!story) {
-    story = storyTopics.find((s) => (s.slug && s.slug === resolvedParams.id) || s.id.toLowerCase() === resolvedParams.id.toLowerCase());
+    story = storyTopics.find((s) => (s.slug && s.slug === requestedId) || s.id.toLowerCase() === requestedId.toLowerCase());
   }
 
   // If still not found, try remote fetch
   if (!story) {
-    story = await fetchRemoteStory(resolvedParams.id);
+    story = await fetchRemoteStory(requestedId);
   }
 
   if (!story) return notFound();

@@ -253,8 +253,9 @@ export class CommunicationsService {
     relatedId?: string;
     publishedAt?: Date;
   }) {
+    const normalizedSlug = String(payload.slug || '').trim().replace(/\s+/g, '-');
     // Ensure slug is unique — append suffix if needed to avoid unique constraint errors
-    const finalSlug = await this.ensureUniqueSlug(payload.slug);
+    const finalSlug = await this.ensureUniqueSlug(normalizedSlug);
 
     const created = await this.prisma.contentCard.create({
       data: {
@@ -307,7 +308,7 @@ export class CommunicationsService {
     // allow updating publishedAt and other fields
     const data: any = {};
     if (payload.title !== undefined) data.title = payload.title;
-    if (payload.slug !== undefined) data.slug = payload.slug;
+    if (payload.slug !== undefined) data.slug = String(payload.slug).trim().replace(/\s+/g, '-');
     if (payload.subtitle !== undefined) data.subtitle = payload.subtitle;
     if (payload.description !== undefined) data.description = payload.description;
     if (payload.imageUrl !== undefined) data.imageUrl = payload.imageUrl;
@@ -355,8 +356,8 @@ export class CommunicationsService {
   }
 
   async ensureUniqueSlug(slug: string) {
-    if (!slug) return slug;
-    const base = slug;
+    const base = String(slug || '').trim().replace(/\s+/g, '-');
+    if (!base) return base;
     let candidate = base;
     let i = 1;
     // eslint-disable-next-line no-constant-condition
@@ -370,11 +371,27 @@ export class CommunicationsService {
 
   async getCardByIdOrSlug(identifier: string) {
     if (!identifier) return null;
+    const normalizedIdentifier = identifier.trim();
+
     // Try by id first
-    let card = await this.prisma.contentCard.findUnique({ where: { id: identifier } }).catch(() => null);
+    let card = await this.prisma.contentCard.findUnique({ where: { id: normalizedIdentifier } }).catch(() => null);
     if (card) return card;
-    // Then try by slug
-    card = await this.prisma.contentCard.findUnique({ where: { slug: identifier } }).catch(() => null);
+
+    // Then try by exact cleaned slug
+    card = await this.prisma.contentCard.findUnique({ where: { slug: normalizedIdentifier } }).catch(() => null);
+    if (card) return card;
+
+    // Legacy fallback for cards whose slug contains accidental trailing/extra whitespace.
+    const compactIdentifier = normalizedIdentifier.replace(/\s+/g, ' ');
+    card = await this.prisma.contentCard.findFirst({
+      where: {
+        OR: [
+          { slug: { contains: compactIdentifier, mode: 'insensitive' } },
+          { title: { contains: compactIdentifier, mode: 'insensitive' } },
+        ],
+      },
+    }).catch(() => null);
+
     return card;
   }
 

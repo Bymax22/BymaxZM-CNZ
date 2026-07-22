@@ -69,7 +69,7 @@ export default function OurStories() {
           const gallery = Array.isArray(c.metadata?.gallery) ? c.metadata.gallery : [];
           const heroImage = c.imageUrl || gallery.find((item: any) => item.type === 'image')?.url || '';
           const heroVideo = gallery.find((item: any) => item.type === 'video')?.url || (isVideoUrl(c.imageUrl || '') ? c.imageUrl : undefined);
-          const slug = c.slug || c.id;
+          const slug = String(c.slug || c.id || '').trim();
           return {
             id: c.id || String(i),
             slug,
