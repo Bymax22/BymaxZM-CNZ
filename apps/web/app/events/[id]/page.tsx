@@ -15,6 +15,7 @@ interface UpcomingEvent {
   location: string;
   description: string;
   imageUrl: string;
+  videoUrl?: string;
   partnerLogos: string[];
   category: string;
   attendees?: number;
@@ -101,6 +102,8 @@ function mapEventToUpcomingEvent(eventData: any): UpcomingEvent {
     gallery.find((item: any) => item.type === 'image')?.url ||
     gallery[0]?.url ||
     '';
+  const videoUrl = eventData.video || gallery.find((item: any) => item.type === 'video')?.url ||
+    (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(imageUrl) ? imageUrl : '');
 
   return {
     id: eventData.id || eventData.slug || eventData.relatedId || '',
@@ -109,7 +112,8 @@ function mapEventToUpcomingEvent(eventData: any): UpcomingEvent {
     date: eventData.startDate || eventData.date || eventData.publishedAt || '',
     time: eventData.metadata?.time || eventData.time || '',
     location: eventData.location || eventData.venue || eventData.category || '',
-    imageUrl,
+    imageUrl: videoUrl === imageUrl ? '' : imageUrl,
+    videoUrl,
     partnerLogos: eventData.partnerLogos || eventData.metadata?.partnerLogos || [],
     category: (eventData.type || eventData.category || 'EVENT').toString().toUpperCase(),
     attendees: eventData.maxAttendees || eventData.attendees || eventData.metadata?.attendees || 0,
@@ -164,6 +168,11 @@ export default function EventDetailPage() {
     };
   }, [eventId]);
 
+  useEffect(() => {
+    if (!event || window.location.hash !== '#engagement') return;
+    document.getElementById('engagement')?.scrollIntoView({ behavior: 'smooth' });
+  }, [event]);
+
   const handleOpenRegistration = () => {
     console.log('Opening registration modal for event:', event?.id);
     setIsRegistrationModalOpen(true);
@@ -214,8 +223,12 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      <div className="relative h-96 bg-gray-300 overflow-hidden">
-        <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+      <div className="relative h-72 sm:h-96 bg-gray-300 overflow-hidden">
+        {event.videoUrl ? (
+          <video src={event.videoUrl} controls playsInline className="w-full h-full object-cover" />
+        ) : (
+          <img src={event.imageUrl} alt={event.title} className="w-full h-full object-cover" />
+        )}
         <div className="absolute top-4 right-4">
           <span className="inline-block bg-[#008000] text-white text-sm font-bold px-4 py-2 rounded-full">
             {event.category}

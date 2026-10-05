@@ -56,7 +56,7 @@ async function fetchRemoteStory(id: string): Promise<StoryTopic | undefined> {
       .map((item: any) => item.url);
 
     return {
-      id: card.slug || card.id || id,
+      id: card.id || card.slug || id,
       category: card.category || 'Other',
       theme: (card.metadata?.theme || 'Other') as StoryTopic['theme'],
       title: card.title || card.name || '',

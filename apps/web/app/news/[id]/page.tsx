@@ -38,6 +38,7 @@ function normalizeApiNewsItem(card: any): NormalizedNewsItem {
     card.video ||
     gallery.find((item: any) => item.type === 'video')?.url ||
     (/\.(mp4|webm|ogg|mov)(\?|$)/i.test(imageUrl) ? imageUrl : undefined);
+  const cardImage = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(imageUrl) ? '' : imageUrl;
   const contentText = card.body || card.description || card.subtitle || '';
   const content = typeof contentText === 'string'
     ? contentText.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean)
@@ -56,7 +57,7 @@ function normalizeApiNewsItem(card: any): NormalizedNewsItem {
     title: card.title || card.name || 'News story',
     excerpt: card.description || card.subtitle || truncateText(contentText, 220),
     content: content.length > 0 ? content : [String(contentText)],
-    image: imageUrl,
+    image: cardImage,
     video: videoUrl,
     category: card.category || card.cardType || 'News',
     date: card.publishedAt || card.createdAt || card.metadata?.date || '',
@@ -70,7 +71,8 @@ function normalizeApiNewsItem(card: any): NormalizedNewsItem {
 async function fetchNewsItemBySlug(slug: string): Promise<NormalizedNewsItem | null> {
   try {
     // First try fetching directly from communications card endpoint using the ID/slug
-    const cardRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/communications/cards/${encodeURIComponent(slug)}`, {
+    const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000').replace(/\/+$/, '');
+    const cardRes = await fetch(`${backendUrl}/communications/cards/${encodeURIComponent(slug)}`, {
       cache: 'no-store',
     });
 
@@ -162,23 +164,17 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         </Link>
 
         <article className="rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
-          {newsItem.image ? (
+            {newsItem.video ? (
+              <div className="relative h-72 sm:h-96 w-full bg-black">
+                <video controls playsInline preload="metadata" className="w-full h-full object-cover" src={newsItem.video} />
+              </div>
+            ) : newsItem.image ? (
             <div className="relative h-72 sm:h-96 w-full">
               <Image
                 src={newsItem.image}
                 alt={newsItem.title}
                 fill
                 className="object-cover"
-              />
-            </div>
-          ) : newsItem.video ? (
-            <div className="relative h-72 sm:h-96 w-full bg-black">
-              <video
-                controls
-                playsInline
-                preload="metadata"
-                className="w-full h-full object-cover"
-                src={newsItem.video}
               />
             </div>
           ) : null}

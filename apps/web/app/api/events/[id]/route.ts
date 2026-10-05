@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,8 +15,14 @@ export async function GET(request: NextRequest) {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    const data = await response.json();
-    return NextResponse.json(data, { status: response.status });
+    if (response.ok || response.status !== 404) {
+      const data = await response.json();
+      return NextResponse.json(data, { status: response.status });
+    }
+
+    const contentCardResponse = await fetch(`${BACKEND}/communications/cards/${encodeURIComponent(id)}`);
+    const contentCard = await contentCardResponse.json();
+    return NextResponse.json(contentCard, { status: contentCardResponse.status });
   } catch (error) {
     console.error('Get event by id proxy error:', error);
     return NextResponse.json({ error: 'Failed to fetch event' }, { status: 500 });

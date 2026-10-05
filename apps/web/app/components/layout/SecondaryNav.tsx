@@ -43,7 +43,6 @@ export const SecondaryNav = () => {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
 
@@ -73,11 +72,6 @@ export const SecondaryNav = () => {
   };
 
   const dashboardHref = getDashboardHref(session?.user?.role);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsPopupVisible(true), 10000);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     let scrollTimeout: number | undefined;
@@ -270,30 +264,6 @@ export const SecondaryNav = () => {
         </div>
       </nav>
 
-      {isPopupVisible && (
-        <div className="md:hidden fixed left-4 right-4 top-[7.5rem] z-50">
-          <div className="relative rounded-xl bg-[var(--primary-orange)] text-white p-3 border border-orange-600">
-            <button
-              className="absolute top-2 right-2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
-              aria-label="Close event popup"
-              onClick={() => setIsPopupVisible(false)}
-            >
-              <MdOutlineClose className="w-4 h-4" />
-            </button>
-            <div className="pr-8">
-              <p className="text-[10px] uppercase tracking-[0.28em] opacity-90 mb-1">Upcoming Event</p>
-              <h3 className="text-sm font-semibold">No Upcoming Events Available</h3>
-              <p className="text-xs text-white/90">Date • Location</p>
-            </div>
-            <Link
-              href="/portal/events"
-              className="mt-3 inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-colors"
-            >
-              View
-            </Link>
-          </div>
-        </div>
-      )}
     </>
   );
 };

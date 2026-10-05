@@ -3,6 +3,11 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { getProjectById } from '../../components/sections/projectsData';
 import { notFound } from 'next/navigation';
+import { ContentActions } from '../../components/ui/ContentActions';
+
+function isVideoUrl(value?: string) {
+  return !!value && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(value);
+}
 
 async function getSiteUrl() {
   const headersList = await headers();
@@ -40,7 +45,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
           location: card.metadata?.location || 'Zambia',
           status: card.metadata?.status || 'ongoing',
           impact: card.metadata?.impact || [],
-          image: card.imageUrl || '',
+          image: isVideoUrl(card.imageUrl) ? '' : card.imageUrl || '',
+          video: card.video || (isVideoUrl(card.imageUrl) ? card.imageUrl : undefined),
           sdgs: card.metadata?.sdgs || [],
           partnerLogos: card.metadata?.partnerLogos || [],
           gallery: card.metadata?.gallery || [],
@@ -79,7 +85,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           location: card.metadata?.location || 'Zambia',
           status: card.metadata?.status || 'ongoing',
           impact: card.metadata?.impact || [],
-          image: card.imageUrl || '',
+          image: isVideoUrl(card.imageUrl) ? '' : card.imageUrl || '',
+          video: card.video || (isVideoUrl(card.imageUrl) ? card.imageUrl : undefined),
           sdgs: card.metadata?.sdgs || [],
           partnerLogos: card.metadata?.partnerLogos || [],
           gallery: card.metadata?.gallery || [],
@@ -120,7 +127,9 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           <div className="md:col-span-2">
             {/* Project Image */}
             <div className="rounded-2xl overflow-hidden shadow-lg mb-12 h-96 bg-gradient-to-br from-[#F0F9F4] to-[#E0F0EB] flex items-center justify-center">
-              {project.image && (project.image.includes('cloudinary') || project.image.includes('http')) ? (
+              {(project as any).video ? (
+                <video src={(project as any).video} controls playsInline className="w-full h-full object-cover" />
+              ) : project.image && (project.image.includes('cloudinary') || project.image.includes('http')) ? (
                 <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="text-center">
@@ -272,6 +281,17 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
       </section>
+
+      <div className="max-w-6xl mx-auto px-4 pb-10">
+        <ContentActions
+          contentType="project"
+          contentId={project.id}
+          initialLikes={0}
+          initialComments={0}
+          initialShares={0}
+          contextLabel={project.title}
+        />
+      </div>
 
       {/* Related Projects */}
       <section className="bg-[#F0F9F4] py-20">

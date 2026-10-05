@@ -245,6 +245,29 @@ export class CommunicationsService {
     )];
   }
 
+  private escapeEmailHtml(value: unknown): string {
+    return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    })[character] || character);
+  }
+
+  private getVideoThumbnailUrl(value?: string): string {
+    if (!value) return '';
+    try {
+      const url = new URL(value);
+      url.pathname = url.pathname
+        .replace(/\/(?:auto|video)\/upload\//, '/video/upload/so_0/')
+        .replace(/\.(?:mp4|webm|mov|ogg)$/i, '.jpg');
+      return url.toString();
+    } catch {
+      return '';
+    }
+  }
+
   private async sendPublicationNotification(card: any, metadata?: any) {
     const defaultRecipients = ['kwibisa21@gmail.com', 'kwibisa12@gmail.com'];
     const customRecipients = this.normalizeEmails(metadata?.notificationEmails)
@@ -255,19 +278,62 @@ export class CommunicationsService {
     if (!recipients.length) return;
 
     const type = (card.cardType || 'story').toString().toLowerCase();
-    const pagePath = (() => {
-      const slug = String(card.slug || card.id || '').trim();
-      const target = slug ? `/${type === 'news' ? 'news' : type === 'event' ? 'events' : type === 'project' ? 'projects' : type === 'story' ? 'stories' : 'stories'}/${encodeURIComponent(slug)}` : '/';
-      return `${process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${target}`;
-    })();
+    const route = type === 'news' ? 'news' : type === 'event' ? 'events' : type === 'project' ? 'projects' : 'stories';
+    const slug = String(card.slug || card.id || '').trim();
+    const configuredOrigin = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.carefornaturezambia.org';
+    const pageUrl = `${configuredOrigin.replace(/\/+$/, '')}/${route}/${encodeURIComponent(slug)}`;
+    const engagementUrl = `${pageUrl}#engagement`;
+    const safeTitle = this.escapeEmailHtml(card.title || 'New content');
+    const safeType = this.escapeEmailHtml(type);
+    const description = String(card.subtitle || card.description || metadata?.summary || 'New content is now live on the website.');
+    const safeDescription = this.escapeEmailHtml(description);
+    const gallery = Array.isArray(metadata?.gallery)
+      ? metadata.gallery
+      : Array.isArray(metadata?.galleryUrls)
+      ? metadata.galleryUrls.map((url: string) => ({
+          url,
+          type: /\.(mp4|webm|mov|ogg)(\?|$)/i.test(url) ? 'video' : 'image',
+        }))
+      : [];
+    const videoUrl = gallery.find((item: any) => item?.type === 'video')?.url || (/\.(mp4|webm|mov|ogg)(\?|$)/i.test(card.imageUrl || '') ? card.imageUrl : '');
+    const cardImage = gallery.find((item: any) => item?.type === 'image')?.url || metadata?.thumbnailUrl || (!videoUrl ? card.imageUrl : '');
+    const previewUrl = String(cardImage || this.getVideoThumbnailUrl(videoUrl) || '').trim();
+    const safePreviewUrl = this.escapeEmailHtml(previewUrl);
+    const safePageUrl = this.escapeEmailHtml(pageUrl);
+    const safeEngagementUrl = this.escapeEmailHtml(engagementUrl);
+    const category = this.escapeEmailHtml(card.category || type);
+    const publishedDate = card.publishedAt ? this.escapeEmailHtml(new Date(card.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })) : '';
     const subject = `New ${type} published: ${card.title}`;
+    const mediaPreview = safePreviewUrl
+      ? `<a href="${safePageUrl}" style="display:block;text-decoration:none"><img src="${safePreviewUrl}" alt="${safeTitle}" width="600" style="display:block;width:100%;max-width:600px;height:auto;max-height:320px;object-fit:cover;border:0" /></a>`
+      : '';
+    const mediaLabel = videoUrl ? '<span style="display:inline-block;margin-top:12px;padding:5px 9px;background:#f2e8e3;color:#5b321f;font-size:12px;font-weight:700">VIDEO</span>' : '';
     const htmlContent = `
-      <p>Hello,</p>
-      <p>A new ${type} has been published: <strong>${card.title}</strong>.</p>
-      <p><a href="${pagePath}">View the card here</a></p>
-      <p>${card.subtitle || card.description || 'New content is now live on the website.'}</p>
+      <div style="margin:0;padding:28px 12px;background:#f3f5f3;font-family:Arial,Helvetica,sans-serif;color:#17211b">
+        <div style="max-width:600px;margin:0 auto">
+          <p style="margin:0 0 14px;font-size:14px;color:#536158">Care for Nature Zambia · New ${safeType}</p>
+          <div style="overflow:hidden;border:1px solid #dce4de;border-radius:12px;background:#ffffff">
+            ${mediaPreview}
+            <div style="padding:22px">
+              <p style="margin:0 0 8px;color:#087b43;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase">${category}${publishedDate ? ` · ${publishedDate}` : ''}</p>
+              <h1 style="margin:0 0 12px;font-size:24px;line-height:1.3;color:#17211b">${safeTitle}</h1>
+              <p style="margin:0;color:#536158;font-size:15px;line-height:1.6">${safeDescription}</p>
+              ${mediaLabel}
+              <p style="margin:20px 0 12px"><a href="${safePageUrl}" style="display:inline-block;padding:12px 18px;border-radius:6px;background:#087b43;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none">View full card</a></p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px solid #e5e9e6;width:100%;margin-top:16px;padding-top:12px">
+                <tr>
+                  <td style="padding:12px 4px 0"><a href="${safeEngagementUrl}" style="display:inline-block;padding:9px 12px;border:1px solid #dce4de;border-radius:6px;background:#f7faf8;color:#087b43;font-size:13px;font-weight:700;text-decoration:none">Like</a></td>
+                  <td style="padding:12px 4px 0;text-align:center"><a href="${safeEngagementUrl}" style="display:inline-block;padding:9px 12px;border:1px solid #dce4de;border-radius:6px;background:#f7faf8;color:#087b43;font-size:13px;font-weight:700;text-decoration:none">Comment</a></td>
+                  <td style="padding:12px 4px 0;text-align:right"><a href="${safeEngagementUrl}" style="display:inline-block;padding:9px 12px;border:1px solid #dce4de;border-radius:6px;background:#f7faf8;color:#087b43;font-size:13px;font-weight:700;text-decoration:none">Share</a></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <p style="margin:16px 0 0;color:#78837b;font-size:12px">Like, comment, and share open the card on the website so you can use its interactive controls.</p>
+        </div>
+      </div>
     `;
-    const textContent = `A new ${type} has been published: ${card.title}. View it here: ${pagePath}`;
+    const textContent = `A new ${type} has been published: ${card.title}\n\n${description}\n\nView the full card: ${pageUrl}\nLike, comment, and share: ${engagementUrl}`;
 
     await this.emailService.sendEmail({
       to: recipients,

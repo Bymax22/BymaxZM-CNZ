@@ -87,18 +87,18 @@ export default function Hero() {
             />
           ))}
 
-          <div className="absolute inset-0 bg-gradient-to-r from-[#e8eddf]/100 via-[#e8eddf]/100 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#5b321f]/95 via-[#5b321f]/85 to-[#5b321f]/45 lg:to-transparent" />
         </div>
 
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-10 pt-10 lg:pt-14">
-          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
+        <div className="max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-10 pt-7 pb-2 sm:pt-10 lg:pt-14 lg:pb-0">
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-6 lg:gap-12">
             {/* LEFT CONTENT */}
-            <div className="relative z-20 pb-10 lg:pb-0 lg:pl-8 xl:pl-12 space-y-6">
-              <p className="text-sm uppercase tracking-[0.32em] text-[#2f1000]">Care For Nature Zambia</p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl text-[#7b3d1f]">
+            <div className="relative z-20 pb-5 lg:pb-0 lg:pl-8 xl:pl-12 space-y-5 lg:space-y-6">
+              <p className="text-xs sm:text-sm uppercase tracking-[0.24em] text-white/90">Care For Nature Zambia</p>
+              <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-5xl">
                 Were humanity, Fauna and Flora flourish in harmony.
               </h1>
-              <p className="mt-5 text-base leading-7 text-[#8b8c89]">
+              <p className="mt-4 text-sm leading-6 text-white/90 sm:text-base sm:leading-7">
                 Care for Nature Zambia (CNZ) is a local not-for-profit Non-Governmental Organization working with diverse groups of people and institutions to promote nature conservation and human rights for the attainment of sustainable development in Zambia.
               </p>
 
@@ -124,7 +124,7 @@ export default function Hero() {
               <div className="w-full max-w-[760px] relative z-20 lg:-mr-16 xl:-mr-24">
                 <div className="flex items-center gap-4 bg-white shadow-lg rounded-xl p-4">
                   <div className="flex-shrink-0">
-                    <p className="text-sm uppercase tracking-[0.18em] text-[#2f1000]">Our Initiatives</p>
+                    <p className="text-xs uppercase tracking-[0.12em] text-[#2f1000] sm:text-sm sm:tracking-[0.18em]">Our Initiatives</p>
                   </div>
 
                   <div
@@ -139,7 +139,7 @@ export default function Hero() {
                           <img
                             src={logo.src}
                             alt={logo.name}
-                            className="h-6 md:h-8 lg:h-10 object-contain mx-auto"
+                            className="h-10 object-contain mx-auto"
                           />
                         </div>
                       ))}
@@ -150,7 +150,7 @@ export default function Hero() {
             </div>
 
             {/* RIGHT IMAGE */}
-            <div className="relative h-[320px] sm:h-[420px] lg:h-[600px] flex items-center justify-center overflow-hidden lg:justify-end">
+            <div className="relative hidden h-[600px] items-center justify-center overflow-hidden lg:flex lg:justify-end">
               {/* MAIN IMAGE */}
               <div className="relative w-full lg:w-[105%] h-full overflow-hidden rounded-bl-3xl">
                 {/* PLAY BUTTON */}

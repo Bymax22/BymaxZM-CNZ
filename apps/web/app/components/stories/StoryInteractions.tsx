@@ -113,7 +113,7 @@ export default function StoryInteractions({ storyId, initialComments = [], initi
   }
 
   return (
-    <div className="mt-6">
+    <div id="engagement" className="mt-6">
       <div className="flex items-center gap-3">
         <button
           onClick={handleToggleLike}
