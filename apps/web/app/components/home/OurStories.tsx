@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, MessageCircle, Heart, Share2 } from 'lucide-react';
 import { storyTopics } from "../sections/storyData";
 import { fetchLikeCount, updateLikeCount } from '../../../lib/supabaseContent';
+import { useAuthPrompt } from '../../hooks/useAuthPrompt';
 
 type CardView = { id: string; slug?: string; text?: string; author?: string; image?: string; video?: string; publishedAt?: string; location?: string; partnerLogos?: string[] };
 
@@ -45,6 +46,7 @@ function truncateSentences(text: string, max = 3) {
 }
 
 export default function OurStories() {
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const scrollRef = useRef<HTMLDivElement>(null);
   const physicalIndexRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -254,14 +256,15 @@ export default function OurStories() {
                           type="button"
                           aria-label="Like"
                           onClick={async () => {
-                            const nextLiked = !likedItems[t.id];
-                            setLikedItems((prev) => ({ ...prev, [t.id]: nextLiked }));
-                            setLikes((prev) => ({
-                              ...prev,
-                              [t.id]: (prev[t.id] ?? 0) + (nextLiked ? 1 : -1),
-                            }));
-                            const nextCount = await updateLikeCount('story', t.id, nextLiked ? 1 : -1);
-                            setLikes((prev) => ({ ...prev, [t.id]: nextCount }));
+                            const toggleLike = async () => {
+                              const nextLiked = !likedItems[t.id];
+                              setLikedItems((prev) => ({ ...prev, [t.id]: nextLiked }));
+                              setLikes((prev) => ({ ...prev, [t.id]: (prev[t.id] ?? 0) + (nextLiked ? 1 : -1) }));
+                              const nextCount = await updateLikeCount('story', t.id, nextLiked ? 1 : -1);
+                              setLikes((prev) => ({ ...prev, [t.id]: nextCount }));
+                            };
+                            if (!requireAuthentication(toggleLike)) return;
+                            await toggleLike();
                           }}
                           className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${likedItems[t.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                         >
@@ -270,6 +273,10 @@ export default function OurStories() {
 
                         <Link
                           href={`/stories/${encodeURIComponent(t.slug || t.id)}`}
+                          onClick={(event) => {
+                            const targetUrl = event.currentTarget.href;
+                            if (!requireAuthentication(() => window.location.assign(`${targetUrl}#engagement`))) event.preventDefault();
+                          }}
                           aria-label="Comment"
                           className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200 hover:text-emerald-600"
                         >
@@ -325,6 +332,7 @@ export default function OurStories() {
             />
           ))}
         </div>
+        {authPrompt}
       </div>
     </section>
   );

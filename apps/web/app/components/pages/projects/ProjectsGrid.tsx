@@ -6,6 +6,7 @@ import { projects as staticProjects } from '../../sections/projectsData';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { fetchLikeCount, updateLikeCount } from '../../../../lib/supabaseContent';
+import { useAuthPrompt } from '../../../hooks/useAuthPrompt';
 
 function isVideoUrl(url: string) {
   return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
@@ -28,6 +29,7 @@ function formatRelativeTime(value?: string) {
 }
 
 export function ProjectsGrid() {
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const [projects, setProjects] = useState(staticProjects);
   const [likes, setLikes] = useState<Record<string, number>>({});
   const [likedItems, setLikedItems] = useState<Record<string, boolean>>({});
@@ -203,14 +205,15 @@ export function ProjectsGrid() {
                           aria-label="Like"
                           onClick={async (e) => {
                             e.preventDefault();
-                            const nextLiked = !likedItems[project.id];
-                            setLikedItems((prev) => ({ ...prev, [project.id]: nextLiked }));
-                            setLikes((prev) => ({
-                              ...prev,
-                              [project.id]: (prev[project.id] ?? 0) + (nextLiked ? 1 : -1),
-                            }));
-                            const nextCount = await updateLikeCount('project', project.id, nextLiked ? 1 : -1);
-                            setLikes((prev) => ({ ...prev, [project.id]: nextCount }));
+                            const toggleLike = async () => {
+                              const nextLiked = !likedItems[project.id];
+                              setLikedItems((prev) => ({ ...prev, [project.id]: nextLiked }));
+                              setLikes((prev) => ({ ...prev, [project.id]: (prev[project.id] ?? 0) + (nextLiked ? 1 : -1) }));
+                              const nextCount = await updateLikeCount('project', project.id, nextLiked ? 1 : -1);
+                              setLikes((prev) => ({ ...prev, [project.id]: nextCount }));
+                            };
+                            if (!requireAuthentication(toggleLike)) return;
+                            await toggleLike();
                           }}
                           className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${likedItems[project.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                         >
@@ -275,6 +278,7 @@ export function ProjectsGrid() {
             </button>
           </div>
         </motion.div>
+        {authPrompt}
       </div>
     </section>
   );

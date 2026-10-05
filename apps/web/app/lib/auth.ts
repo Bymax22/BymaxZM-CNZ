@@ -2,7 +2,7 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-const BACKEND = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || 'http://localhost:5000').replace(/\/+$/, '');
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,25 +10,27 @@ export const authOptions: NextAuthOptions = {
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' }
+        password: { label: 'Password', type: 'password' },
+        otp: { label: 'Verification code', type: 'text' },
+        flow: { label: 'Authentication flow', type: 'text' },
       },
       async authorize(credentials) {
         try {
-          if (!credentials?.email || !credentials?.password) {
-            console.warn('[next-auth] Missing credentials on authorize call');
+          if (!credentials?.email) {
+            console.warn('[next-auth] Missing email on authorize call');
             return null;
           }
 
-          console.debug('[next-auth] Authorize attempt for:', credentials.email);
+          const isGuestFlow = credentials.flow === 'guest';
+          if (isGuestFlow && !credentials.otp) return null;
+          if (!isGuestFlow && !credentials.password) return null;
 
-          // Proxy authentication to backend instead of using Prisma in the web package
-          const body: any = { email: credentials.email, password: credentials.password };
-          if ((credentials as any).otp) body.otp = (credentials as any).otp;
-
-          const res = await fetch(`${BACKEND}/auth/login`, {
+          const res = await fetch(`${BACKEND}/auth/${isGuestFlow ? 'guest/verify' : 'login'}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
+            body: JSON.stringify(isGuestFlow
+              ? { email: credentials.email, otp: credentials.otp }
+              : { email: credentials.email, password: credentials.password, ...(credentials.otp ? { otp: credentials.otp } : {}) }),
           });
 
           if (!res.ok) {

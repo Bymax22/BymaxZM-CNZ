@@ -1,7 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
-import { useSession } from 'next-auth/react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import {
   fetchComments,
@@ -11,7 +10,7 @@ import {
   subscribeToLikeCount,
   updateLikeCount,
 } from '../../../lib/supabaseContent';
-import AuthPromptModal from '../AuthPromptModal';
+import { useAuthPrompt } from '../../hooks/useAuthPrompt';
 
 type CommentItem = {
   id: string;
@@ -25,7 +24,8 @@ type Props = {
 };
 
 export default function StoryInteractions({ storyId, initialComments = [], initialLikes = 0 }: Props) {
-  const { status } = useSession();
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
+  const commentInputRef = useRef<HTMLInputElement>(null);
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(initialLikes);
   const [comments, setComments] = useState<CommentItem[]>(
@@ -33,128 +33,105 @@ export default function StoryInteractions({ storyId, initialComments = [], initi
   );
   const [text, setText] = useState('');
   const [copied, setCopied] = useState(false);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
-    let cleanupLikes = () => {};
-    let cleanupComments = () => {};
+    let mounted = true;
+    const cleanupLikes = subscribeToLikeCount('story', storyId, setLikes);
+    const cleanupComments = subscribeToComments('story', storyId, (comment) => {
+      setComments((current) => current.some((item) => item.id === comment.id)
+        ? current
+        : [{ id: comment.id, content: comment.content }, ...current]);
+    });
 
     async function loadEngagement() {
       const [likeCount, storedComments] = await Promise.all([
         fetchLikeCount('story', storyId),
         fetchComments('story', storyId),
       ]);
-
+      if (!mounted) return;
       setLikes(likeCount);
       setComments(storedComments.map((comment) => ({ id: comment.id, content: comment.content })));
-
-      cleanupLikes = subscribeToLikeCount('story', storyId, setLikes);
-      cleanupComments = subscribeToComments('story', storyId, (comment) => {
-        setComments((current) => {
-          if (current.some((item) => item.id === comment.id)) return current;
-          return [{ id: comment.id, content: comment.content }, ...current];
-        });
-      });
     }
 
     void loadEngagement();
     return () => {
+      mounted = false;
       cleanupLikes();
       cleanupComments();
     };
   }, [storyId]);
 
   async function handleToggleLike() {
-    if (status !== 'authenticated') {
-      setShowAuthPrompt(true);
-      return;
-    }
-
-    const next = !liked;
-    setLiked(next);
-    setLikes((previous) => Math.max(0, previous + (next ? 1 : -1)));
-
-    const result = await updateLikeCount('story', storyId, next ? 1 : -1);
-    setLikes(result);
+    const toggle = async () => {
+      const next = !liked;
+      setLiked(next);
+      setLikes((previous) => Math.max(0, previous + (next ? 1 : -1)));
+      setLikes(await updateLikeCount('story', storyId, next ? 1 : -1));
+    };
+    if (!requireAuthentication(toggle)) return;
+    await toggle();
   }
 
-  async function handleAddComment(e?: FormEvent<HTMLFormElement>) {
-    e?.preventDefault();
-
-    if (status !== 'authenticated') {
-      setShowAuthPrompt(true);
-      return;
-    }
-
-    const trimmed = text.trim();
-    if (!trimmed) return;
-
-    const savedComment = await postComment('story', storyId, trimmed);
-    if (savedComment) {
-      setComments((current) => {
-        if (current.some((item) => item.id === savedComment.id)) return current;
-        return [{ id: savedComment.id, content: savedComment.content }, ...current];
-      });
+  async function handleAddComment(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const submit = async () => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      const savedComment = await postComment('story', storyId, trimmed);
+      if (!savedComment) return;
+      setComments((current) => current.some((item) => item.id === savedComment.id)
+        ? current
+        : [{ id: savedComment.id, content: savedComment.content }, ...current]);
       setText('');
-    }
+    };
+    if (!requireAuthentication(submit)) return;
+    await submit();
   }
 
   async function handleShare() {
     try {
-      const url = typeof window !== 'undefined' ? window.location.origin + `/stories/${storyId}` : `/stories/${storyId}`;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      const url = `${window.location.origin}/stories/${storyId}`;
+      if (navigator.share) {
+        await navigator.share({ title: 'Care for Nature Zambia story', url });
+      } else {
         await navigator.clipboard.writeText(url);
         setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
+        window.setTimeout(() => setCopied(false), 1500);
       }
     } catch {
-      // ignore
+      // Ignore cancellation or unavailable share actions.
     }
   }
 
   return (
     <div id="engagement" className="mt-6">
       <div className="flex items-center gap-3">
-        <button
-          onClick={handleToggleLike}
-          className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${
-            liked ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'
-          }`}
-        >
+        <button type="button" onClick={() => void handleToggleLike()} className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${liked ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>
           <Heart size={16} className={liked ? 'text-emerald-700' : 'text-slate-700'} />
           <span>{likes}</span>
         </button>
-
-        <button className="inline-flex items-center gap-2 rounded-md px-3 py-2 bg-slate-100 text-slate-700">
+        <button type="button" onClick={() => {
+          const focusComment = () => commentInputRef.current?.focus();
+          if (!requireAuthentication(focusComment)) return;
+          focusComment();
+        }} className="inline-flex items-center gap-2 rounded-md bg-slate-100 px-3 py-2 text-slate-700">
           <MessageCircle size={16} /> <span>{comments.length}</span>
         </button>
-
-        <button onClick={handleShare} className="inline-flex items-center gap-2 rounded-md px-3 py-2 bg-slate-100 text-slate-700">
+        <button type="button" onClick={() => void handleShare()} className="inline-flex items-center gap-2 rounded-md bg-slate-100 px-3 py-2 text-slate-700">
           <Share2 size={16} /> <span>{copied ? 'Copied' : 'Share'}</span>
         </button>
       </div>
 
       <form onSubmit={handleAddComment} className="mt-4 flex gap-2">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Write a comment..."
-          className="flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm"
-        />
-        <button type="submit" className="rounded-md bg-emerald-600 px-3 py-2 text-sm text-white">
-          Comment
-        </button>
+        <input ref={commentInputRef} value={text} onChange={(event) => setText(event.target.value)} placeholder="Write a comment..." className="flex-1 rounded-md border border-slate-200 px-3 py-2 text-sm" />
+        <button type="submit" className="rounded-md bg-emerald-600 px-3 py-2 text-sm text-white">Comment</button>
       </form>
 
-      <AuthPromptModal isOpen={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
+      {authPrompt}
 
       {comments.length > 0 && (
         <div className="mt-4 space-y-3">
-          {comments.map((comment) => (
-            <div key={comment.id} className="rounded-md border bg-white px-3 py-2 text-sm text-slate-800">
-              {comment.content}
-            </div>
-          ))}
+          {comments.map((comment) => <div key={comment.id} className="rounded-md border bg-white px-3 py-2 text-sm text-slate-800">{comment.content}</div>)}
         </div>
       )}
     </div>

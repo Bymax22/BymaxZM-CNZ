@@ -278,10 +278,9 @@ export class CommunicationsService {
     if (!recipients.length) return;
 
     const type = (card.cardType || 'story').toString().toLowerCase();
-    const route = type === 'news' ? 'news' : type === 'event' ? 'events' : type === 'project' ? 'projects' : 'stories';
-    const slug = String(card.slug || card.id || '').trim();
+    const cardIdentifier = String(card.id || card.slug || '').trim();
     const configuredOrigin = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://www.carefornaturezambia.org';
-    const pageUrl = `${configuredOrigin.replace(/\/+$/, '')}/${route}/${encodeURIComponent(slug)}`;
+    const pageUrl = `${configuredOrigin.replace(/\/+$/, '')}/content-card/${encodeURIComponent(cardIdentifier)}`;
     const engagementUrl = `${pageUrl}#engagement`;
     const safeTitle = this.escapeEmailHtml(card.title || 'New content');
     const safeType = this.escapeEmailHtml(type);
@@ -301,6 +300,13 @@ export class CommunicationsService {
     const safePreviewUrl = this.escapeEmailHtml(previewUrl);
     const safePageUrl = this.escapeEmailHtml(pageUrl);
     const safeEngagementUrl = this.escapeEmailHtml(engagementUrl);
+    const shareBody = [
+      `Care for Nature Zambia: ${card.title || 'New content'}`,
+      description,
+      previewUrl ? `Media: ${previewUrl}` : '',
+      `View card: ${pageUrl}`,
+    ].filter(Boolean).join('\n\n');
+    const safeShareMailto = this.escapeEmailHtml(`mailto:?subject=${encodeURIComponent(`Care for Nature Zambia: ${card.title || 'New content'}`)}&body=${encodeURIComponent(shareBody)}`);
     const category = this.escapeEmailHtml(card.category || type);
     const publishedDate = card.publishedAt ? this.escapeEmailHtml(new Date(card.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })) : '';
     const subject = `New ${type} published: ${card.title}`;
@@ -322,14 +328,14 @@ export class CommunicationsService {
               <p style="margin:20px 0 12px"><a href="${safePageUrl}" style="display:inline-block;padding:12px 18px;border-radius:6px;background:#087b43;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none">View full card</a></p>
               <table role="presentation" cellpadding="0" cellspacing="0" style="border-top:1px solid #e5e9e6;width:100%;margin-top:16px;padding-top:12px">
                 <tr>
-                  <td style="padding:12px 4px 0"><a href="${safeEngagementUrl}" style="display:inline-block;padding:9px 12px;border:1px solid #dce4de;border-radius:6px;background:#f7faf8;color:#087b43;font-size:13px;font-weight:700;text-decoration:none">Like</a></td>
-                  <td style="padding:12px 4px 0;text-align:center"><a href="${safeEngagementUrl}" style="display:inline-block;padding:9px 12px;border:1px solid #dce4de;border-radius:6px;background:#f7faf8;color:#087b43;font-size:13px;font-weight:700;text-decoration:none">Comment</a></td>
-                  <td style="padding:12px 4px 0;text-align:right"><a href="${safeEngagementUrl}" style="display:inline-block;padding:9px 12px;border:1px solid #dce4de;border-radius:6px;background:#f7faf8;color:#087b43;font-size:13px;font-weight:700;text-decoration:none">Share</a></td>
+                  <td style="padding:12px 4px 0"><a href="${safeEngagementUrl}" style="display:inline-block;padding:10px 14px;border:0;border-radius:6px;background:#f79021;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none">Like</a></td>
+                  <td style="padding:12px 4px 0;text-align:center"><a href="${safeEngagementUrl}" style="display:inline-block;padding:10px 14px;border:0;border-radius:6px;background:#f79021;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none">Comment</a></td>
+                  <td style="padding:12px 4px 0;text-align:right"><a href="${safeShareMailto}" style="display:inline-block;padding:10px 14px;border:0;border-radius:6px;background:#f79021;color:#ffffff;font-size:13px;font-weight:700;text-decoration:none">Share</a></td>
                 </tr>
               </table>
             </div>
           </div>
-          <p style="margin:16px 0 0;color:#78837b;font-size:12px">Like, comment, and share open the card on the website so you can use its interactive controls.</p>
+          <p style="margin:16px 0 0;color:#78837b;font-size:12px">Like and Comment open the card’s interactive controls. Share opens a new email with the card details and media link.</p>
         </div>
       </div>
     `;

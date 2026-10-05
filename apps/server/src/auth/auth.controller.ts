@@ -34,11 +34,22 @@ export class AuthController {
       const user = await this.authService.register(body);
       return { message: 'User created successfully', user };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       throw new HttpException(
         { error: error instanceof Error ? error.message : 'Unable to register user' },
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  @Post('guest/start')
+  async startGuestSignup(@Body() body: { name: string; email: string }) {
+    return this.authService.startGuestSignup(body);
+  }
+
+  @Post('guest/verify')
+  async verifyGuestSignup(@Body() body: { email: string; otp: string }) {
+    return { message: 'Guest sign-in successful', user: await this.authService.verifyGuestSignup(body.email, body.otp) };
   }
 
   @Post('login')
@@ -55,6 +66,7 @@ export class AuthController {
       // Successful login - return the authenticated user object
       return { message: 'Login successful', user: result };
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       throw new HttpException(
         { error: error.message },
         HttpStatus.UNAUTHORIZED,

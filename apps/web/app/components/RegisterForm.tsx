@@ -39,9 +39,9 @@ export const roleConfigMap: Record<RoleKey, {
     roleValue: 'USER',
     cta: 'Create member account',
     extraFields: {
-      organization: true,
-      occupation: true,
-      bio: true,
+      organization: false,
+      occupation: false,
+      bio: false,
     },
   },
   donor: {

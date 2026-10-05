@@ -23,7 +23,7 @@ export async function fetchLikeCount(contentType: string, contentId: string | nu
     .select('likes')
     .eq('content_type', contentType)
     .eq('content_id', normalizedContentId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('fetchLikeCount error', error);
@@ -39,28 +39,18 @@ export async function updateLikeCount(contentType: string, contentId: string | n
     return 0;
   }
 
-  const current = await fetchLikeCount(contentType, contentId);
-  const nextCount = Math.max(0, current + delta);
-
-  const { data, error } = await supabase
-    .from(SUPABASE_TABLES.likes)
-    .upsert(
-      {
-        content_type: contentType,
-        content_id: normalizedContentId,
-        likes: nextCount,
-      },
-      { onConflict: 'content_type,content_id' }
-    )
-    .select('likes')
-    .single();
+  const { data, error } = await supabase.rpc('increment_content_counter', {
+    p_content_type: contentType,
+    p_content_id: normalizedContentId,
+    p_delta: delta,
+  });
 
   if (error) {
     console.error('updateLikeCount error', error);
-    return current;
+    return fetchLikeCount(contentType, contentId);
   }
 
-  return data?.likes ?? nextCount;
+  return Number(data ?? 0);
 }
 
 export async function fetchComments(contentType: string, contentId: string | number) {
@@ -127,6 +117,11 @@ export function subscribeToLikeCount(
   }
 
   const client = supabase;
+  const matchesContent = (record: Record<string, any> | null | undefined) =>
+    record?.content_id === normalizedContentId && record?.content_type === contentType;
+  const refreshCount = async (record: Record<string, any> | null | undefined) => {
+    if (matchesContent(record)) onUpdate(await fetchLikeCount(contentType, contentId));
+  };
   const channel = client
     .channel(`content-likes-${contentType}-${normalizedContentId}`)
     .on(
@@ -135,11 +130,10 @@ export function subscribeToLikeCount(
         event: 'INSERT',
         schema: 'public',
         table: SUPABASE_TABLES.likes,
-        filter: `content_type=eq.${contentType}&content_id=eq.${normalizedContentId}`,
+        filter: `content_id=eq.${normalizedContentId}`,
       },
-      async () => {
-        const latest = await fetchLikeCount(contentType, contentId);
-        onUpdate(latest);
+      async (payload) => {
+        await refreshCount(payload.new);
       }
     )
     .on(
@@ -148,11 +142,10 @@ export function subscribeToLikeCount(
         event: 'UPDATE',
         schema: 'public',
         table: SUPABASE_TABLES.likes,
-        filter: `content_type=eq.${contentType}&content_id=eq.${normalizedContentId}`,
+        filter: `content_id=eq.${normalizedContentId}`,
       },
-      async () => {
-        const latest = await fetchLikeCount(contentType, contentId);
-        onUpdate(latest);
+      async (payload) => {
+        await refreshCount(payload.new);
       }
     )
     .subscribe();
@@ -173,6 +166,8 @@ export function subscribeToComments(
   }
 
   const client = supabase;
+  const matchesContent = (record: Record<string, any> | null | undefined) =>
+    record?.content_id === normalizedContentId && record?.content_type === contentType;
 
   const channel = client
     .channel(`content-comments-${contentType}-${normalizedContentId}`)
@@ -182,10 +177,10 @@ export function subscribeToComments(
         event: 'INSERT',
         schema: 'public',
         table: SUPABASE_TABLES.comments,
-        filter: `content_type=eq.${contentType}&content_id=eq.${normalizedContentId}`,
+        filter: `content_id=eq.${normalizedContentId}`,
       },
       (payload) => {
-        if (payload.new) {
+        if (payload.new && matchesContent(payload.new)) {
           onInsert({
             id: payload.new.id,
             content: payload.new.content,

@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { storyTopics } from "../components/sections/storyData";
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
-import StoryInteractions from '../components/stories/StoryInteractions';
+import StoryInteractions from '@/components/stories/StoryInteractions';
 
 type Story = {
   id: string;

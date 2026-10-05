@@ -9,6 +9,7 @@ import {
   postComment,
   updateLikeCount,
 } from '../../lib/supabaseContent';
+import { useAuthPrompt } from '../hooks/useAuthPrompt';
 
 type NewsEventItem = {
   id: string;
@@ -86,6 +87,7 @@ function normalizeCardToItem(card: RawCard, index: number): NewsEventItem {
 }
 
 export default function NewsPage() {
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const [activeTab, setActiveTab] = useState<'all' | 'news' | 'events'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCommentItem, setActiveCommentItem] = useState<string | null>(null);
@@ -183,39 +185,35 @@ export default function NewsPage() {
   );
 
   const handleToggleLike = async (itemId: string) => {
-    const currentLiked = likedItems[itemId] ?? false;
-    const nextLiked = !currentLiked;
-
-    setLikedItems((prev) => ({ ...prev, [itemId]: nextLiked }));
-    setLikes((current) => ({
-      ...current,
-      [itemId]: (current[itemId] ?? 0) + (nextLiked ? 1 : -1),
-    }));
-
-    const item = items.find((entry) => entry.id === itemId);
-    if (!item) return;
-
-    const contentType = item.itemType === 'Event' ? 'event' : 'news';
-    const nextCount = await updateLikeCount(contentType, itemId, nextLiked ? 1 : -1);
-    setLikes((current) => ({ ...current, [itemId]: nextCount }));
+    const toggleLike = async () => {
+      const currentLiked = likedItems[itemId] ?? false;
+      const nextLiked = !currentLiked;
+      setLikedItems((prev) => ({ ...prev, [itemId]: nextLiked }));
+      setLikes((current) => ({ ...current, [itemId]: (current[itemId] ?? 0) + (nextLiked ? 1 : -1) }));
+      const item = items.find((entry) => entry.id === itemId);
+      if (!item) return;
+      const contentType = item.itemType === 'Event' ? 'event' : 'news';
+      const nextCount = await updateLikeCount(contentType, itemId, nextLiked ? 1 : -1);
+      setLikes((current) => ({ ...current, [itemId]: nextCount }));
+    };
+    if (!requireAuthentication(toggleLike)) return;
+    await toggleLike();
   };
 
   const handleAddComment = async (itemId: string) => {
-    const trimmed = commentText.trim();
-    if (!trimmed) return;
-
-    const item = items.find((entry) => entry.id === itemId);
-    if (!item) return;
-
-    const contentType = item.itemType === 'Event' ? 'event' : 'news';
-    const savedComment = await postComment(contentType, itemId, trimmed);
-    if (!savedComment) return;
-
-    setComments((prev) => ({
-      ...prev,
-      [itemId]: [trimmed, ...(prev[itemId] ?? [])],
-    }));
-    setCommentText('');
+    const submitComment = async () => {
+      const trimmed = commentText.trim();
+      if (!trimmed) return;
+      const item = items.find((entry) => entry.id === itemId);
+      if (!item) return;
+      const contentType = item.itemType === 'Event' ? 'event' : 'news';
+      const savedComment = await postComment(contentType, itemId, trimmed);
+      if (!savedComment) return;
+      setComments((prev) => ({ ...prev, [itemId]: [trimmed, ...(prev[itemId] ?? [])] }));
+      setCommentText('');
+    };
+    if (!requireAuthentication(submitComment)) return;
+    await submitComment();
   };
 
   const handleShare = async (itemId: string, href: string) => {
@@ -240,6 +238,7 @@ export default function NewsPage() {
 
   return (
     <main className="bg-slate-50 min-h-screen py-16">
+      {authPrompt}
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <section className="rounded-[32px] border border-slate-200 bg-white p-10 shadow-sm">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -397,8 +396,12 @@ export default function NewsPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setActiveCommentItem(item.id);
-                          setCommentText('');
+                          const openComment = () => {
+                            setActiveCommentItem(item.id);
+                            setCommentText('');
+                          };
+                          if (!requireAuthentication(openComment)) return;
+                          openComment();
                         }}
                         aria-label="Comment"
                         className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-slate-100"

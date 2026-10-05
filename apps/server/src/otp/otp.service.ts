@@ -83,11 +83,7 @@ export class OtpService {
         return false;
       }
 
-      // Mark OTP as verified
-      await this.prisma.otp.update({
-        where: { id: record.id },
-        data: { isVerified: true, verifiedAt: new Date() }
-      });
+      await this.prisma.otp.delete({ where: { id: record.id } });
 
       this.logger.log(`OTP verified for user ${userId}`);
       return true;

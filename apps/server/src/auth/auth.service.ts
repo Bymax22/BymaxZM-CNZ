@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, UnauthorizedException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, ConflictException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { OtpService } from '../otp/otp.service';
@@ -101,6 +101,66 @@ export class AuthService {
     await this.sendOtp(data.email);
 
     return { user, otpSent: true };
+  }
+
+  async startGuestSignup(data: { name: string; email: string }) {
+    const name = String(data.name || '').trim().replace(/\s+/g, ' ');
+    const email = String(data.email || '').trim().toLowerCase();
+    if (!name || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new BadRequestException('Enter your name and a valid email address.');
+    }
+
+    let user = await this.prisma.user.findUnique({ where: { email } });
+    if (user && user.role !== UserRole.GUEST) {
+      throw new ConflictException('This email already has an account. Sign in to continue.');
+    }
+
+    if (!user) {
+      const [firstName, ...lastNameParts] = name.split(' ');
+      user = await this.prisma.user.create({
+        data: {
+          firstName,
+          lastName: lastNameParts.join(' ') || 'Guest',
+          email,
+          password: await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12),
+          role: UserRole.GUEST,
+        },
+      });
+    }
+
+    const latestOtp = await this.prisma.otp.findFirst({
+      where: { userId: user.id, method: 'email' },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (latestOtp && Date.now() - latestOtp.createdAt.getTime() < 60_000) {
+      throw new BadRequestException('Please wait a minute before requesting another code.');
+    }
+
+    const { otp } = await this.otpService.createOtp(user.id, 'email');
+    const emailSent = await this.emailService.sendOtpEmail(email, otp);
+    if (!emailSent) {
+      throw new BadRequestException('Unable to send a verification code. Please try again later.');
+    }
+
+    return { message: 'A verification code has been sent to your email.' };
+  }
+
+  async verifyGuestSignup(emailValue: string, otp: string) {
+    const email = String(emailValue || '').trim().toLowerCase();
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || user.role !== UserRole.GUEST || !user.isActive) {
+      throw new UnauthorizedException('Guest signup could not be verified.');
+    }
+
+    const isValid = await this.otpService.verifyOtp(user.id, otp, 'email');
+    if (!isValid) throw new UnauthorizedException('The code is invalid or expired.');
+
+    const verifiedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: { isVerified: true },
+      select: { id: true, firstName: true, lastName: true, email: true, role: true, isActive: true, isVerified: true },
+    });
+    return verifiedUser;
   }
 
   async login(email: string, password: string, otp?: string) {

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useSession } from 'next-auth/react';
 import { FaCommentAlt, FaHeart, FaShareAlt } from 'react-icons/fa';
 import {
   fetchComments,
@@ -11,7 +10,7 @@ import {
   subscribeToLikeCount,
   updateLikeCount,
 } from '../../../lib/supabaseContent';
-import AuthPromptModal from '../AuthPromptModal';
+import { useAuthPrompt } from '../../hooks/useAuthPrompt';
 
 type CommentItem = {
   id: string;
@@ -31,13 +30,13 @@ type ContentActionsProps = {
 export function ContentActions({
   contentType = 'initiative',
   contentId,
-  initialLikes = 28,
-  initialComments = 12,
-  initialShares = 8,
+  initialLikes = 0,
+  initialComments = 0,
+  initialShares = 0,
   contextLabel = 'this content',
   shareUrl = '',
 }: ContentActionsProps) {
-  const { status } = useSession();
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const commentInputRef = useRef<HTMLInputElement>(null);
   const [likes, setLikes] = useState(initialLikes);
   const [liked, setLiked] = useState(false);
@@ -46,51 +45,66 @@ export function ContentActions({
   const [commentText, setCommentText] = useState('');
   const [commentList, setCommentList] = useState<CommentItem[]>([]);
   const [feedback, setFeedback] = useState('');
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [likePending, setLikePending] = useState(false);
+  const seenCommentIds = useRef(new Set<string>());
 
   useEffect(() => {
     let cleanupLikes = () => {};
     let cleanupComments = () => {};
 
+    let active = true;
     async function loadInitialData() {
-      const [likeCount, storedComments] = await Promise.all([
+      const [likeCount, storedComments, shareCount] = await Promise.all([
         fetchLikeCount(contentType, contentId),
         fetchComments(contentType, contentId),
+        fetchLikeCount(`${contentType}_share`, contentId),
       ]);
 
+      if (!active) return;
       setLikes(likeCount);
       setComments(storedComments.length);
       setCommentList(storedComments.map((comment) => ({ id: comment.id, content: comment.content })));
+      setShares(shareCount);
+      seenCommentIds.current = new Set(storedComments.map((comment) => comment.id));
 
       cleanupLikes = subscribeToLikeCount(contentType, contentId, setLikes);
+      const cleanupShares = subscribeToLikeCount(`${contentType}_share`, contentId, setShares);
       cleanupComments = subscribeToComments(contentType, contentId, (comment) => {
+        if (seenCommentIds.current.has(comment.id)) return;
+        seenCommentIds.current.add(comment.id);
         setCommentList((current) => {
-          if (current.some((item) => item.id === comment.id)) return current;
           return [{ id: comment.id, content: comment.content }, ...current];
         });
         setComments((value) => value + 1);
       });
+      cleanupShareUpdates = cleanupShares;
     }
 
+    let cleanupShareUpdates = () => {};
     void loadInitialData();
     return () => {
+      active = false;
       cleanupLikes();
+      cleanupShareUpdates();
       cleanupComments();
     };
   }, [contentId, contentType]);
 
   const toggleLike = async () => {
-    if (status !== 'authenticated') {
-      setShowAuthPrompt(true);
-      return;
-    }
-
-    const nextLiked = !liked;
-    setLiked(nextLiked);
-    setLikes((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
-
-    const result = await updateLikeCount(contentType, contentId, nextLiked ? 1 : -1);
-    setLikes(result);
+    if (likePending) return;
+    const performLike = async () => {
+      const nextLiked = !liked;
+      setLikePending(true);
+      setLiked(nextLiked);
+      setLikes((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
+      try {
+        setLikes(await updateLikeCount(contentType, contentId, nextLiked ? 1 : -1));
+      } finally {
+        setLikePending(false);
+      }
+    };
+    if (!requireAuthentication(performLike)) return;
+    await performLike();
   };
 
   const handleShare = async () => {
@@ -106,7 +120,7 @@ export function ContentActions({
         await navigator.clipboard.writeText(url);
         setFeedback('Link copied to clipboard');
       }
-      setShares((value) => value + 1);
+      setShares(await updateLikeCount(`${contentType}_share`, contentId, 1));
     } catch {
       setFeedback('Unable to share from this browser.');
     } finally {
@@ -116,32 +130,25 @@ export function ContentActions({
 
   const handleCommentSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (status !== 'authenticated') {
-      setShowAuthPrompt(true);
-      return;
-    }
-
-    const trimmed = commentText.trim();
-    if (!trimmed) {
-      return;
-    }
-
-    const savedComment = await postComment(contentType, contentId, trimmed);
-
-    if (savedComment) {
-      setCommentList((items) => {
-        if (items.some((item) => item.id === savedComment.id)) return items;
-        return [{ id: savedComment.id, content: savedComment.content }, ...items];
-      });
-      setComments((value) => value + 1);
-      setCommentText('');
-      setFeedback('Comment added');
-    } else {
-      setFeedback('Unable to post comment. Try again.');
-    }
-
-    window.setTimeout(() => setFeedback(''), 2500);
+    const submitComment = async () => {
+      const trimmed = commentText.trim();
+      if (!trimmed) return;
+      const savedComment = await postComment(contentType, contentId, trimmed);
+      if (savedComment) {
+        if (!seenCommentIds.current.has(savedComment.id)) {
+          seenCommentIds.current.add(savedComment.id);
+          setCommentList((items) => [{ id: savedComment.id, content: savedComment.content }, ...items]);
+          setComments((value) => value + 1);
+        }
+        setCommentText('');
+        setFeedback('Comment added');
+      } else {
+        setFeedback('Unable to post comment. Try again.');
+      }
+      window.setTimeout(() => setFeedback(''), 2500);
+    };
+    if (!requireAuthentication(submitComment)) return;
+    await submitComment();
   };
 
   return (
@@ -160,10 +167,11 @@ export function ContentActions({
           <button
             type="button"
             onClick={toggleLike}
-            className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            disabled={likePending}
+            className={`inline-flex items-center gap-2 rounded-full border-0 px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-60 ${
               liked
-                ? 'border-[#029346] bg-[#029346] text-white'
-                : 'border-slate-300 bg-white text-slate-700 hover:border-[#029346] hover:text-[#029346]'
+                ? 'bg-[#d66f0b]'
+                : 'bg-[#f79021] hover:bg-[#df7d16]'
             }`}
           >
             <FaHeart className="h-4 w-4" />
@@ -172,13 +180,11 @@ export function ContentActions({
           <button
             type="button"
             onClick={() => {
-              if (status !== 'authenticated') {
-                setShowAuthPrompt(true);
-                return;
-              }
-              commentInputRef.current?.focus();
+              const focusComment = () => commentInputRef.current?.focus();
+              if (!requireAuthentication(focusComment)) return;
+              focusComment();
             }}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#029346] hover:text-[#029346]"
+            className="inline-flex items-center gap-2 rounded-full border-0 bg-[#f79021] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#df7d16]"
           >
             <FaCommentAlt className="h-4 w-4" />
             Comment
@@ -186,7 +192,7 @@ export function ContentActions({
           <button
             type="button"
             onClick={handleShare}
-            className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-[#029346] hover:text-[#029346]"
+            className="inline-flex items-center gap-2 rounded-full border-0 bg-[#f79021] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#df7d16]"
           >
             <FaShareAlt className="h-4 w-4" />
             Share
@@ -236,7 +242,7 @@ export function ContentActions({
         )}
       </form>
 
-      <AuthPromptModal isOpen={showAuthPrompt} onClose={() => setShowAuthPrompt(false)} />
+      {authPrompt}
 
       {commentList.length > 0 && (
         <div className="mt-6 space-y-3">

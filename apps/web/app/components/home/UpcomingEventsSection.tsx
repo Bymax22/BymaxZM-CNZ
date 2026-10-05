@@ -5,6 +5,7 @@ import { Calendar, MapPin, Clock, Heart, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import EventRegistrationModal from '../events/EventRegistrationModal';
 import { fetchLikeCount, updateLikeCount } from '../../../lib/supabaseContent';
+import { useAuthPrompt } from '../../hooks/useAuthPrompt';
 
 interface UpcomingEvent {
   id: string;
@@ -211,6 +212,7 @@ function mapBackendEventToUpcomingEvent(event: BackendEvent): UpcomingEvent {
 }
 
 export default function UpcomingEventsSection() {
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const [events, setEvents] = useState<UpcomingEvent[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(null);
   const [liked, setLiked] = useState<Record<string, boolean>>({});
@@ -325,21 +327,21 @@ export default function UpcomingEventsSection() {
   };
 
   const handleLike = async () => {
-    if (!selectedEvent) return;
-
-    const isCurrentlyLiked = !!liked[selectedEvent.id];
-    const delta = isCurrentlyLiked ? -1 : 1;
-
-    setLiked((prev) => ({ ...prev, [selectedEvent.id]: !isCurrentlyLiked }));
-    
-    try {
-      const nextCount = await updateLikeCount('event', selectedEvent.id, delta);
-      setLikeCount((prev) => ({ ...prev, [selectedEvent.id]: nextCount }));
-    } catch (err) {
-      console.error('Error updating like count:', err);
-      // Revert on error
-      setLiked((prev) => ({ ...prev, [selectedEvent.id]: isCurrentlyLiked }));
-    }
+    const toggleLike = async () => {
+      if (!selectedEvent) return;
+      const isCurrentlyLiked = !!liked[selectedEvent.id];
+      const delta = isCurrentlyLiked ? -1 : 1;
+      setLiked((prev) => ({ ...prev, [selectedEvent.id]: !isCurrentlyLiked }));
+      try {
+        const nextCount = await updateLikeCount('event', selectedEvent.id, delta);
+        setLikeCount((prev) => ({ ...prev, [selectedEvent.id]: nextCount }));
+      } catch (err) {
+        console.error('Error updating like count:', err);
+        setLiked((prev) => ({ ...prev, [selectedEvent.id]: isCurrentlyLiked }));
+      }
+    };
+    if (!requireAuthentication(toggleLike)) return;
+    await toggleLike();
   };
 
   const handleShare = async () => {
@@ -490,6 +492,7 @@ export default function UpcomingEventsSection() {
           eventDate={formatDate(selectedEvent.date)}
         />
       )}
+      {authPrompt}
     </section>
   );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { storyTopics, type StoryTopic } from '../../components/sections/storyData';
-import StoryInteractions from '../../components/stories/StoryInteractions';
+import StoryInteractions from '@/components/stories/StoryInteractions';
 
 type Props = {
   params: Promise<{ id: string }>;

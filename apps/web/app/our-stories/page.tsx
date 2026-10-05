@@ -5,8 +5,10 @@ import Link from 'next/link';
 import type { StoryTopic } from '../components/sections/storyData';
 import { storyCategories, storyThemes, storyTopics } from '../components/sections/storyData';
 import { fetchComments, fetchLikeCount, updateLikeCount } from '../../lib/supabaseContent';
+import { useAuthPrompt } from '../hooks/useAuthPrompt';
 
 function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(12 + index * 4);
   const [comments, setComments] = useState(4 + index * 2);
@@ -33,12 +35,15 @@ function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
   }, [story.id]);
 
   const toggleLike = async () => {
-    const nextLiked = !liked;
-    setLiked(nextLiked);
-    setLikes((value) => Math.max(0, value + (nextLiked ? 1 : -1)));
-
-    const updatedCount = await updateLikeCount('story', story.id, nextLiked ? 1 : -1);
-    setLikes(updatedCount);
+    const performLike = async () => {
+      const nextLiked = !liked;
+      setLiked(nextLiked);
+      setLikes((value) => Math.max(0, value + (nextLiked ? 1 : -1)));
+      const updatedCount = await updateLikeCount('story', story.id, nextLiked ? 1 : -1);
+      setLikes(updatedCount);
+    };
+    if (!requireAuthentication(performLike)) return;
+    await performLike();
   };
 
   const handleShare = () => setShares((value) => value + 1);
@@ -67,12 +72,16 @@ function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
           >
             ❤ {likes}
           </button>
-          <button
-            type="button"
+          <Link
+            href={`/our-stories/${story.id}#engagement`}
+            onClick={(event) => {
+              const targetUrl = event.currentTarget.href;
+              if (!requireAuthentication(() => window.location.assign(targetUrl))) event.preventDefault();
+            }}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-slate-700 transition hover:border-[#029346] hover:text-[#029346]"
           >
             💬 {comments}
-          </button>
+          </Link>
           <button
             type="button"
             onClick={handleShare}
@@ -89,6 +98,7 @@ function StoryCard({ story, index }: { story: StoryTopic; index: number }) {
           See full story
         </Link>
       </div>
+      {authPrompt}
     </article>
   );
 }

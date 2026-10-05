@@ -4,6 +4,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { Heart, MessageCircle, Share2 } from 'lucide-react';
 import { fetchLikeCount, updateLikeCount } from '../../../lib/supabaseContent';
+import { useAuthPrompt } from '../../hooks/useAuthPrompt';
 
 const NEWS = [
   {
@@ -117,6 +118,7 @@ function formatRelativePublishedTime(publishedAt: string, now: number) {
 }
 
 export default function NewsGrid() {
+  const { requireAuthentication, authPrompt } = useAuthPrompt();
   const [items, setItems] = useState<any[]>(NEWS);
   const [now, setNow] = useState(() => Date.now());
   const [likes, setLikes] = useState<Record<string, number>>({});
@@ -266,17 +268,21 @@ export default function NewsGrid() {
                       aria-label="Like"
                       onClick={async () => {
                         if (!n.id) return;
-                        const isLiked = !!liked[n.id];
-                        setLiked((prev) => ({ ...prev, [n.id]: !isLiked }));
-                        const nextCount = await updateLikeCount(contentType, n.id, isLiked ? -1 : 1);
-                        setLikes((prev) => ({ ...prev, [n.id]: nextCount }));
+                        const toggleLike = async () => {
+                          const isLiked = !!liked[n.id];
+                          setLiked((prev) => ({ ...prev, [n.id]: !isLiked }));
+                          const nextCount = await updateLikeCount(contentType, n.id, isLiked ? -1 : 1);
+                          setLikes((prev) => ({ ...prev, [n.id]: nextCount }));
+                        };
+                        if (!requireAuthentication(toggleLike)) return;
+                        await toggleLike();
                       }}
                       className={`flex h-8 min-w-[2rem] items-center justify-center gap-1 rounded-lg transition ${liked[n.id] ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-emerald-600'}`}
                     >
                       <Heart size={16} fill={liked[n.id] ? 'currentColor' : 'none'} />
                       <span className="text-[11px] font-semibold">{likes[n.id] ?? 0}</span>
                     </button>
-                    <Link href={detailUrl} aria-label="Comment" className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200 hover:text-emerald-600">
+                    <Link href={detailUrl} onClick={(event) => { if (!requireAuthentication(() => window.location.assign(`${detailUrl}#engagement`))) event.preventDefault(); }} aria-label="Comment" className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition hover:bg-slate-200 hover:text-emerald-600">
                       <MessageCircle size={16} />
                     </Link>
                     <button
@@ -302,6 +308,7 @@ export default function NewsGrid() {
             </div>
           )})}
         </div>
+        {authPrompt}
       </div>
     </section>
   );

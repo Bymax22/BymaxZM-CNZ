@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { storyTopics } from '../../components/sections/storyData';
+import StoryInteractions from '../../components/stories/StoryInteractions';
 
 export async function generateStaticParams() {
   return storyTopics.map((story) => ({ storyId: story.id }));
@@ -75,6 +76,9 @@ export default async function StoryDetailPage({ params }: { params: Promise<{ st
               ))}
             </div>
           </div>
+        </div>
+        <div id="engagement" className="mt-8">
+          <StoryInteractions storyId={story.id} />
         </div>
       </section>
     </main>
