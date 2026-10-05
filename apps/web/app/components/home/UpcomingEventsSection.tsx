@@ -90,16 +90,16 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
   }, [targetDate]);
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
       {[
         { value: countdown.days, label: 'Days' },
         { value: countdown.hours, label: 'Hours' },
         { value: countdown.minutes, label: 'Mins' },
         { value: countdown.seconds, label: 'Secs' },
       ].map((unit, idx) => (
-        <div key={idx} className="bg-[#ff8c00] rounded-lg p-2 text-center">
-          <div className="text-xl font-bold text-white">{String(unit.value).padStart(2, '0')}</div>
-          <div className="text-[10px] text-white/80 mt-1">{unit.label}</div>
+        <div key={idx} className="bg-[#ff8c00] rounded-md p-1.5 text-center sm:rounded-lg sm:p-2">
+          <div className="text-lg font-bold text-white sm:text-xl">{String(unit.value).padStart(2, '0')}</div>
+          <div className="mt-0.5 text-[9px] text-white/80 sm:mt-1 sm:text-[10px]">{unit.label}</div>
         </div>
       ))}
     </div>
@@ -374,7 +374,7 @@ export default function UpcomingEventsSection() {
   }
 
   return (
-    <section className="relative overflow-hidden py-8">
+    <section className="relative overflow-hidden py-5 sm:py-8">
       <div className="absolute inset-0">
         <div
           className="absolute inset-y-0 right-0 w-full lg:w-3/5 bg-cover bg-right-center bg-no-repeat opacity-100"
@@ -383,18 +383,18 @@ export default function UpcomingEventsSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#008000]/100 via-[#008000]/100 to-transparent" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-white">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-end">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+        <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2 lg:items-end">
           <div className="max-w-[520px] lg:self-start">
             <p className="text-[10px] uppercase tracking-[0.25em] text-[#bfe8c9]">Upcoming Events</p>
-            <h3 className="text-xl lg:text-2xl font-semibold leading-tight mt-3">{selectedEvent.title}</h3>
+            <h3 className="mt-2 text-lg font-semibold leading-tight sm:mt-3 sm:text-xl lg:text-2xl">{selectedEvent.title}</h3>
             {selectedStatus && (
-              <div className="mt-3 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-[#bfe8c9]">
+              <div className="mt-2 inline-flex items-center rounded-full bg-white/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] text-[#bfe8c9] sm:mt-3 sm:px-3 sm:text-xs sm:tracking-[0.2em]">
                 {selectedStatus.label}
               </div>
             )}
 
-            <div className="mt-3 text-xs sm:text-sm text-white/90 flex flex-wrap items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-white/90 sm:mt-3 sm:text-sm">
               <span className="inline-flex items-center gap-1">
                 <Calendar size={14} className="text-[#bfe8c9]" />
                 {formatDate(selectedEvent.date)}
@@ -411,12 +411,12 @@ export default function UpcomingEventsSection() {
               </span>
             </div>
 
-            <div className="mt-3 pt-2 border-t border-white/20">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-[#bfe8c9] mb-2">{countdownLabel}</p>
+            <div className="mt-2 border-t border-white/20 pt-2 sm:mt-3">
+              <p className="mb-1.5 text-[9px] uppercase tracking-[0.16em] text-[#bfe8c9] sm:mb-2 sm:text-[10px] sm:tracking-[0.2em]">{countdownLabel}</p>
               <CountdownTimer targetDate={countdownTarget} />
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-5">
               <button
                 onClick={handleJoinEvent}
                 className="inline-flex items-center gap-2 px-3 py-1.5 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 text-sm transition hover:bg-slate-50"
@@ -444,18 +444,18 @@ export default function UpcomingEventsSection() {
           </div>
 
           <div>
-            <h4 className="text-base font-semibold mb-3">Other Upcoming Events</h4>
-            <div className="bg-white/10 p-1.5 rounded-2xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-white/20">
-                {activeEvents.map((event) => (
+            <h4 className="mb-2 text-sm font-semibold sm:mb-3 sm:text-base">Other Upcoming Events</h4>
+            <div className="rounded-xl bg-white/10 p-1 sm:rounded-2xl sm:p-1.5">
+              <div className="grid grid-cols-1 divide-y divide-white/20 sm:grid-cols-2 sm:divide-y-0 sm:divide-x">
+                {activeEvents.slice(0, 2).map((event) => (
                   <button
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
-                    className={`p-2 text-left transition ${
+                    className={`p-1.5 text-left transition sm:p-2 ${
                       selectedEvent.id === event.id ? 'bg-white/20' : 'hover:bg-white/10'
                     }`}
                   >
-                    <div className="text-sm font-semibold leading-snug mb-1 line-clamp-2">{event.title}</div>
+                    <div className="mb-1 line-clamp-1 text-xs font-semibold leading-snug sm:text-sm">{event.title}</div>
                     <div className="text-xs text-white/70 space-y-1">
                       <div className="flex items-center gap-1">
                         <Calendar size={12} />

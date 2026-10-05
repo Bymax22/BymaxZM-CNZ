@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import Hero from './components/home/Hero';
 import UpcomingEventsSection from './components/home/UpcomingEventsSection';
+import VideoShowcase from '@/components/home/VideoShowcase';
 import Programs from './components/home/Programs';
 import ImpactBand from './components/home/ImpactBand';
 
@@ -35,6 +36,7 @@ export default function HomePage() {
   return (
     <div>
       <Hero />
+      <VideoShowcase />
       <UpcomingEventsSection />
       <Programs />
       <ImpactBand />

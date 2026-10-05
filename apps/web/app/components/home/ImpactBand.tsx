@@ -12,38 +12,38 @@ const STATS = [
 
 export default function ImpactBand() {
   return (
-    <section className="relative overflow-hidden py-12">
+    <section className="relative overflow-hidden py-6 sm:py-10 lg:py-12">
       <div className="absolute inset-0">
         <div className="absolute inset-y-0 right-0 w-full lg:w-3/5 bg-[url('https://res.cloudinary.com/dwxlzl5us/image/upload/q_auto/f_auto/v1779726699/410798998_750008060491803_5601703772940240462_n_q1t08s.jpg')] bg-cover bg-right-center bg-no-repeat opacity-100" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#008000]/100 via-[#008000]/100 to-transparent" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8 text-white">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 lg:items-center">
           <div className="max-w-[360px]">
-            <p className="text-sm uppercase tracking-[0.25em] text-[#bfe8c9]">OUR IMPACT</p>
-            <h3 className="text-2xl font-bold leading-tight mt-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#bfe8c9] sm:text-sm sm:tracking-[0.25em]">OUR IMPACT</p>
+            <h3 className="mt-2 text-xl font-bold leading-tight sm:mt-4 sm:text-2xl">
               Numbers that reflect the change we create together.
             </h3>
-            <button className="mt-6 inline-flex items-center px-4 py-2 bg-white text-[#006400] rounded-lg font-semibold shadow-lg shadow-black/10 transition hover:bg-slate-50">
+            <button className="mt-3 inline-flex items-center rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-[#006400] shadow-lg shadow-black/10 transition hover:bg-slate-50 sm:mt-6 sm:px-4 sm:py-2">
               View Impact Report
             </button>
           </div>
 
-          <div className="squared-[32px] bg-white/10 p-2 backdrop-blur-sm">
-            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-white/20">
+          <div className="bg-white/10 p-1.5 backdrop-blur-sm sm:p-2">
+            <div className="grid grid-cols-2 divide-x divide-white/20 sm:grid-cols-4">
               {STATS.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
-                  <div key={stat.label} className={`p-4 text-center ${index === 0 ? '' : 'pl-5'}`}>
+                  <div key={stat.label} className={`p-2.5 text-center sm:p-4 ${index % 2 === 1 ? 'border-l border-white/20 sm:border-l-0' : ''}`}>
                     <div
-                      className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full text-white"
+                      className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-full text-white sm:mb-3 sm:h-11 sm:w-11"
                       style={{ backgroundColor: stat.bg }}
                     >
-                      <Icon size={18} />
+                      <Icon size={16} />
                     </div>
-                    <div className="text-3xl font-bold leading-none">{stat.value}</div>
-                    <div className="mt-2 text-sm text-white/80">{stat.label}</div>
+                    <div className="text-2xl font-bold leading-none sm:text-3xl">{stat.value}</div>
+                    <div className="mt-1 text-xs text-white/80 sm:mt-2 sm:text-sm">{stat.label}</div>
                   </div>
                 );
               })}

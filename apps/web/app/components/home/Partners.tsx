@@ -13,24 +13,24 @@ const PARTNERS = [
 
 export default function Partners() {
   return (
-    <section className="py-10 bg-white">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
-          <div className="rounded-[32px] bg-slate-50 p-8">
-            <h4 className="text-2xl font-semibold text-slate-950">Our Partners</h4>
-            <p className="mt-4 text-sm leading-7 text-slate-600">
+    <section className="bg-white py-5 sm:py-8 lg:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-3 sm:gap-5 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+          <div className="rounded-xl bg-slate-50 p-4 sm:rounded-2xl sm:p-6 lg:p-8">
+            <h4 className="text-xl font-semibold text-slate-950 sm:text-2xl">Our Partners</h4>
+            <p className="mt-2 text-sm leading-6 text-slate-600 sm:mt-4 sm:leading-7">
               We work with trusted organizations to extend our reach.
             </p>
           </div>
 
-          <div className="rounded-[32px] bg-white p-6">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6">
+          <div className="rounded-xl bg-white p-1 sm:rounded-2xl sm:p-4">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-4 xl:grid-cols-6">
               {PARTNERS.map((p) => (
                 <div
                   key={p.name}
-                  className="flex h-20 items-center justify-center rounded-3xl bg-slate-50 p-3 shadow-sm"
+                  className="flex h-16 items-center justify-center rounded-xl bg-slate-50 p-2 shadow-sm sm:h-20 sm:rounded-2xl sm:p-3"
                 >
-                  <img src={p.logo} alt={p.name} className="max-h-12 w-full object-contain" />
+                  <img src={p.logo} alt={p.name} className="max-h-10 w-full object-contain sm:max-h-12" />
                 </div>
               ))}
             </div>
