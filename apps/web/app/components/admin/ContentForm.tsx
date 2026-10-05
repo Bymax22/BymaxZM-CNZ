@@ -23,6 +23,9 @@ export interface ContentCardFormData {
     location?: string;
     partnerLogos?: string[];
     galleryUrls?: string[];
+    notificationEmails?: string[];
+    recipients?: string[];
+    emails?: string[];
   };
   relatedId?: string;
   publishedAt?: string;
@@ -55,6 +58,9 @@ const defaultForm: ContentCardFormData = {
     location: '',
     partnerLogos: [],
     galleryUrls: [],
+    notificationEmails: [],
+    recipients: [],
+    emails: [],
   },
   relatedId: '',
   publishedAt: '',
@@ -91,6 +97,9 @@ export default function ContentForm({
           location: initialData.metadata?.location || defaultForm.metadata.location,
           partnerLogos: initialData.metadata?.partnerLogos || defaultForm.metadata.partnerLogos,
           galleryUrls: initialData.metadata?.galleryUrls || defaultForm.metadata.galleryUrls,
+          notificationEmails: initialData.metadata?.notificationEmails || defaultForm.metadata.notificationEmails,
+          recipients: initialData.metadata?.recipients || defaultForm.metadata.recipients,
+          emails: initialData.metadata?.emails || defaultForm.metadata.emails,
         },
       });
     } else {
@@ -101,6 +110,7 @@ export default function ContentForm({
   const tagsInput = useMemo(() => form.tags.join(', '), [form.tags]);
   const partnerLogosInput = useMemo(() => form.metadata.partnerLogos?.join(', ') || '', [form.metadata.partnerLogos]);
   const galleryUrlsInput = useMemo(() => form.metadata.galleryUrls?.join(', ') || '', [form.metadata.galleryUrls]);
+  const notificationEmailsInput = useMemo(() => form.metadata?.notificationEmails?.join(', ') || '', [form.metadata?.notificationEmails]);
   const locationInput = useMemo(() => form.metadata.location || '', [form.metadata.location]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -116,6 +126,7 @@ export default function ContentForm({
     location: locationInput,
     partnerLogos: normalizeList(partnerLogosInput),
     galleryUrls: normalizeList(galleryUrlsInput),
+    notificationEmails: normalizeList(notificationEmailsInput),
   },
 };
 
@@ -333,15 +344,26 @@ try {
           </label>
         </div>
 
-        <label className="space-y-2 text-sm text-slate-700">
-          Gallery URLs
-          <input
-            value={galleryUrlsInput}
-            onChange={(event) => setForm((prev) => ({ ...prev, metadata: { ...prev.metadata, galleryUrls: normalizeList(event.target.value) } }))}
-            className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:outline-none"
-            placeholder="comma separated image URLs"
-          />
-        </label>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <label className="space-y-2 text-sm text-slate-700">
+            Notification recipients
+            <input
+              value={notificationEmailsInput}
+              onChange={(event) => setForm((prev) => ({ ...prev, metadata: { ...prev.metadata, notificationEmails: normalizeList(event.target.value) } }))}
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:outline-none"
+              placeholder="name@domain.com, second@domain.com"
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-700">
+            Gallery URLs
+            <input
+              value={galleryUrlsInput}
+              onChange={(event) => setForm((prev) => ({ ...prev, metadata: { ...prev.metadata, galleryUrls: normalizeList(event.target.value) } }))}
+              className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 focus:border-emerald-500 focus:outline-none"
+              placeholder="comma separated image URLs"
+            />
+          </label>
+        </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-700">

@@ -1,25 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: string; onUpload?: (url: string) => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | null>(imageUrl ?? null);
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
   const publicCloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const publicUploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-  async function handleUpload() {
-    if (!file) return;
+  useEffect(() => {
+    setUrl(imageUrl ?? null);
+  }, [imageUrl]);
+
+  async function handleUpload(selectedFile: File | null = file) {
+    if (!selectedFile) return;
 
     setUploading(true);
 
     try {
-      // If an unsigned preset and public cloud name are available, upload directly from client
       if (publicUploadPreset && publicCloudName) {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', selectedFile);
         formData.append('upload_preset', publicUploadPreset);
 
         const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${publicCloudName}/auto/upload`, {
@@ -32,12 +35,10 @@ export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: 
         if (data.secure_url) {
           setUrl(data.secure_url);
           if (onUpload) onUpload(data.secure_url);
-        } else {
-          console.error('Upload failed', data);
-          alert('Upload failed, check console for details.');
+          return;
         }
 
-        return;
+        throw new Error(data?.error?.message || 'Cloudinary upload failed');
       }
 
       const signatureResponse = await fetch(`${backendUrl}/cloudinary/sign`, {
@@ -60,7 +61,7 @@ export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: 
       }
 
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', selectedFile);
       formData.append('api_key', apiKey);
       formData.append('timestamp', String(timestamp));
       formData.append('signature', signature);
@@ -78,10 +79,10 @@ export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: 
       if (data.secure_url) {
         setUrl(data.secure_url);
         if (onUpload) onUpload(data.secure_url);
-      } else {
-        console.error('Upload failed', data);
-        alert('Upload failed, check console for details.');
+        return;
       }
+
+      throw new Error(data?.error?.message || 'Cloudinary upload failed');
     } catch (err) {
       console.error(err);
       alert('Upload error, see console.');
@@ -99,13 +100,16 @@ export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: 
         onChange={(e) => {
           const selectedFile = e.target.files?.[0] ?? null;
           setFile(selectedFile);
+          if (selectedFile) {
+            void handleUpload(selectedFile);
+          }
         }}
         className="mt-2"
       />
 
       <div className="mt-4 flex items-center gap-2">
         <button
-          onClick={handleUpload}
+          onClick={() => void handleUpload()}
           disabled={!file || uploading}
           className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
         >
@@ -120,7 +124,7 @@ export default function CloudinaryUploader({ imageUrl, onUpload }: { imageUrl?: 
 
       {url && (
         <div className="mt-3 p-3 bg-gray-50 rounded text-sm break-words">
-          <div className="font-semibold mb-1">Copy this URL into your news data:</div>
+          <div className="font-semibold mb-1">Cloudinary URL ready:</div>
           <code className="text-xs">{url}</code>
         </div>
       )}

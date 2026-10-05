@@ -86,6 +86,10 @@ const NEWS = [
   },
 ];
 
+function isVideoUrl(url?: string) {
+  return !!url && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+}
+
 function formatRelativePublishedTime(publishedAt: string, now: number) {
   const date = new Date(publishedAt);
   if (Number.isNaN(date.getTime())) return '';
@@ -213,11 +217,15 @@ export default function NewsGrid() {
                 className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
               >
               <div className="relative overflow-hidden">
-                <img
-                  src={n.image}
-                  alt={n.title}
-                  className="h-28 w-full object-cover transition duration-500 group-hover:scale-105"
-                />
+                {isVideoUrl(n.image) ? (
+                  <video src={n.image} controls muted loop playsInline className="h-28 w-full object-cover transition duration-500 group-hover:scale-105" />
+                ) : (
+                  <img
+                    src={n.image}
+                    alt={n.title}
+                    className="h-28 w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                )}
                 <div className="absolute left-4 top-4 overflow-hidden rounded-2xl bg-white shadow-sm">
                   <div
                     className={`px-3 py-1 text-[10px] uppercase tracking-[0.28em] text-white ${

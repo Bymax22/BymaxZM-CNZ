@@ -31,6 +31,14 @@ export default function StoriesPage() {
   const [stories, setStories] = useState<Story[]>(initialStories);
   const [loading, setLoading] = useState(true);
 
+  const renderMedia = (story: Story) => {
+    if (story.media && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(story.media)) {
+      return <video src={story.media} controls muted loop playsInline className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />;
+    }
+
+    return <img src={story.media} alt={story.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />;
+  };
+
   useEffect(() => {
     const loadStories = async () => {
       try {
@@ -105,7 +113,7 @@ export default function StoriesPage() {
           {stories.map((story) => (
             <article key={story.id} className="group flex h-full flex-col overflow-hidden rounded-xl border bg-white shadow">
               <div className="relative h-48 w-full overflow-hidden">
-                <img src={story.media} alt={story.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                {renderMedia(story)}
               </div>
 
               <div className="p-6 flex flex-1 flex-col">

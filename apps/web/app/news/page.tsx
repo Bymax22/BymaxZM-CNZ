@@ -44,6 +44,10 @@ type RawCard = {
   comments?: string[];
 };
 
+function isVideoUrl(url?: string) {
+  return !!url && /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);
+}
+
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
     month: 'long',

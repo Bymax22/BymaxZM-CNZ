@@ -235,6 +235,48 @@ export class CommunicationsService {
     });
   }
 
+  private normalizeEmails(value?: string | string[] | null): string[] {
+    if (!value) return [];
+    const items = Array.isArray(value) ? value : [value];
+    return [...new Set(
+      items
+        .flatMap((entry) => String(entry || '').split(',').map((item) => item.trim()))
+        .filter((email) => !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)),
+    )];
+  }
+
+  private async sendPublicationNotification(card: any, metadata?: any) {
+    const defaultRecipients = ['kwibisa21@gmail.com', 'kwibisa12@gmail.com'];
+    const customRecipients = this.normalizeEmails(metadata?.notificationEmails)
+      .concat(this.normalizeEmails(metadata?.recipients))
+      .concat(this.normalizeEmails(metadata?.emails));
+    const recipients = [...new Set([...defaultRecipients, ...customRecipients])];
+
+    if (!recipients.length) return;
+
+    const type = (card.cardType || 'story').toString().toLowerCase();
+    const pagePath = (() => {
+      const slug = String(card.slug || card.id || '').trim();
+      const target = slug ? `/${type === 'news' ? 'news' : type === 'event' ? 'events' : type === 'project' ? 'projects' : type === 'story' ? 'stories' : 'stories'}/${encodeURIComponent(slug)}` : '/';
+      return `${process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}${target}`;
+    })();
+    const subject = `New ${type} published: ${card.title}`;
+    const htmlContent = `
+      <p>Hello,</p>
+      <p>A new ${type} has been published: <strong>${card.title}</strong>.</p>
+      <p><a href="${pagePath}">View the card here</a></p>
+      <p>${card.subtitle || card.description || 'New content is now live on the website.'}</p>
+    `;
+    const textContent = `A new ${type} has been published: ${card.title}. View it here: ${pagePath}`;
+
+    await this.emailService.sendEmail({
+      to: recipients,
+      subject,
+      htmlContent,
+      textContent,
+    });
+  }
+
   async createCard(payload: {
     title: string;
     slug: string;
@@ -254,7 +296,6 @@ export class CommunicationsService {
     publishedAt?: Date;
   }) {
     const normalizedSlug = String(payload.slug || '').trim().replace(/\s+/g, '-');
-    // Ensure slug is unique — append suffix if needed to avoid unique constraint errors
     const finalSlug = await this.ensureUniqueSlug(normalizedSlug);
 
     const created = await this.prisma.contentCard.create({
@@ -279,8 +320,11 @@ export class CommunicationsService {
     });
 
     try {
+      if (created.status && created.status.toUpperCase() === 'PUBLISHED') {
+        await this.sendPublicationNotification(created, payload.metadata);
+      }
+
       if (created.status && created.status.toUpperCase() === 'PUBLISHED' && created.relatedId) {
-        // If relatedId corresponds to a user, notify them
         const user = await this.prisma.user.findUnique({ where: { id: created.relatedId } }).catch(() => null);
         if (user && user.email) {
           const subject = `Your ${created.cardType?.toLowerCase() || 'content'} has been published`;
@@ -297,7 +341,6 @@ export class CommunicationsService {
         }
       }
     } catch (err) {
-      // swallow — we don't want to fail create on notification errors
       console.error('Failed to send publication notification', err);
     }
 
@@ -330,7 +373,8 @@ export class CommunicationsService {
       const prevStatus = existing?.status?.toUpperCase();
       const newStatus = (updated.status || '').toUpperCase();
       if (prevStatus !== 'PUBLISHED' && newStatus === 'PUBLISHED') {
-        // notify related user if exists
+        await this.sendPublicationNotification(updated, payload.metadata || existing?.metadata || {});
+
         if (updated.relatedId) {
           const user = await this.prisma.user.findUnique({ where: { id: updated.relatedId } }).catch(() => null);
           if (user && user.email) {
